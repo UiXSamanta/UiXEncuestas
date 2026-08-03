@@ -7,6 +7,7 @@ import {
   Grid3x3, ArrowUpDown, Gauge
 } from 'lucide-react';
 import * as api from '../lib/api';
+import { getPreviewUrl, getSurveyUrl } from '../lib/urls';
 
 // ── Type helpers ─────────────────────────────────────────────────────────────
 
@@ -1149,9 +1150,8 @@ export function AnalyticsDashboard() {
     return Math.floor(diff / (1000 * 60 * 60 * 24));
   };
 
-  const FIGMA_BASE = 'https://uix-encuestas.figma.site';
-  const surveyLink  = `${FIGMA_BASE}/${id}`;
-  const previewLink = `${FIGMA_BASE}/preview/${id}`;
+  const surveyLink = id ? getSurveyUrl(id) : '';
+  const previewLink = id ? getPreviewUrl(id) : '';
 
   const copyToClipboard = (link: string) => {
     try {
