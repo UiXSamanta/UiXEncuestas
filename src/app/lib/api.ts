@@ -197,6 +197,21 @@ export async function deleteAdmin(adminId: string, accessToken: string) {
   });
 }
 
+export async function importAdminsCsv(
+  rows: Array<Record<string, unknown>>,
+  accessToken: string,
+) {
+  return fetchApi<{
+    created: Array<{ id: string; email: string; name: string; temp_password?: string }>;
+    updated: Array<{ id: string; email: string; name: string }>;
+    skipped: Array<{ email: string; reason: string }>;
+    errors: string[];
+  }>('/auth/admins/import', {
+    method: 'POST',
+    body: JSON.stringify({ rows, _token: accessToken }),
+  });
+}
+
 export async function setupInitialAdmin() {
   return fetchApi<any>('/setup-admin', {
     method: 'POST',
