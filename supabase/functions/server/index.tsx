@@ -150,13 +150,13 @@ app.get("/make-server-824603ba/health", (c) => {
 
 app.get("/make-server-824603ba/og/:id", async (c) => {
   const id = c.req.param("id");
-  const SITE_URL = Deno.env.get("SITE_URL") ?? "https://uix-encuestas.figma.site";
+  const SITE_URL = (Deno.env.get("SITE_URL") ?? "https://uixencuestas.vercel.app").replace(/\/$/, "");
 
   try {
     const encuesta = await kv.get(`encuesta:${id}`);
 
     if (!encuesta) {
-      return c.html(`<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0;url=${SITE_URL}/${id}"/></head><body><script>location.href='${SITE_URL}/${id}'</script></body></html>`);
+      return c.html(`<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0;url=${SITE_URL}/survey/${id}"/></head><body><script>location.href='${SITE_URL}/survey/${id}'</script></body></html>`);
     }
 
     const titulo = encuesta.pantalla_bienvenida?.titulo || encuesta.nombre_encuesta || "Encuesta";
@@ -164,7 +164,7 @@ app.get("/make-server-824603ba/og/:id", async (c) => {
     const ogImage = (encuesta.pantalla_bienvenida?.opengraph_enabled !== false && encuesta.pantalla_bienvenida?.opengraph_url)
       ? encuesta.pantalla_bienvenida.opengraph_url
       : null;
-    const surveyUrl = `${SITE_URL}/${id}`;
+    const surveyUrl = `${SITE_URL}/survey/${id}`;
 
     const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
@@ -202,7 +202,7 @@ app.get("/make-server-824603ba/og/:id", async (c) => {
     return c.html(html, 200);
   } catch (error) {
     console.error("Error in /og/:id:", error);
-    return c.html(`<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0;url=${SITE_URL}/${id}"/></head><body><script>location.href='${SITE_URL}/${id}'</script></body></html>`, 500);
+    return c.html(`<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0;url=${SITE_URL}/survey/${id}"/></head><body><script>location.href='${SITE_URL}/survey/${id}'</script></body></html>`, 500);
   }
 });
 
