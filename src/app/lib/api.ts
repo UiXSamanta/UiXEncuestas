@@ -8,6 +8,40 @@ interface ApiResponse<T> {
   error: string | null;
 }
 
+/** Fresh access token from Supabase session, synced to localStorage. */
+export async function getAccessToken(): Promise<string> {
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+  if (token) {
+    localStorage.setItem('access_token', token);
+    return token;
+  }
+  return localStorage.getItem('access_token') ?? '';
+}
+
+function parseApiResponseBody(text: string, status: number, endpoint: string): ApiResponse<unknown> | null {
+  if (!text.trim()) return null;
+
+  const looksJson = text.trimStart().startsWith('{') || text.trimStart().startsWith('[');
+  if (!looksJson) {
+    const errMsg = status === 404
+      ? 'Endpoint no disponible (404). Verifica el deploy de Supabase.'
+      : text || `Error del servidor (${status})`;
+    console.error(`API Error [${endpoint}]:`, errMsg);
+    return { data: null, error: errMsg };
+  }
+
+  try {
+    return JSON.parse(text) as ApiResponse<unknown>;
+  } catch {
+    const errMsg = status === 404
+      ? 'Endpoint no disponible (404). Verifica el deploy de Supabase.'
+      : `Respuesta inválida del servidor (${status})`;
+    console.error(`API Parse Error [${endpoint}]:`, errMsg, text.slice(0, 120));
+    return { data: null, error: errMsg };
+  }
+}
+
 // Helper function for API calls
 async function fetchApi<T>(
   endpoint: string,
@@ -31,10 +65,23 @@ async function fetchApi<T>(
       headers: mergedHeaders,
     });
 
-    const data = await response.json();
+    const text = await response.text();
+    const parsed = parseApiResponseBody(text, response.status, endpoint);
+
+    if (!parsed) {
+      if (!response.ok) {
+        const errMsg = response.status === 404
+          ? 'Endpoint no disponible (404). Verifica el deploy de Supabase.'
+          : `HTTP ${response.status}`;
+        return { data: null, error: errMsg };
+      }
+      return { data: null, error: null };
+    }
+
+    const data = parsed as ApiResponse<T>;
 
     if (!response.ok) {
-      const errMsg = data?.error || data?.message || `HTTP ${response.status}`;
+      const errMsg = data?.error || (parsed as { message?: string }).message || `HTTP ${response.status}`;
       console.error(`API Error [${endpoint}]:`, errMsg, data);
       return { data: null, error: errMsg || 'Error en la solicitud' };
     }
@@ -144,7 +191,7 @@ export async function getSession() {
 }
 
 export async function verifyUser() {
-  const accessToken = localStorage.getItem('access_token') ?? '';
+  const accessToken = await getAccessToken();
   return fetchApi<any>('/auth/verify', {
     method: 'POST',
     body: JSON.stringify({ _token: accessToken }),
@@ -282,7 +329,7 @@ export async function deleteNotification(id: string) {
 }
 
 export async function approveAccessRequest(notificationId: string) {
-  const accessToken = localStorage.getItem('access_token') ?? '';
+  const accessToken = await getAccessToken();
   console.log('🔑 Access token being sent:', accessToken ? `${accessToken.substring(0, 20)}...` : 'NULL');
 
   if (!accessToken) {
@@ -297,7 +344,7 @@ export async function approveAccessRequest(notificationId: string) {
 }
 
 export async function rejectAccessRequest(notificationId: string) {
-  const accessToken = localStorage.getItem('access_token') ?? '';
+  const accessToken = await getAccessToken();
   console.log('🔑 Access token being sent (reject):', accessToken ? `${accessToken.substring(0, 20)}...` : 'NULL');
 
   if (!accessToken) {
@@ -312,7 +359,7 @@ export async function rejectAccessRequest(notificationId: string) {
 }
 
 export async function changePassword(newPassword: string) {
-  const accessToken = localStorage.getItem('access_token') ?? '';
+  const accessToken = await getAccessToken();
   return fetchApi<any>('/auth/change-password', {
     method: 'POST',
     body: JSON.stringify({ newPassword, _token: accessToken }),
@@ -343,7 +390,7 @@ export async function getProyectoById(id: string) {
 }
 
 export async function createProyecto(proyecto: any) {
-  const accessToken = localStorage.getItem('access_token') ?? '';
+  const accessToken = await getAccessToken();
   return fetchApi<any>('/proyectos', {
     method: 'POST',
     body: JSON.stringify({ ...proyecto, _token: accessToken }),
@@ -371,7 +418,7 @@ export async function duplicateProyecto(id: string, newName: string) {
 }
 
 export async function checkProyectoAccess(id: string) {
-  const accessToken = localStorage.getItem('access_token') ?? '';
+  const accessToken = await getAccessToken();
   return fetchApi<any>(`/proyectos/${id}/check-access`, {
     method: 'POST',
     body: JSON.stringify({ _token: accessToken }),
@@ -379,7 +426,7 @@ export async function checkProyectoAccess(id: string) {
 }
 
 export async function validateProyectoPassword(id: string, password: string) {
-  const accessToken = localStorage.getItem('access_token') ?? '';
+  const accessToken = await getAccessToken();
   return fetchApi<any>(`/proyectos/${id}/validate-password`, {
     method: 'POST',
     body: JSON.stringify({ password, _token: accessToken }),

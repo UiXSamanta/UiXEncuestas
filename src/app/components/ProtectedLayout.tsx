@@ -17,6 +17,16 @@ export function ProtectedLayout() {
 
   useEffect(() => {
     checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.access_token) {
+        localStorage.setItem('access_token', session.access_token);
+      } else if (_event === 'SIGNED_OUT') {
+        localStorage.removeItem('access_token');
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const checkAuth = async () => {
