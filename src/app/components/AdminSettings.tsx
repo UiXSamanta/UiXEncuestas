@@ -77,8 +77,8 @@ export function AdminSettings() {
 
   const loadAdmins = async () => {
     setIsLoading(true);
-    const accessToken = localStorage.getItem('access_token');
-    const { data, error } = await api.getAllAdmins(accessToken || '');
+    const accessToken = await api.getAccessToken();
+    const { data, error } = await api.getAllAdmins(accessToken);
 
     if (error) {
       setErrorMessage('Error al cargar usuarios: ' + error);
@@ -111,7 +111,7 @@ export function AdminSettings() {
 
   const handleDownloadCsv = async () => {
     setIsExporting(true);
-    const accessToken = localStorage.getItem('access_token') || '';
+    const accessToken = await api.getAccessToken();
     const { data, error } = await api.getAllAdmins(accessToken);
 
     if (error || !data) {
@@ -153,7 +153,7 @@ export function AdminSettings() {
     }
 
     setIsImporting(true);
-    const accessToken = localStorage.getItem('access_token') || '';
+    const accessToken = await api.getAccessToken();
     const { data, error } = await api.importAdminsCsv(importRows, accessToken);
     setIsImporting(false);
 
@@ -239,13 +239,13 @@ export function AdminSettings() {
     }
 
     if (editingAdmin) {
-      const accessToken = localStorage.getItem('access_token');
+      const accessToken = await api.getAccessToken();
       const { error } = await api.updateAdmin(editingAdmin.id, {
         name: formName.trim(),
         role: formRole,
         can_access_notifications: formCanAccessNotifications,
         can_access_settings: formCanAccessSettings,
-      }, accessToken || '');
+      }, accessToken);
 
       if (error) {
         setFormError('Error al actualizar: ' + error);
@@ -284,7 +284,7 @@ export function AdminSettings() {
   const handleResetPassword = async (admin: Admin) => {
     if (!confirm(`¿Resetear la contraseña de "${admin.name}"? Se le enviará un correo de notificación.`)) return;
     setResettingId(admin.id);
-    const accessToken = localStorage.getItem('access_token') ?? '';
+    const accessToken = await api.getAccessToken();
     const { data, error } = await api.resetAdminPassword(admin.id, accessToken);
     setResettingId(null);
     if (error) {
@@ -306,8 +306,8 @@ export function AdminSettings() {
   const handleDelete = async (admin: Admin) => {
     if (!confirm(`¿Estás seguro de que deseas eliminar a "${admin.name}"?`)) return;
 
-    const accessToken = localStorage.getItem('access_token');
-    const { error } = await api.deleteAdmin(admin.id, accessToken || '');
+    const accessToken = await api.getAccessToken();
+    const { error } = await api.deleteAdmin(admin.id, accessToken);
 
     if (error) {
       setErrorMessage('Error al eliminar usuario: ' + error);
