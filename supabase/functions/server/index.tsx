@@ -1183,6 +1183,118 @@ app.post("/make-server-824603ba/auth/admins/:id/reset-password", async (c) => {
   }
 });
 
+const PRIMARY_ADMIN_EMAIL = "samanta.camacho@upax.com.mx";
+
+// Bulk import admin users from CSV rows (upsert by email; never deletes existing users)
+app.post("/make-server-824603ba/auth/admins/import", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { _token, rows } = body;
+
+    const { data: userData, error: authError } = await supabaseAdmin.auth.getUser(_token || '');
+    if (authError || !userData?.user) {
+      return c.json({ data: null, error: "No autorizado" }, 401);
+    }
+
+    if (!Array.isArray(rows) || rows.length === 0) {
+      return c.json({ data: null, error: "No hay filas para importar" }, 400);
+    }
+
+    const existingAdmins = await kv.getByPrefix("admin:");
+    const adminByEmail = new Map(
+      existingAdmins
+        .filter((admin: any) => admin?.email)
+        .map((admin: any) => [String(admin.email).toLowerCase(), admin])
+    );
+
+    const results = {
+      created: [] as any[],
+      updated: [] as any[],
+      skipped: [] as any[],
+      errors: [] as string[],
+    };
+
+    for (const row of rows) {
+      const email = String(row?.email || '').trim().toLowerCase();
+      const name = String(row?.nombre || row?.name || '').trim();
+      const role = String(row?.rol || row?.role || 'Administrador').trim();
+      const can_access_notifications = row?.acceso_notificaciones === true;
+      const can_access_settings = row?.acceso_configuracion === true;
+
+      if (!email || !name) {
+        results.errors.push(`Fila inválida: nombre y email son obligatorios (${email || 'sin email'}).`);
+        continue;
+      }
+
+      if (email === PRIMARY_ADMIN_EMAIL) {
+        results.skipped.push({ email, reason: "Admin principal protegido" });
+        continue;
+      }
+
+      const existing = adminByEmail.get(email);
+
+      if (existing) {
+        const updatedAdmin = {
+          ...existing,
+          name,
+          role,
+          can_access_notifications,
+          can_access_settings,
+          updated_at: new Date().toISOString(),
+        };
+
+        await kv.set(`admin:${existing.id}`, updatedAdmin);
+        await supabaseAdmin.auth.admin.updateUserById(existing.id, {
+          user_metadata: { name },
+        });
+
+        adminByEmail.set(email, updatedAdmin);
+        results.updated.push({ id: existing.id, email, name });
+        continue;
+      }
+
+      const tempPassword = generateAutoPassword(name || email);
+      const { data: createdUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
+        email,
+        password: tempPassword,
+        user_metadata: { name, must_change_password: true },
+        email_confirm: true,
+      });
+
+      if (createError || !createdUser?.user) {
+        results.errors.push(`No se pudo crear ${email}: ${createError?.message || 'error desconocido'}`);
+        continue;
+      }
+
+      const newAdmin = {
+        id: createdUser.user.id,
+        email: createdUser.user.email,
+        name,
+        role,
+        can_access_notifications,
+        can_access_settings,
+        must_change_password: true,
+        temp_password: tempPassword,
+        created_at: new Date().toISOString(),
+      };
+
+      await kv.set(`admin:${createdUser.user.id}`, newAdmin);
+      adminByEmail.set(email, newAdmin);
+      results.created.push({
+        id: createdUser.user.id,
+        email,
+        name,
+        temp_password: tempPassword,
+      });
+    }
+
+    return c.json({ data: results, error: null });
+  } catch (error) {
+    console.error("Error importing admins:", error);
+    return c.json({ data: null, error: error.message }, 500);
+  }
+});
+
 // Delete admin user — token passed as query param
 app.delete("/make-server-824603ba/auth/admins/:id", async (c) => {
   try {

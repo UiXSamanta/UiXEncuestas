@@ -1,10 +1,7 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router';
+import { useState, useEffect, useRef } from 'react';
 import {
   Settings,
-  User,
   Mail,
-  ArrowLeft,
   Plus,
   Edit2,
   Trash2,
@@ -18,8 +15,18 @@ import {
   Copy,
   Key,
   RefreshCw,
+  Download,
+  Upload,
 } from 'lucide-react';
 import * as api from '../lib/api';
+import { AdminSidebar } from './AdminSidebar';
+import {
+  adminsToCsv,
+  downloadCsvFile,
+  parseAdminCsv,
+  PRIMARY_ADMIN_EMAIL,
+  type AdminCsvRow,
+} from '../lib/adminCsv';
 
 interface Admin {
   id: string;
@@ -34,7 +41,6 @@ interface Admin {
 }
 
 export function AdminSettings() {
-  const navigate = useNavigate();
   const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
   const isAdminPrincipal = currentUser.email === 'samanta.camacho@upax.com.mx';
 
@@ -56,9 +62,17 @@ export function AdminSettings() {
   const [formError, setFormError] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [resettingId, setResettingId] = useState<string | null>(null);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importRows, setImportRows] = useState<AdminCsvRow[]>([]);
+  const [importErrors, setImportErrors] = useState<string[]>([]);
+  const [isImporting, setIsImporting] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     loadAdmins();
+    loadUnreadCount();
   }, []);
 
   const loadAdmins = async () => {
@@ -88,6 +102,84 @@ export function AdminSettings() {
     }
 
     setIsLoading(false);
+  };
+
+  const loadUnreadCount = async () => {
+    const { data } = await api.getNotifications();
+    setUnreadCount((data || []).filter((item: { leido?: boolean }) => !item.leido).length);
+  };
+
+  const handleDownloadCsv = async () => {
+    setIsExporting(true);
+    const accessToken = localStorage.getItem('access_token') || '';
+    const { data, error } = await api.getAllAdmins(accessToken);
+
+    if (error || !data) {
+      setErrorMessage('Error al exportar usuarios: ' + (error || 'sin datos'));
+      setTimeout(() => setErrorMessage(''), 5000);
+      setIsExporting(false);
+      return;
+    }
+
+    const csv = adminsToCsv(data);
+    const date = new Date().toISOString().slice(0, 10);
+    downloadCsvFile(`usuarios_admin_${date}.csv`, csv);
+    setSuccessMessage(`Se descargaron ${data.length} usuario(s) en CSV.`);
+    setTimeout(() => setSuccessMessage(''), 4000);
+    setIsExporting(false);
+  };
+
+  const handleCsvFileSelected = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const { rows, errors } = parseAdminCsv(text);
+      setImportRows(rows);
+      setImportErrors(errors);
+      setShowImportModal(true);
+    } catch {
+      setErrorMessage('No se pudo leer el archivo CSV.');
+      setTimeout(() => setErrorMessage(''), 5000);
+    }
+  };
+
+  const handleConfirmImport = async () => {
+    if (importRows.length === 0) {
+      setImportErrors(['No hay filas válidas para importar.']);
+      return;
+    }
+
+    setIsImporting(true);
+    const accessToken = localStorage.getItem('access_token') || '';
+    const { data, error } = await api.importAdminsCsv(importRows, accessToken);
+    setIsImporting(false);
+
+    if (error || !data) {
+      setImportErrors([error || 'Error al importar usuarios.']);
+      return;
+    }
+
+    setShowImportModal(false);
+    setImportRows([]);
+    setImportErrors([]);
+
+    const createdCount = data.created.length;
+    const updatedCount = data.updated.length;
+    const skippedCount = data.skipped.length;
+    const errorCount = data.errors.length;
+
+    setSuccessMessage(
+      `Importación completada: ${createdCount} creado(s), ${updatedCount} actualizado(s), ${skippedCount} omitido(s)${errorCount ? `, ${errorCount} error(es)` : ''}.`,
+    );
+    if (data.errors.length > 0) {
+      setErrorMessage(data.errors.join(' '));
+      setTimeout(() => setErrorMessage(''), 8000);
+    }
+    setTimeout(() => setSuccessMessage(''), 6000);
+    loadAdmins();
   };
 
   const openAddModal = () => {
@@ -229,39 +321,60 @@ export function AdminSettings() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => navigate('/admin')}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5 text-gray-600" />
-            </button>
-            <Settings className="w-6 h-6 text-gray-700" />
-            <h1 className="text-xl font-semibold text-gray-900">Configuración de Cuentas</h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <User className="w-4 h-4" />
-              <span>{currentUser.name || currentUser.email}</span>
-            </div>
-            {isAdminPrincipal && (
-              <button
-                onClick={openAddModal}
-                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#597AFF] to-[#8C59FE] text-white rounded-lg hover:shadow-lg transition-all text-sm font-medium"
-              >
-                <Plus className="w-4 h-4" />
-                Agregar usuario
-              </button>
-            )}
-          </div>
-        </div>
-      </header>
+    <div className="flex h-screen bg-[#EBEEF4]">
+      <AdminSidebar unreadCount={unreadCount} />
 
-      <main className="p-8 max-w-4xl mx-auto">
+      <main className="flex-1 overflow-auto">
+        <div className="p-8">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv,text/csv"
+            className="hidden"
+            onChange={handleCsvFileSelected}
+          />
+
+          {/* Header */}
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <div className="flex items-center gap-3">
+                <Settings className="w-7 h-7 text-[#8C59FE]" />
+                <h2 className="text-3xl font-semibold text-[#303C48]">Configuración de Cuentas</h2>
+              </div>
+              <p className="text-sm text-[#81878E] mt-1">
+                {admins.length} usuario{admins.length !== 1 ? 's' : ''} registrado{admins.length !== 1 ? 's' : ''}
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              {isAdminPrincipal && (
+                <>
+                  <button
+                    onClick={handleDownloadCsv}
+                    disabled={isExporting || isLoading}
+                    className="flex items-center gap-2 px-4 py-2 text-[#364153] bg-white border border-[#C3C5C9] rounded-lg hover:bg-[#F8F9FB] disabled:opacity-50 transition-colors text-sm font-medium"
+                  >
+                    <Download className={`w-4 h-4 ${isExporting ? 'animate-pulse' : ''}`} />
+                    Descargar CSV
+                  </button>
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isImporting}
+                    className="flex items-center gap-2 px-4 py-2 text-[#364153] bg-white border border-[#C3C5C9] rounded-lg hover:bg-[#F8F9FB] disabled:opacity-50 transition-colors text-sm font-medium"
+                  >
+                    <Upload className="w-4 h-4" />
+                    Subir CSV
+                  </button>
+                  <button
+                    onClick={openAddModal}
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#597AFF] to-[#8C59FE] text-white rounded-lg hover:shadow-lg transition-all text-sm font-medium"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Agregar usuario
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
 
         {/* Temp password reveal banner */}
         {newTempPassword && (
@@ -312,26 +425,26 @@ export function AdminSettings() {
         )}
 
         {/* Admins Table */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-base font-semibold text-gray-900">Administradores del sistema</h2>
-            <p className="text-xs text-gray-500 mt-0.5">{admins.length} usuario{admins.length !== 1 ? 's' : ''} registrado{admins.length !== 1 ? 's' : ''}</p>
+        <div className="bg-white rounded-lg border border-[#C3C5C9] overflow-x-auto shadow-sm">
+          <div className="px-6 py-4 border-b border-[#EBEEF4]">
+            <h3 className="text-base font-semibold text-[#303C48]">Administradores del sistema</h3>
+            <p className="text-xs text-[#81878E] mt-0.5">Gestiona accesos, roles y permisos de usuarios admin</p>
           </div>
 
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50 border-b border-gray-200">
+          <table className="min-w-full divide-y divide-[#EBEEF4]">
+            <thead className="bg-[#EBEEF4] border-b border-[#C3C5C9]">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Correo</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rol</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contraseña temporal</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Permisos</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#5C6671] uppercase tracking-wider">Usuario</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#5C6671] uppercase tracking-wider">Correo</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#5C6671] uppercase tracking-wider">Rol</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#5C6671] uppercase tracking-wider">Contraseña temporal</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#5C6671] uppercase tracking-wider">Permisos</th>
                 {isAdminPrincipal && (
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[#5C6671] uppercase tracking-wider">Acciones</th>
                 )}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-[#EBEEF4]">
               {isLoading ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center">
@@ -489,10 +602,114 @@ export function AdminSettings() {
         <div className="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-start gap-3">
           <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
           <p className="text-xs text-amber-800">
-            La contraseña temporal es visible hasta que el usuario la cambie al iniciar sesión por primera vez. Compártela de forma segura.
+            La contraseña temporal es visible hasta que el usuario la cambie al iniciar sesión por primera vez. El admin principal ({PRIMARY_ADMIN_EMAIL}) nunca se modifica en importaciones CSV.
           </p>
         </div>
+        </div>
       </main>
+
+      {/* CSV Import Preview Modal */}
+      {showImportModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#EBEEF4]">
+              <div>
+                <h3 className="text-base font-semibold text-[#303C48]">Importar usuarios desde CSV</h3>
+                <p className="text-xs text-[#81878E] mt-0.5">
+                  Se crearán usuarios nuevos y se actualizarán existentes por email. No se eliminarán usuarios.
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setShowImportModal(false);
+                  setImportRows([]);
+                  setImportErrors([]);
+                }}
+                className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="px-6 py-4 overflow-auto flex-1 space-y-4">
+              {importErrors.length > 0 && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 space-y-1">
+                  {importErrors.map((err) => (
+                    <p key={err}>{err}</p>
+                  ))}
+                </div>
+              )}
+
+              <div className="grid grid-cols-3 gap-3">
+                <div className="rounded-lg border border-[#EBEEF4] p-3 bg-[#F8F9FB]">
+                  <p className="text-xs text-[#81878E]">Filas válidas</p>
+                  <p className="text-xl font-semibold text-[#303C48]">{importRows.length}</p>
+                </div>
+                <div className="rounded-lg border border-[#EBEEF4] p-3 bg-[#F8F9FB]">
+                  <p className="text-xs text-[#81878E]">Nuevos</p>
+                  <p className="text-xl font-semibold text-[#303C48]">
+                    {importRows.filter((row) => !admins.some((admin) => admin.email.toLowerCase() === row.email.toLowerCase())).length}
+                  </p>
+                </div>
+                <div className="rounded-lg border border-[#EBEEF4] p-3 bg-[#F8F9FB]">
+                  <p className="text-xs text-[#81878E]">Actualizaciones</p>
+                  <p className="text-xl font-semibold text-[#303C48]">
+                    {importRows.filter((row) => admins.some((admin) => admin.email.toLowerCase() === row.email.toLowerCase())).length}
+                  </p>
+                </div>
+              </div>
+
+              {importRows.length > 0 && (
+                <div className="border border-[#EBEEF4] rounded-lg overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead className="bg-[#EBEEF4]">
+                      <tr>
+                        <th className="px-4 py-2 text-left text-xs text-[#5C6671]">Nombre</th>
+                        <th className="px-4 py-2 text-left text-xs text-[#5C6671]">Email</th>
+                        <th className="px-4 py-2 text-left text-xs text-[#5C6671]">Rol</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {importRows.slice(0, 8).map((row) => (
+                        <tr key={`${row.email}-${row.nombre}`} className="border-t border-[#EBEEF4]">
+                          <td className="px-4 py-2 text-[#303C48]">{row.nombre}</td>
+                          <td className="px-4 py-2 text-[#5C6671]">{row.email}</td>
+                          <td className="px-4 py-2 text-[#5C6671]">{row.rol}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {importRows.length > 8 && (
+                    <p className="px-4 py-2 text-xs text-[#81878E] border-t border-[#EBEEF4]">
+                      + {importRows.length - 8} fila(s) adicional(es)
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="px-6 py-4 border-t border-[#EBEEF4] flex items-center justify-end gap-3">
+              <button
+                onClick={() => {
+                  setShowImportModal(false);
+                  setImportRows([]);
+                  setImportErrors([]);
+                }}
+                className="px-4 py-2 text-sm font-medium text-[#5C6671] bg-[#EBEEF4] rounded-lg hover:bg-[#E2E6ED] transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleConfirmImport}
+                disabled={isImporting || importRows.length === 0}
+                className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-[#597AFF] to-[#8C59FE] rounded-lg hover:shadow-lg transition-all disabled:opacity-50"
+              >
+                {isImporting ? 'Importando...' : 'Confirmar importación'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Add / Edit Modal */}
       {showModal && (
