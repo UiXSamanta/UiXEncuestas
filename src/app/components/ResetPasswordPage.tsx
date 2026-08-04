@@ -83,15 +83,15 @@ export function ResetPasswordPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#597AFF]/10 via-[#8C59FE]/10 to-[#EBEEF4] flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-xl w-full max-w-[420px] px-[24px] py-[40px] text-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#597AFF]/10 via-[#8C59FE]/10 to-[#EBEEF4] dark:from-[#597AFF]/5 dark:via-[#8C59FE]/5 dark:to-background flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-card rounded-2xl shadow-xl w-full max-w-[420px] px-[24px] py-[40px] text-center">
           <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center mx-auto mb-5">
             <CheckCircle2 className="w-8 h-8 text-green-600" />
           </div>
-          <h2 className="font-semibold text-[22px] leading-[30px] text-[#303C48] mb-3">
+          <h2 className="font-semibold text-[22px] leading-[30px] text-[#303C48] dark:text-foreground mb-3">
             Contraseña actualizada
           </h2>
-          <p className="text-[15px] leading-[22px] text-[#5C6671] mb-8">
+          <p className="text-[15px] leading-[22px] text-[#5C6671] dark:text-muted-foreground mb-8">
             Tu contraseña fue cambiada exitosamente. Serás redirigido al login en unos segundos.
           </p>
           <button
@@ -106,8 +106,8 @@ export function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#597AFF]/10 via-[#8C59FE]/10 to-[#EBEEF4] flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-[420px] px-[24px] py-[32px]">
+    <div className="min-h-screen bg-gradient-to-br from-[#597AFF]/10 via-[#8C59FE]/10 to-[#EBEEF4] dark:from-[#597AFF]/5 dark:via-[#8C59FE]/5 dark:to-background flex items-center justify-center p-4">
+      <div className="bg-white dark:bg-card rounded-2xl shadow-xl w-full max-w-[420px] px-[24px] py-[32px]">
 
         <div className="flex flex-col items-start gap-3 mb-[24px]">
           <div className="w-16 h-7 mb-2">
@@ -118,10 +118,10 @@ export function ResetPasswordPage() {
               <Lock className="w-5 h-5 text-[#8C59FE]" />
             </div>
             <div>
-              <h1 className="font-semibold text-[20px] leading-[28px] tracking-[-0.4492px] text-[#303C48]">
+              <h1 className="font-semibold text-[20px] leading-[28px] tracking-[-0.4492px] text-[#303C48] dark:text-foreground">
                 Nueva contraseña
               </h1>
-              <p className="text-[13px] leading-[18px] text-[#81878E]">
+              <p className="text-[13px] leading-[18px] text-[#81878E] dark:text-muted-foreground">
                 Ingresa tu nueva contraseña
               </p>
             </div>
@@ -148,7 +148,7 @@ export function ResetPasswordPage() {
         {isValidSession !== false && (
           <form onSubmit={handleSubmit} className="flex flex-col gap-[20px]">
             <div className="flex flex-col gap-[8px]">
-              <label className="font-medium leading-[20px] text-[#303C48] text-[14px] tracking-[-0.1504px]">
+              <label className="font-medium leading-[20px] text-[#303C48] dark:text-foreground text-[14px] tracking-[-0.1504px]">
                 Nueva contraseña
               </label>
               <div className="relative">
@@ -160,12 +160,12 @@ export function ResetPasswordPage() {
                   minLength={8}
                   disabled={isLoading}
                   placeholder="Mínimo 8 caracteres"
-                  className="h-[50px] w-full px-[16px] pr-[48px] rounded-[10px] border border-[#C3C5C9] text-[16px] text-[#303C48] placeholder:text-[#81878E] focus:outline-none focus:ring-2 focus:ring-[#8C59FE] focus:border-transparent transition-all"
+                  className="h-[50px] w-full px-[16px] pr-[48px] rounded-[10px] border border-[#C3C5C9] dark:border-border text-[16px] text-[#303C48] dark:text-foreground placeholder:text-[#81878E] dark:placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#8C59FE] focus:border-transparent transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-[14px] top-1/2 -translate-y-1/2 text-[#81878E] hover:text-[#303C48]"
+                  className="absolute right-[14px] top-1/2 -translate-y-1/2 text-[#81878E] dark:text-muted-foreground hover:text-[#303C48] dark:hover:text-foreground"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -173,7 +173,7 @@ export function ResetPasswordPage() {
             </div>
 
             <div className="flex flex-col gap-[8px]">
-              <label className="font-medium leading-[20px] text-[#303C48] text-[14px] tracking-[-0.1504px]">
+              <label className="font-medium leading-[20px] text-[#303C48] dark:text-foreground text-[14px] tracking-[-0.1504px]">
                 Confirmar contraseña
               </label>
               <div className="relative">
@@ -184,12 +184,12 @@ export function ResetPasswordPage() {
                   required
                   disabled={isLoading}
                   placeholder="Repite la contraseña"
-                  className="h-[50px] w-full px-[16px] pr-[48px] rounded-[10px] border border-[#C3C5C9] text-[16px] text-[#303C48] placeholder:text-[#81878E] focus:outline-none focus:ring-2 focus:ring-[#8C59FE] focus:border-transparent transition-all"
+                  className="h-[50px] w-full px-[16px] pr-[48px] rounded-[10px] border border-[#C3C5C9] dark:border-border text-[16px] text-[#303C48] dark:text-foreground placeholder:text-[#81878E] dark:placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#8C59FE] focus:border-transparent transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirm(!showConfirm)}
-                  className="absolute right-[14px] top-1/2 -translate-y-1/2 text-[#81878E] hover:text-[#303C48]"
+                  className="absolute right-[14px] top-1/2 -translate-y-1/2 text-[#81878E] dark:text-muted-foreground hover:text-[#303C48] dark:hover:text-foreground"
                 >
                   {showConfirm ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>

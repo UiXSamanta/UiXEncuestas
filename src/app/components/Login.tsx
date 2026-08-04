@@ -76,18 +76,18 @@ export function Login() {
         <ChangePasswordModal onSuccess={handlePasswordChangeSuccess} />
       )}
 
-      <div className="min-h-screen bg-gradient-to-br from-[#597AFF]/10 via-[#8C59FE]/10 to-[#EBEEF4] flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-xl w-full max-w-[440px] px-[32px] py-[40px]">
+      <div className="min-h-screen bg-gradient-to-br from-[#597AFF]/10 via-[#8C59FE]/10 to-[#EBEEF4] dark:from-[#597AFF]/5 dark:via-[#8C59FE]/5 dark:to-background flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-card rounded-2xl shadow-xl w-full max-w-[440px] px-[32px] py-[40px]">
 
         {/* Header with Logo */}
         <div className="text-center mb-[32px] flex flex-col items-center">
           <div className="w-20 h-9 mb-4">
             <Logo />
           </div>
-          <h1 className="font-semibold text-[24px] leading-[32px] tracking-[-0.4492px] text-[#303C48] mb-[6px]">
+          <h1 className="font-semibold text-[24px] leading-[32px] tracking-[-0.4492px] text-[#303C48] dark:text-foreground mb-[6px]">
             Encuestas
           </h1>
-          <p className="font-normal text-[14px] leading-[20px] text-[#81878E]">
+          <p className="font-normal text-[14px] leading-[20px] text-[#81878E] dark:text-muted-foreground">
             Inicia sesión para acceder al panel de administración
           </p>
         </div>
@@ -105,7 +105,7 @@ export function Login() {
           <div className="flex flex-col gap-[8px]">
             <label
               htmlFor="email"
-              className="font-medium leading-[20px] text-[#303C48] text-[14px] tracking-[-0.1504px]"
+              className="font-medium leading-[20px] text-[#303C48] dark:text-foreground text-[14px] tracking-[-0.1504px]"
             >
               Email
             </label>
@@ -117,7 +117,7 @@ export function Login() {
               required
               disabled={isLoading}
               placeholder="admin@ejemplo.com"
-              className="h-[50px] w-full px-[16px] rounded-[10px] border border-[#C3C5C9] font-normal text-[16px] text-[#303C48] placeholder:text-[#81878E] tracking-[-0.3125px] focus:outline-none focus:ring-2 focus:ring-[#8C59FE] focus:border-transparent transition-all"
+              className="h-[50px] w-full px-[16px] rounded-[10px] border border-[#C3C5C9] dark:border-border font-normal text-[16px] text-[#303C48] dark:text-foreground placeholder:text-[#81878E] dark:placeholder:text-muted-foreground tracking-[-0.3125px] focus:outline-none focus:ring-2 focus:ring-[#8C59FE] focus:border-transparent transition-all"
             />
           </div>
 
@@ -125,7 +125,7 @@ export function Login() {
           <div className="flex flex-col gap-[8px]">
             <label
               htmlFor="password"
-              className="font-medium leading-[20px] text-[#303C48] text-[14px] tracking-[-0.1504px]"
+              className="font-medium leading-[20px] text-[#303C48] dark:text-foreground text-[14px] tracking-[-0.1504px]"
             >
               Contraseña
             </label>
@@ -137,7 +137,7 @@ export function Login() {
               required
               disabled={isLoading}
               placeholder="••••••••"
-              className="h-[50px] w-full px-[16px] rounded-[10px] border border-[#C3C5C9] font-normal text-[16px] text-[#303C48] placeholder:text-[#81878E] tracking-[-0.3125px] focus:outline-none focus:ring-2 focus:ring-[#8C59FE] focus:border-transparent transition-all"
+              className="h-[50px] w-full px-[16px] rounded-[10px] border border-[#C3C5C9] dark:border-border font-normal text-[16px] text-[#303C48] dark:text-foreground placeholder:text-[#81878E] dark:placeholder:text-muted-foreground tracking-[-0.3125px] focus:outline-none focus:ring-2 focus:ring-[#8C59FE] focus:border-transparent transition-all"
             />
           </div>
 

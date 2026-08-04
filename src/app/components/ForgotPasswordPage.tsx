@@ -38,18 +38,18 @@ export function ForgotPasswordPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#597AFF]/10 via-[#8C59FE]/10 to-[#EBEEF4] flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-xl w-full max-w-[420px] px-[24px] py-[40px] text-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#597AFF]/10 via-[#8C59FE]/10 to-[#EBEEF4] dark:from-[#597AFF]/5 dark:via-[#8C59FE]/5 dark:to-background flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-card rounded-2xl shadow-xl w-full max-w-[420px] px-[24px] py-[40px] text-center">
           <div className="w-16 h-16 bg-gradient-to-br from-[#597AFF]/20 to-[#8C59FE]/20 rounded-full flex items-center justify-center mx-auto mb-5">
             <Mail className="w-8 h-8 text-[#8C59FE]" />
           </div>
-          <h2 className="font-semibold text-[22px] leading-[30px] text-[#303C48] mb-3">
+          <h2 className="font-semibold text-[22px] leading-[30px] text-[#303C48] dark:text-foreground mb-3">
             Correo enviado
           </h2>
-          <p className="text-[15px] leading-[22px] text-[#5C6671] mb-2">
+          <p className="text-[15px] leading-[22px] text-[#5C6671] dark:text-muted-foreground mb-2">
             Si existe una cuenta con ese correo, recibirás un enlace para restablecer tu contraseña.
           </p>
-          <p className="text-[13px] leading-[20px] text-[#81878E] mb-8">
+          <p className="text-[13px] leading-[20px] text-[#81878E] dark:text-muted-foreground mb-8">
             Revisa tu bandeja de entrada y la carpeta de spam.
           </p>
           <button
@@ -64,13 +64,13 @@ export function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#597AFF]/10 via-[#8C59FE]/10 to-[#EBEEF4] flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-[420px] px-[24px] py-[32px]">
+    <div className="min-h-screen bg-gradient-to-br from-[#597AFF]/10 via-[#8C59FE]/10 to-[#EBEEF4] dark:from-[#597AFF]/5 dark:via-[#8C59FE]/5 dark:to-background flex items-center justify-center p-4">
+      <div className="bg-white dark:bg-card rounded-2xl shadow-xl w-full max-w-[420px] px-[24px] py-[32px]">
 
         {/* Back */}
         <button
           onClick={() => navigate('/login')}
-          className="flex items-center gap-2 text-[#81878E] hover:text-[#303C48] transition-colors mb-[24px] text-[14px] font-medium"
+          className="flex items-center gap-2 text-[#81878E] dark:text-muted-foreground hover:text-[#303C48] dark:hover:text-foreground transition-colors mb-[24px] text-[14px] font-medium"
         >
           <ArrowLeft className="w-4 h-4" />
           Volver al Login
@@ -86,10 +86,10 @@ export function ForgotPasswordPage() {
               <Mail className="w-5 h-5 text-[#8C59FE]" />
             </div>
             <div>
-              <h1 className="font-semibold text-[20px] leading-[28px] tracking-[-0.4492px] text-[#303C48]">
+              <h1 className="font-semibold text-[20px] leading-[28px] tracking-[-0.4492px] text-[#303C48] dark:text-foreground">
                 Recuperar contraseña
               </h1>
-              <p className="text-[13px] leading-[18px] text-[#81878E]">
+              <p className="text-[13px] leading-[18px] text-[#81878E] dark:text-muted-foreground">
                 Te enviaremos un enlace para restablecerla
               </p>
             </div>
@@ -109,7 +109,7 @@ export function ForgotPasswordPage() {
           <div className="flex flex-col gap-[8px]">
             <label
               htmlFor="email"
-              className="font-medium leading-[20px] text-[#303C48] text-[14px] tracking-[-0.1504px]"
+              className="font-medium leading-[20px] text-[#303C48] dark:text-foreground text-[14px] tracking-[-0.1504px]"
             >
               Email
             </label>
@@ -121,7 +121,7 @@ export function ForgotPasswordPage() {
               required
               disabled={isLoading}
               placeholder="admin@ejemplo.com"
-              className="h-[50px] w-full px-[16px] rounded-[10px] border border-[#C3C5C9] text-[16px] text-[#303C48] placeholder:text-[#81878E] tracking-[-0.3125px] focus:outline-none focus:ring-2 focus:ring-[#8C59FE] focus:border-transparent transition-all"
+              className="h-[50px] w-full px-[16px] rounded-[10px] border border-[#C3C5C9] dark:border-border text-[16px] text-[#303C48] dark:text-foreground placeholder:text-[#81878E] dark:placeholder:text-muted-foreground tracking-[-0.3125px] focus:outline-none focus:ring-2 focus:ring-[#8C59FE] focus:border-transparent transition-all"
             />
           </div>
 

@@ -66,10 +66,10 @@ export function ProtectedLayout() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Verificando autenticación...</p>
+          <p className="text-gray-600 dark:text-muted-foreground">Verificando autenticación...</p>
         </div>
       </div>
     );
@@ -80,7 +80,7 @@ export function ProtectedLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-background">
       <AppNav />
       <Outlet />
       {mustChangePassword && (

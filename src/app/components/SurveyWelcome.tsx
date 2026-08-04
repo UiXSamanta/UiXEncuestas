@@ -42,10 +42,10 @@ export function SurveyWelcome({
 
   const contentBlock = (
     <div className={`flex flex-col ${showThumbnail ? 'items-start text-left' : 'items-center text-center'}`}>
-      <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-5">
+      <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-foreground leading-tight mb-5">
         {titulo}
       </h1>
-      <p className="text-lg text-gray-500 italic leading-relaxed mb-10">
+      <p className="text-lg text-gray-500 dark:text-muted-foreground italic leading-relaxed mb-10">
         {descripcion}
       </p>
       <button
@@ -57,7 +57,7 @@ export function SurveyWelcome({
         <ArrowRight className="w-5 h-5" />
       </button>
       {notaPrivacidad && (
-        <p className="mt-8 text-sm text-gray-400">{notaPrivacidad}</p>
+        <p className="mt-8 text-sm text-gray-400 dark:text-muted-foreground">{notaPrivacidad}</p>
       )}
     </div>
   );
@@ -71,7 +71,7 @@ export function SurveyWelcome({
       <div className="flex-1 flex items-center justify-center px-5 py-10">
         {showThumbnail ? (
           /* Two-column layout for thumbnail */
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-[672px] overflow-hidden flex flex-col md:flex-row">
+          <div className="relative bg-white dark:bg-card rounded-2xl shadow-2xl w-full max-w-[672px] overflow-hidden flex flex-col md:flex-row">
             {/* Image column */}
             <div className="md:flex-[0_0_40%] h-[240px] md:h-auto bg-[#c1c1c1] shrink-0">
               <img
@@ -87,7 +87,7 @@ export function SurveyWelcome({
           </div>
         ) : (
           /* Single-column layout (original) */
-          <div className="relative bg-white rounded-2xl shadow-2xl p-10 md:p-14 max-w-2xl w-full text-center">
+          <div className="relative bg-white dark:bg-card rounded-2xl shadow-2xl p-10 md:p-14 max-w-2xl w-full text-center">
             {contentBlock}
           </div>
         )}

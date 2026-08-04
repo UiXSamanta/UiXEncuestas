@@ -3,6 +3,7 @@ import { RouterProvider } from 'react-router';
 import { router } from './routes';
 import { useEffect } from 'react';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { ThemeProvider } from './components/ThemeProvider';
 
 // INJECT IMMEDIATELY - Create dummy elements that Figma's share-modal.js is looking for
 if (typeof window !== 'undefined') {
@@ -67,8 +68,10 @@ export default function App() {
   }, []);
   
   return (
-    <ErrorBoundary>
-      <RouterProvider router={router} />
-    </ErrorBoundary>
+    <ThemeProvider>
+      <ErrorBoundary>
+        <RouterProvider router={router} />
+      </ErrorBoundary>
+    </ThemeProvider>
   );
 }

@@ -627,7 +627,7 @@ export function AdminDashboard() {
   };
 
   return (
-    <div className="flex h-screen bg-[#EBEEF4]">
+    <div className="flex h-screen bg-[#EBEEF4] dark:bg-muted">
       <AdminSidebar />
 
       <main className="flex-1 overflow-auto">
@@ -638,13 +638,13 @@ export function AdminDashboard() {
               {/* Header */}
               <div className="flex items-center justify-between mb-8">
                 <div>
-                  <h2 className="text-3xl font-semibold text-[#303C48]">Proyectos</h2>
-                  <p className="text-sm text-[#81878E] mt-1">Organiza tus encuestas por proyectos</p>
+                  <h2 className="text-3xl font-semibold text-[#303C48] dark:text-foreground">Proyectos</h2>
+                  <p className="text-sm text-[#81878E] dark:text-muted-foreground mt-1">Organiza tus encuestas por proyectos</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <button
                     onClick={handleDbCheck}
-                    className="flex items-center gap-2 px-4 py-2 text-[#303C48] bg-white border border-[#C3C5C9] rounded-lg hover:bg-[#EBEEF4] transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 text-[#303C48] dark:text-foreground bg-white dark:bg-card border border-[#C3C5C9] dark:border-border rounded-lg hover:bg-[#EBEEF4] dark:hover:bg-accent transition-colors"
                     title="Verificar conexión y campos de la base de datos"
                   >
                     <DatabaseZap className="w-4 h-4 text-[#8C59FE]" />
@@ -652,7 +652,7 @@ export function AdminDashboard() {
                   </button>
                   <button
                     onClick={() => navigate('/trash')}
-                    className="hidden flex items-center gap-2 px-4 py-2 text-[#303C48] bg-white border border-[#C3C5C9] rounded-lg hover:bg-[#EBEEF4] transition-colors"
+                    className="hidden flex items-center gap-2 px-4 py-2 text-[#303C48] dark:text-foreground bg-white dark:bg-card border border-[#C3C5C9] dark:border-border rounded-lg hover:bg-[#EBEEF4] dark:hover:bg-accent transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                     Papelera
@@ -660,7 +660,7 @@ export function AdminDashboard() {
                   <button
                     onClick={handleRefreshData}
                     disabled={isRefreshing}
-                    className="flex items-center gap-2 px-4 py-2 text-[#303C48] bg-white border border-[#C3C5C9] rounded-lg hover:bg-[#EBEEF4] disabled:opacity-50 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 text-[#303C48] dark:text-foreground bg-white dark:bg-card border border-[#C3C5C9] dark:border-border rounded-lg hover:bg-[#EBEEF4] dark:hover:bg-accent disabled:opacity-50 transition-colors"
                   >
                     <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
                     Actualizar
@@ -678,18 +678,18 @@ export function AdminDashboard() {
               {/* Search Bar */}
               <div className="mb-6">
                 <div className="relative">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#81878E]" />
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#81878E] dark:text-muted-foreground" />
                   <input
                     type="text"
                     placeholder="Buscar proyectos o encuestas..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 border border-[#C3C5C9] rounded-lg bg-white text-[#303C48] placeholder-[#81878E] focus:outline-none focus:ring-2 focus:ring-[#597AFF] focus:border-transparent"
+                    className="w-full pl-12 pr-4 py-3 border border-[#C3C5C9] dark:border-border rounded-lg bg-white dark:bg-card text-[#303C48] dark:text-foreground placeholder-[#81878E] dark:placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#597AFF] focus:border-transparent"
                   />
                   {searchTerm && (
                     <button
                       onClick={() => setSearchTerm('')}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#81878E] hover:text-[#303C48]"
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#81878E] dark:text-muted-foreground hover:text-[#303C48] dark:hover:text-foreground"
                     >
                       <X className="w-5 h-5" />
                     </button>
@@ -699,14 +699,14 @@ export function AdminDashboard() {
 
               {/* Loading State */}
               {isLoading ? (
-                <div className="bg-white rounded-lg border border-[#C3C5C9] p-12 text-center">
-                  <RefreshCw className="w-8 h-8 text-[#81878E] animate-spin mx-auto mb-3" />
-                  <p className="text-[#5C6671]">Cargando proyectos...</p>
+                <div className="bg-white dark:bg-card rounded-lg border border-[#C3C5C9] dark:border-border p-12 text-center">
+                  <RefreshCw className="w-8 h-8 text-[#81878E] dark:text-muted-foreground animate-spin mx-auto mb-3" />
+                  <p className="text-[#5C6671] dark:text-muted-foreground">Cargando proyectos...</p>
                 </div>
               ) : proyectos.length === 0 ? (
-                <div className="bg-white rounded-lg border border-[#C3C5C9] p-12 text-center">
-                  <Folder className="w-12 h-12 text-[#81878E] mx-auto mb-3" />
-                  <p className="text-[#5C6671] mb-4">No hay proyectos todavía</p>
+                <div className="bg-white dark:bg-card rounded-lg border border-[#C3C5C9] dark:border-border p-12 text-center">
+                  <Folder className="w-12 h-12 text-[#81878E] dark:text-muted-foreground mx-auto mb-3" />
+                  <p className="text-[#5C6671] dark:text-muted-foreground mb-4">No hay proyectos todavía</p>
                   <button
                     onClick={() => setShowCreateProjectModal(true)}
                     className="text-[#597AFF] hover:text-[#8C59FE] font-medium"
@@ -728,10 +728,10 @@ export function AdminDashboard() {
 
                     if (filteredProyectos.length === 0 && searchTerm) {
                       return (
-                        <div className="bg-white rounded-lg border border-[#C3C5C9] p-12 text-center">
-                          <Search className="w-12 h-12 text-[#81878E] mx-auto mb-3" />
-                          <p className="text-[#5C6671] mb-2">No se encontraron resultados</p>
-                          <p className="text-sm text-[#81878E]">Intenta con otro término de búsqueda</p>
+                        <div className="bg-white dark:bg-card rounded-lg border border-[#C3C5C9] dark:border-border p-12 text-center">
+                          <Search className="w-12 h-12 text-[#81878E] dark:text-muted-foreground mx-auto mb-3" />
+                          <p className="text-[#5C6671] dark:text-muted-foreground mb-2">No se encontraron resultados</p>
+                          <p className="text-sm text-[#81878E] dark:text-muted-foreground">Intenta con otro término de búsqueda</p>
                         </div>
                       );
                     }
@@ -746,12 +746,12 @@ export function AdminDashboard() {
                     return (
                       <div
                         key={proyecto.id}
-                        className="bg-white rounded-lg border border-[#C3C5C9] p-6 hover:shadow-lg transition-all relative group"
+                        className="bg-white dark:bg-card rounded-lg border border-[#C3C5C9] dark:border-border p-6 hover:shadow-lg transition-all relative group"
                       >
                         {/* Lock Icon */}
                         {hasPassword && !isAdminPrincipal && (
                           <div className="absolute top-4 right-4">
-                            <Lock className="w-4 h-4 text-[#81878E]" />
+                            <Lock className="w-4 h-4 text-[#81878E] dark:text-muted-foreground" />
                           </div>
                         )}
 
@@ -768,21 +768,21 @@ export function AdminDashboard() {
                           className="mb-4 cursor-pointer"
                           onClick={() => handleOpenProject(proyecto)}
                         >
-                          <h3 className="text-lg font-semibold text-[#303C48] mb-1">{proyecto.nombre}</h3>
-                          <p className="text-sm text-[#81878E]">{surveyCount} encuesta{surveyCount !== 1 ? 's' : ''}</p>
+                          <h3 className="text-lg font-semibold text-[#303C48] dark:text-foreground mb-1">{proyecto.nombre}</h3>
+                          <p className="text-sm text-[#81878E] dark:text-muted-foreground">{surveyCount} encuesta{surveyCount !== 1 ? 's' : ''}</p>
                         </div>
 
                         {/* Actions Menu */}
                         <div className="relative">
                           <button
                             onClick={() => setOpenMenuId(showMenu ? null : proyecto.id)}
-                            className="absolute bottom-0 right-0 p-2 text-[#81878E] hover:text-[#303C48] rounded-lg hover:bg-[#EBEEF4] transition-colors"
+                            className="absolute bottom-0 right-0 p-2 text-[#81878E] dark:text-muted-foreground hover:text-[#303C48] dark:hover:text-foreground rounded-lg hover:bg-[#EBEEF4] dark:hover:bg-accent transition-colors"
                           >
                             <MoreVertical className="w-4 h-4" />
                           </button>
 
                           {showMenu && (
-                            <div className="absolute bottom-10 right-0 bg-white border border-[#C3C5C9] rounded-lg shadow-lg py-2 z-10 min-w-[160px]">
+                            <div className="absolute bottom-10 right-0 bg-white dark:bg-card border border-[#C3C5C9] dark:border-border rounded-lg shadow-lg py-2 z-10 min-w-[160px]">
                               <button
                                 onClick={() => {
                                   setOpenMenuId(null);
@@ -792,7 +792,7 @@ export function AdminDashboard() {
                                   setUsePassword(!!proyecto.password);
                                   setShowRenameProjectModal(true);
                                 }}
-                                className="w-full px-4 py-2 text-left text-sm text-[#303C48] hover:bg-[#EBEEF4] flex items-center gap-2"
+                                className="w-full px-4 py-2 text-left text-sm text-[#303C48] dark:text-foreground hover:bg-[#EBEEF4] dark:hover:bg-accent flex items-center gap-2"
                               >
                                 <Edit className="w-4 h-4" />
                                 Editar
@@ -804,7 +804,7 @@ export function AdminDashboard() {
                                   setNewProjectName(proyecto.nombre + ' (Copia)');
                                   setShowDuplicateProjectModal(true);
                                 }}
-                                className="w-full px-4 py-2 text-left text-sm text-[#303C48] hover:bg-[#EBEEF4] flex items-center gap-2"
+                                className="w-full px-4 py-2 text-left text-sm text-[#303C48] dark:text-foreground hover:bg-[#EBEEF4] dark:hover:bg-accent flex items-center gap-2"
                               >
                                 <Copy className="w-4 h-4" />
                                 Duplicar
@@ -841,16 +841,16 @@ export function AdminDashboard() {
                 <div className="flex items-center gap-4">
                   <button
                     onClick={handleBackToProjects}
-                    className="p-2 text-[#81878E] hover:text-[#303C48] hover:bg-white rounded-lg transition-colors"
+                    className="p-2 text-[#81878E] dark:text-muted-foreground hover:text-[#303C48] dark:hover:text-foreground hover:bg-white dark:hover:bg-accent rounded-lg transition-colors"
                   >
                     <ArrowLeft className="w-5 h-5" />
                   </button>
                   <div>
-                    <h2 className="text-3xl font-semibold text-[#303C48] flex items-center gap-2">
+                    <h2 className="text-3xl font-semibold text-[#303C48] dark:text-foreground flex items-center gap-2">
                       <FolderOpen className="w-8 h-8 text-[#597AFF]" />
                       {selectedProyecto.nombre}
                     </h2>
-                    <p className="text-sm text-[#81878E] mt-1">
+                    <p className="text-sm text-[#81878E] dark:text-muted-foreground mt-1">
                       {encuestas.filter(e => e.proyecto_id === selectedProyecto.id).length} encuesta(s)
                     </p>
                   </div>
@@ -859,7 +859,7 @@ export function AdminDashboard() {
                   <button
                     onClick={handleRefreshData}
                     disabled={isRefreshing}
-                    className="flex items-center gap-2 px-4 py-2 text-[#303C48] bg-white border border-[#C3C5C9] rounded-lg hover:bg-[#EBEEF4] disabled:opacity-50 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 text-[#303C48] dark:text-foreground bg-white dark:bg-card border border-[#C3C5C9] dark:border-border rounded-lg hover:bg-[#EBEEF4] dark:hover:bg-accent disabled:opacity-50 transition-colors"
                   >
                     <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
                     Actualizar
@@ -877,18 +877,18 @@ export function AdminDashboard() {
               {/* Search Bar */}
               <div className="mb-6">
                 <div className="relative">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#81878E]" />
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#81878E] dark:text-muted-foreground" />
                   <input
                     type="text"
                     placeholder="Buscar encuestas..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 border border-[#C3C5C9] rounded-lg bg-white text-[#303C48] placeholder-[#81878E] focus:outline-none focus:ring-2 focus:ring-[#597AFF] focus:border-transparent"
+                    className="w-full pl-12 pr-4 py-3 border border-[#C3C5C9] dark:border-border rounded-lg bg-white dark:bg-card text-[#303C48] dark:text-foreground placeholder-[#81878E] dark:placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#597AFF] focus:border-transparent"
                   />
                   {searchTerm && (
                     <button
                       onClick={() => setSearchTerm('')}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#81878E] hover:text-[#303C48]"
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#81878E] dark:text-muted-foreground hover:text-[#303C48] dark:hover:text-foreground"
                     >
                       <X className="w-5 h-5" />
                     </button>
@@ -917,9 +917,9 @@ export function AdminDashboard() {
 
                 if (projectSurveys.length === 0 && !searchTerm) {
                   return (
-                    <div className="bg-white rounded-lg border border-[#C3C5C9] p-12 text-center">
-                      <FileText className="w-12 h-12 text-[#81878E] mx-auto mb-3" />
-                      <p className="text-[#5C6671] mb-4">No hay encuestas en este proyecto</p>
+                    <div className="bg-white dark:bg-card rounded-lg border border-[#C3C5C9] dark:border-border p-12 text-center">
+                      <FileText className="w-12 h-12 text-[#81878E] dark:text-muted-foreground mx-auto mb-3" />
+                      <p className="text-[#5C6671] dark:text-muted-foreground mb-4">No hay encuestas en este proyecto</p>
                       <button
                         onClick={handleCreateSurvey}
                         className="text-[#597AFF] hover:text-[#8C59FE] font-medium"
@@ -932,18 +932,18 @@ export function AdminDashboard() {
 
                 if (projectSurveys.length === 0 && searchTerm) {
                   return (
-                    <div className="bg-white rounded-lg border border-[#C3C5C9] p-12 text-center">
-                      <Search className="w-12 h-12 text-[#81878E] mx-auto mb-3" />
-                      <p className="text-[#5C6671] mb-2">No se encontraron encuestas</p>
-                      <p className="text-sm text-[#81878E]">Intenta con otro término de búsqueda</p>
+                    <div className="bg-white dark:bg-card rounded-lg border border-[#C3C5C9] dark:border-border p-12 text-center">
+                      <Search className="w-12 h-12 text-[#81878E] dark:text-muted-foreground mx-auto mb-3" />
+                      <p className="text-[#5C6671] dark:text-muted-foreground mb-2">No se encontraron encuestas</p>
+                      <p className="text-sm text-[#81878E] dark:text-muted-foreground">Intenta con otro término de búsqueda</p>
                     </div>
                   );
                 }
 
                 return (
-                  <div className="bg-white rounded-lg border border-[#C3C5C9] overflow-hidden shadow-sm">
+                  <div className="bg-white dark:bg-card rounded-lg border border-[#C3C5C9] dark:border-border overflow-hidden shadow-sm">
                     <table className="w-full">
-                      <thead className="bg-[#EBEEF4] border-b border-[#C3C5C9]">
+                      <thead className="bg-[#EBEEF4] dark:bg-muted border-b border-[#C3C5C9] dark:border-border">
                         <tr>
                           <th className="px-6 py-3 text-left">
                             <button
@@ -955,7 +955,7 @@ export function AdminDashboard() {
                                   setSortOrder('asc');
                                 }
                               }}
-                              className="flex items-center gap-2 text-xs font-medium text-[#5C6671] uppercase tracking-wider hover:text-[#303C48] transition-colors"
+                              className="flex items-center gap-2 text-xs font-medium text-[#5C6671] dark:text-muted-foreground uppercase tracking-wider hover:text-[#303C48] dark:hover:text-foreground transition-colors"
                             >
                               Nombre de Encuesta
                               <ArrowUpDown className={`w-3.5 h-3.5 ${sortBy === 'nombre' ? 'text-[#597AFF]' : ''}`} />
@@ -971,38 +971,38 @@ export function AdminDashboard() {
                                   setSortOrder('desc');
                                 }
                               }}
-                              className="flex items-center gap-2 text-xs font-medium text-[#5C6671] uppercase tracking-wider hover:text-[#303C48] transition-colors"
+                              className="flex items-center gap-2 text-xs font-medium text-[#5C6671] dark:text-muted-foreground uppercase tracking-wider hover:text-[#303C48] dark:hover:text-foreground transition-colors"
                             >
                               Fecha de Creación
                               <ArrowUpDown className={`w-3.5 h-3.5 ${sortBy === 'fecha' ? 'text-[#597AFF]' : ''}`} />
                             </button>
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-[#5C6671] uppercase tracking-wider">
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#5C6671] dark:text-muted-foreground uppercase tracking-wider">
                             Respuestas
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-[#5C6671] uppercase tracking-wider">
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#5C6671] dark:text-muted-foreground uppercase tracking-wider">
                             Acciones
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-[#5C6671] uppercase tracking-wider">
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#5C6671] dark:text-muted-foreground uppercase tracking-wider">
                             Estado
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="bg-white divide-y divide-[#C3C5C9]">
+                      <tbody className="bg-white dark:bg-card divide-y divide-[#C3C5C9] dark:divide-border">
                         {projectSurveys.map((encuesta) => (
-                          <tr key={encuesta.id} className="hover:bg-[#EBEEF4] transition-colors">
-                            <td className="px-6 py-4 text-sm font-medium text-[#303C48]">
+                          <tr key={encuesta.id} className="hover:bg-[#EBEEF4] dark:hover:bg-accent transition-colors">
+                            <td className="px-6 py-4 text-sm font-medium text-[#303C48] dark:text-foreground">
                               {encuesta.nombre_encuesta}
                             </td>
                             <td className="px-6 py-4">
-                              <div className="text-sm text-[#5C6671]">
+                              <div className="text-sm text-[#5C6671] dark:text-muted-foreground">
                                 {new Date(encuesta.created_at).toLocaleDateString('es-MX', {
                                   year: 'numeric',
                                   month: 'short',
                                   day: 'numeric'
                                 })}
                               </div>
-                              <div className="text-xs text-[#81878E]">
+                              <div className="text-xs text-[#81878E] dark:text-muted-foreground">
                                 {new Date(encuesta.created_at).toLocaleTimeString('es-MX', {
                                   hour: '2-digit',
                                   minute: '2-digit'
@@ -1010,7 +1010,7 @@ export function AdminDashboard() {
                               </div>
                             </td>
                             <td className="px-6 py-4 flex justify-center items-center">
-                              <span className="text-2xl font-bold text-[#303C48]">
+                              <span className="text-2xl font-bold text-[#303C48] dark:text-foreground">
                                 {encuesta.conteo_respuestas}
                               </span>
                             </td>
@@ -1018,21 +1018,21 @@ export function AdminDashboard() {
                               <div className="flex items-center gap-3">
                                 <button
                                   onClick={() => navigate(`/builder/${encuesta.id}`)}
-                                  className="text-[#81878E] hover:text-[#597AFF] transition-colors"
+                                  className="text-[#81878E] dark:text-muted-foreground hover:text-[#597AFF] transition-colors"
                                   title="Editar Encuesta"
                                 >
                                   <Edit className="w-5 h-5" />
                                 </button>
                                 <button
                                   onClick={() => navigate(`/analytics/${encuesta.id}`)}
-                                  className="text-[#81878E] hover:text-[#8C59FE] transition-colors"
+                                  className="text-[#81878E] dark:text-muted-foreground hover:text-[#8C59FE] transition-colors"
                                   title="Ver Analytics"
                                 >
                                   <BarChart3 className="w-5 h-5" />
                                 </button>
                                 <button
                                   onClick={() => handleDuplicateSurvey(encuesta.id)}
-                                  className="text-[#81878E] hover:text-[#00C4B3] transition-colors"
+                                  className="text-[#81878E] dark:text-muted-foreground hover:text-[#00C4B3] transition-colors"
                                   title="Duplicar Encuesta"
                                 >
                                   <Copy className="w-5 h-5" />
@@ -1043,7 +1043,7 @@ export function AdminDashboard() {
                                       setPendingEncuestaId(encuesta.id);
                                       setShowMoveToProjectModal(true);
                                     }}
-                                    className="text-[#81878E] hover:text-[#FDC700] transition-colors"
+                                    className="text-[#81878E] dark:text-muted-foreground hover:text-[#FDC700] transition-colors"
                                     title="Mover a otro proyecto"
                                   >
                                     <FolderInput className="w-5 h-5" />
@@ -1051,7 +1051,7 @@ export function AdminDashboard() {
                                 )}
                                 <button
                                   onClick={() => handleDeleteEncuesta(encuesta.id, encuesta.nombre_encuesta)}
-                                  className="text-[#81878E] hover:text-red-600 transition-colors"
+                                  className="text-[#81878E] dark:text-muted-foreground hover:text-red-600 transition-colors"
                                   title="Eliminar Encuesta"
                                 >
                                   <Trash2 className="w-5 h-5" />
@@ -1066,12 +1066,12 @@ export function AdminDashboard() {
                                 }`}
                               >
                                 <span
-                                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                  className={`inline-block h-4 w-4 transform rounded-full bg-white dark:bg-card transition-transform ${
                                     encuesta.estado ? 'translate-x-6' : 'translate-x-1'
                                   }`}
                                 />
                               </button>
-                              <span className="ml-2 text-xs font-medium text-[#5C6671]">
+                              <span className="ml-2 text-xs font-medium text-[#5C6671] dark:text-muted-foreground">
                                 {encuesta.estado ? 'Activa' : 'Borrador'}
                               </span>
                             </td>
@@ -1090,9 +1090,9 @@ export function AdminDashboard() {
       {/* Create Project Modal */}
       {showCreateProjectModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">Nuevo Proyecto</h3>
+          <div className="bg-white dark:bg-card rounded-2xl shadow-2xl w-full max-w-md">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-border">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-foreground">Nuevo Proyecto</h3>
               <button
                 onClick={() => {
                   setShowCreateProjectModal(false);
@@ -1100,20 +1100,20 @@ export function AdminDashboard() {
                   setNewProjectPassword('');
                   setUsePassword(false);
                 }}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 text-gray-400 dark:text-muted-foreground hover:text-gray-600 dark:hover:text-muted-foreground hover:bg-gray-100 dark:hover:bg-accent rounded-lg transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="px-6 py-4 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Nombre del Proyecto</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-muted-foreground mb-2">Nombre del Proyecto</label>
                 <input
                   type="text"
                   value={newProjectName}
                   onChange={(e) => setNewProjectName(e.target.value)}
                   placeholder="Mi Proyecto"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#597AFF]"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#597AFF]"
                   autoFocus
                 />
               </div>
@@ -1123,25 +1123,25 @@ export function AdminDashboard() {
                     type="checkbox"
                     checked={usePassword}
                     onChange={(e) => setUsePassword(e.target.checked)}
-                    className="w-4 h-4 text-[#597AFF] border-gray-300 rounded focus:ring-[#597AFF]"
+                    className="w-4 h-4 text-[#597AFF] border-gray-300 dark:border-border rounded focus:ring-[#597AFF]"
                   />
-                  <span className="text-sm font-medium text-gray-700">Proteger con contraseña</span>
+                  <span className="text-sm font-medium text-gray-700 dark:text-muted-foreground">Proteger con contraseña</span>
                 </label>
               </div>
               {usePassword && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Contraseña</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-muted-foreground mb-2">Contraseña</label>
                   <input
                     type="password"
                     value={newProjectPassword}
                     onChange={(e) => setNewProjectPassword(e.target.value)}
                     placeholder="Contraseña"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#597AFF]"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#597AFF]"
                   />
                 </div>
               )}
             </div>
-            <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+            <div className="px-6 py-4 border-t border-gray-200 dark:border-border flex justify-end gap-3">
               <button
                 onClick={() => {
                   setShowCreateProjectModal(false);
@@ -1149,7 +1149,7 @@ export function AdminDashboard() {
                   setNewProjectPassword('');
                   setUsePassword(false);
                 }}
-                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                className="px-4 py-2 text-gray-700 dark:text-muted-foreground bg-gray-100 dark:bg-muted hover:bg-gray-200 dark:hover:bg-accent rounded-lg transition-colors"
               >
                 Cancelar
               </button>
@@ -1167,9 +1167,9 @@ export function AdminDashboard() {
       {/* Rename Project Modal */}
       {showRenameProjectModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">Editar Proyecto</h3>
+          <div className="bg-white dark:bg-card rounded-2xl shadow-2xl w-full max-w-md">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-border">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-foreground">Editar Proyecto</h3>
               <button
                 onClick={() => {
                   setShowRenameProjectModal(false);
@@ -1178,30 +1178,30 @@ export function AdminDashboard() {
                   setUsePassword(false);
                   setPendingProjectId(null);
                 }}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 text-gray-400 dark:text-muted-foreground hover:text-gray-600 dark:hover:text-muted-foreground hover:bg-gray-100 dark:hover:bg-accent rounded-lg transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="px-6 py-4 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Nombre del Proyecto</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-muted-foreground mb-2">Nombre del Proyecto</label>
                 <input
                   type="text"
                   value={newProjectName}
                   onChange={(e) => setNewProjectName(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#597AFF]"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#597AFF]"
                   autoFocus
                 />
               </div>
 
               <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-muted-foreground mb-2">
                   <input
                     type="checkbox"
                     checked={usePassword}
                     onChange={(e) => setUsePassword(e.target.checked)}
-                    className="w-4 h-4 rounded border-gray-300 text-[#597AFF] focus:ring-[#597AFF]"
+                    className="w-4 h-4 rounded border-gray-300 dark:border-border text-[#597AFF] focus:ring-[#597AFF]"
                   />
                   <Lock className="w-4 h-4" />
                   Proteger con contraseña
@@ -1212,12 +1212,12 @@ export function AdminDashboard() {
                     value={newProjectPassword}
                     onChange={(e) => setNewProjectPassword(e.target.value)}
                     placeholder="Ingrese la contraseña"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#597AFF]"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#597AFF]"
                   />
                 )}
               </div>
             </div>
-            <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+            <div className="px-6 py-4 border-t border-gray-200 dark:border-border flex justify-end gap-3">
               <button
                 onClick={() => {
                   setShowRenameProjectModal(false);
@@ -1226,7 +1226,7 @@ export function AdminDashboard() {
                   setUsePassword(false);
                   setPendingProjectId(null);
                 }}
-                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                className="px-4 py-2 text-gray-700 dark:text-muted-foreground bg-gray-100 dark:bg-muted hover:bg-gray-200 dark:hover:bg-accent rounded-lg transition-colors"
               >
                 Cancelar
               </button>
@@ -1244,38 +1244,38 @@ export function AdminDashboard() {
       {/* Duplicate Project Modal */}
       {showDuplicateProjectModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">Duplicar Proyecto</h3>
+          <div className="bg-white dark:bg-card rounded-2xl shadow-2xl w-full max-w-md">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-border">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-foreground">Duplicar Proyecto</h3>
               <button
                 onClick={() => {
                   setShowDuplicateProjectModal(false);
                   setNewProjectName('');
                   setPendingProjectId(null);
                 }}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 text-gray-400 dark:text-muted-foreground hover:text-gray-600 dark:hover:text-muted-foreground hover:bg-gray-100 dark:hover:bg-accent rounded-lg transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="px-6 py-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Nombre del Proyecto Duplicado</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-muted-foreground mb-2">Nombre del Proyecto Duplicado</label>
               <input
                 type="text"
                 value={newProjectName}
                 onChange={(e) => setNewProjectName(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#597AFF]"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#597AFF]"
                 autoFocus
               />
             </div>
-            <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+            <div className="px-6 py-4 border-t border-gray-200 dark:border-border flex justify-end gap-3">
               <button
                 onClick={() => {
                   setShowDuplicateProjectModal(false);
                   setNewProjectName('');
                   setPendingProjectId(null);
                 }}
-                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                className="px-4 py-2 text-gray-700 dark:text-muted-foreground bg-gray-100 dark:bg-muted hover:bg-gray-200 dark:hover:bg-accent rounded-lg transition-colors"
               >
                 Cancelar
               </button>
@@ -1293,11 +1293,11 @@ export function AdminDashboard() {
       {/* Password Modal */}
       {showPasswordModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+          <div className="bg-white dark:bg-card rounded-2xl shadow-2xl w-full max-w-md">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-border">
               <div className="flex items-center gap-3">
                 <Lock className="w-5 h-5 text-[#597AFF]" />
-                <h3 className="text-lg font-semibold text-gray-900">Proyecto Protegido</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-foreground">Proyecto Protegido</h3>
               </div>
               <button
                 onClick={() => {
@@ -1307,14 +1307,14 @@ export function AdminDashboard() {
                   setPendingProjectId(null);
                   setPendingAction(null);
                 }}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 text-gray-400 dark:text-muted-foreground hover:text-gray-600 dark:hover:text-muted-foreground hover:bg-gray-100 dark:hover:bg-accent rounded-lg transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="px-6 py-4">
-              <p className="text-sm text-gray-600 mb-4">Este proyecto está protegido con contraseña. Ingresa la contraseña para continuar.</p>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Contraseña</label>
+              <p className="text-sm text-gray-600 dark:text-muted-foreground mb-4">Este proyecto está protegido con contraseña. Ingresa la contraseña para continuar.</p>
+              <label className="block text-sm font-medium text-gray-700 dark:text-muted-foreground mb-2">Contraseña</label>
               <input
                 type="password"
                 value={passwordInput}
@@ -1330,7 +1330,7 @@ export function AdminDashboard() {
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
                   passwordError
                     ? 'border-red-500 focus:ring-red-500'
-                    : 'border-gray-300 focus:ring-[#597AFF]'
+                    : 'border-gray-300 dark:border-border focus:ring-[#597AFF]'
                 }`}
                 autoFocus
               />
@@ -1338,7 +1338,7 @@ export function AdminDashboard() {
                 <p className="mt-2 text-sm text-red-600">{passwordError}</p>
               )}
             </div>
-            <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+            <div className="px-6 py-4 border-t border-gray-200 dark:border-border flex justify-end gap-3">
               <button
                 onClick={() => {
                   setShowPasswordModal(false);
@@ -1347,7 +1347,7 @@ export function AdminDashboard() {
                   setPendingProjectId(null);
                   setPendingAction(null);
                 }}
-                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                className="px-4 py-2 text-gray-700 dark:text-muted-foreground bg-gray-100 dark:bg-muted hover:bg-gray-200 dark:hover:bg-accent rounded-lg transition-colors"
               >
                 Cancelar
               </button>
@@ -1365,26 +1365,26 @@ export function AdminDashboard() {
       {/* Move to Project Modal */}
       {showMoveToProjectModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">Mover a otro proyecto</h3>
+          <div className="bg-white dark:bg-card rounded-2xl shadow-2xl w-full max-w-md">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-border">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-foreground">Mover a otro proyecto</h3>
               <button
                 onClick={() => {
                   setShowMoveToProjectModal(false);
                   setPendingEncuestaId(null);
                   setTargetProjectId('');
                 }}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 text-gray-400 dark:text-muted-foreground hover:text-gray-600 dark:hover:text-muted-foreground hover:bg-gray-100 dark:hover:bg-accent rounded-lg transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="px-6 py-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Selecciona el proyecto destino</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-muted-foreground mb-2">Selecciona el proyecto destino</label>
               <select
                 value={targetProjectId}
                 onChange={(e) => setTargetProjectId(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#597AFF]"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#597AFF]"
                 autoFocus
               >
                 <option value="">-- Selecciona un proyecto --</option>
@@ -1397,14 +1397,14 @@ export function AdminDashboard() {
                   ))}
               </select>
             </div>
-            <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+            <div className="px-6 py-4 border-t border-gray-200 dark:border-border flex justify-end gap-3">
               <button
                 onClick={() => {
                   setShowMoveToProjectModal(false);
                   setPendingEncuestaId(null);
                   setTargetProjectId('');
                 }}
-                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                className="px-4 py-2 text-gray-700 dark:text-muted-foreground bg-gray-100 dark:bg-muted hover:bg-gray-200 dark:hover:bg-accent rounded-lg transition-colors"
               >
                 Cancelar
               </button>
@@ -1423,9 +1423,9 @@ export function AdminDashboard() {
       {/* DB Check Modal */}
       {showDbModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
+          <div className="bg-white dark:bg-card rounded-2xl shadow-2xl w-full max-w-lg">
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-border">
               <div className="flex items-center gap-3">
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
                   overallStatus === 'ok' ? 'bg-green-100' :
@@ -1446,8 +1446,8 @@ export function AdminDashboard() {
                   )}
                 </div>
                 <div>
-                  <h3 className="text-base font-semibold text-gray-900">Verificación de Base de Datos</h3>
-                  <p className="text-xs text-gray-500">
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-foreground">Verificación de Base de Datos</h3>
+                  <p className="text-xs text-gray-500 dark:text-muted-foreground">
                     {isChecking ? 'Comprobando campos...' :
                      overallStatus === 'ok' ? 'Todos los campos verificados correctamente' :
                      overallStatus === 'error' ? 'Se encontraron errores de conexión' :
@@ -1458,7 +1458,7 @@ export function AdminDashboard() {
               </div>
               <button
                 onClick={() => setShowDbModal(false)}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 text-gray-400 dark:text-muted-foreground hover:text-gray-600 dark:hover:text-muted-foreground hover:bg-gray-100 dark:hover:bg-accent rounded-lg transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1473,12 +1473,12 @@ export function AdminDashboard() {
                     check.status === 'ok'       ? 'bg-green-50 border-green-200' :
                     check.status === 'error'    ? 'bg-red-50 border-red-200' :
                     check.status === 'warning'  ? 'bg-yellow-50 border-yellow-200' :
-                    'bg-gray-50 border-gray-200'
+                    'bg-gray-50 dark:bg-background border-gray-200 dark:border-border'
                   }`}
                 >
                   <div className="mt-0.5 shrink-0">
                     {check.status === 'checking' ? (
-                      <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />
+                      <Loader2 className="w-4 h-4 text-gray-400 dark:text-muted-foreground animate-spin" />
                     ) : check.status === 'ok' ? (
                       <CheckCircle2 className="w-4 h-4 text-green-600" />
                     ) : check.status === 'error' ? (
@@ -1489,9 +1489,9 @@ export function AdminDashboard() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-sm font-medium text-gray-900">{check.label}</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-foreground">{check.label}</span>
                       {check.value && (
-                        <span className="text-xs font-mono text-gray-500 bg-white border border-gray-200 px-2 py-0.5 rounded shrink-0">
+                        <span className="text-xs font-mono text-gray-500 dark:text-muted-foreground bg-white dark:bg-card border border-gray-200 dark:border-border px-2 py-0.5 rounded shrink-0">
                           {check.value}
                         </span>
                       )}
@@ -1501,7 +1501,7 @@ export function AdminDashboard() {
                         check.status === 'ok'      ? 'text-green-700' :
                         check.status === 'error'   ? 'text-red-600' :
                         check.status === 'warning' ? 'text-yellow-700' :
-                        'text-gray-500'
+                        'text-gray-500 dark:text-muted-foreground'
                       }`}>
                         {check.message}
                       </p>
@@ -1512,15 +1512,15 @@ export function AdminDashboard() {
             </div>
 
             {/* Modal Footer */}
-            <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-              <div className="text-xs text-gray-400 font-mono">
+            <div className="px-6 py-4 border-t border-gray-200 dark:border-border flex items-center justify-between">
+              <div className="text-xs text-gray-400 dark:text-muted-foreground font-mono">
                 KV Store · Supabase Edge Functions
               </div>
               <div className="flex gap-2">
                 <button
                   onClick={handleDbCheck}
                   disabled={isChecking}
-                  className="flex items-center gap-2 px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                  className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-muted-foreground bg-gray-100 dark:bg-muted hover:bg-gray-200 dark:hover:bg-accent rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${isChecking ? 'animate-spin' : ''}`} />
                   Re-verificar

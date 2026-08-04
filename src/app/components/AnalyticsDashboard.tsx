@@ -181,12 +181,12 @@ function BarRow({ label, count, total, color, emoji }: { label: string; count: n
   return (
     <div className="flex items-center gap-3">
       {emoji && <span className="text-xl w-7 text-center shrink-0">{emoji}</span>}
-      <span className="text-[13px] text-gray-600 w-36 shrink-0 truncate">{label}</span>
-      <div className="flex-1 h-[10px] bg-gray-100 rounded-full overflow-hidden">
+      <span className="text-[13px] text-gray-600 dark:text-muted-foreground w-36 shrink-0 truncate">{label}</span>
+      <div className="flex-1 h-[10px] bg-gray-100 dark:bg-muted rounded-full overflow-hidden">
         <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, backgroundColor: color }} />
       </div>
-      <span className="text-[12px] font-semibold text-gray-700 w-6 text-right shrink-0">{count}</span>
-      <span className="text-[11px] text-gray-400 w-9 text-right shrink-0">{pct}%</span>
+      <span className="text-[12px] font-semibold text-gray-700 dark:text-muted-foreground w-6 text-right shrink-0">{count}</span>
+      <span className="text-[11px] text-gray-400 dark:text-muted-foreground w-9 text-right shrink-0">{pct}%</span>
     </div>
   );
 }
@@ -205,8 +205,8 @@ function ScoreGauge({ value, max, color }: { value: number; max: number; color: 
           strokeDasharray={circ} strokeDashoffset={offset} strokeLinecap="round" />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-lg font-bold text-gray-900">{value.toFixed(1)}</span>
-        <span className="text-[10px] text-gray-500">/ {max}</span>
+        <span className="text-lg font-bold text-gray-900 dark:text-foreground">{value.toFixed(1)}</span>
+        <span className="text-[10px] text-gray-500 dark:text-muted-foreground">/ {max}</span>
       </div>
     </div>
   );
@@ -270,7 +270,7 @@ function NPSGauge({ score }: { score: number }) {
 
       <div className="absolute inset-0 flex flex-col items-center justify-end pb-1">
         <span className="text-2xl font-bold" style={{ color }}>{score}</span>
-        <span className="text-[9px] text-gray-500">NPS Score</span>
+        <span className="text-[9px] text-gray-500 dark:text-muted-foreground">NPS Score</span>
       </div>
     </div>
   );
@@ -285,11 +285,11 @@ function QuestionCard({ question, index, respuestasData }: { question: any; inde
   if (tipo === 'separator') {
     return (
       <div className="py-4">
-        <h3 className="text-[16px] font-bold text-[#101828]">
+        <h3 className="text-[16px] font-bold text-[#101828] dark:text-foreground">
           {question.titulo_pregunta}
         </h3>
         {question.subtitulo_pregunta && (
-          <p className="text-[13px] text-gray-500 mt-1">{question.subtitulo_pregunta}</p>
+          <p className="text-[13px] text-gray-500 dark:text-muted-foreground mt-1">{question.subtitulo_pregunta}</p>
         )}
       </div>
     );
@@ -304,39 +304,39 @@ function QuestionCard({ question, index, respuestasData }: { question: any; inde
   const answered = `${totalAnswers} / ${totalResponses}`;
 
   return (
-    <div className="bg-white rounded-[12px] border border-[#e5e7eb] overflow-hidden">
+    <div className="bg-white dark:bg-card rounded-[12px] border border-[#e5e7eb] dark:border-border overflow-hidden">
       {/* Card header */}
       <div
-        className="flex items-center gap-3 px-6 py-4 cursor-pointer select-none hover:bg-gray-50 transition-colors"
+        className="flex items-center gap-3 px-6 py-4 cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-accent transition-colors"
         onClick={() => setExpanded(e => !e)}
       >
-        <span className="flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 text-[12px] font-bold text-gray-500 shrink-0">
+        <span className="flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 dark:bg-muted text-[12px] font-bold text-gray-500 dark:text-muted-foreground shrink-0">
           {index + 1}
         </span>
         <span className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[11px] font-semibold shrink-0 ${meta.badge}`}>
           <Icon className="w-3 h-3" />
           {meta.label}
         </span>
-        <h3 className="flex-1 text-[14px] font-semibold text-[#101828] leading-snug">
+        <h3 className="flex-1 text-[14px] font-semibold text-[#101828] dark:text-foreground leading-snug">
           {question.titulo_pregunta}
         </h3>
         <div className="flex items-center gap-3 shrink-0">
-          <span className="text-[12px] text-gray-400 flex items-center gap-1">
+          <span className="text-[12px] text-gray-400 dark:text-muted-foreground flex items-center gap-1">
             <Users className="w-3.5 h-3.5" />
             {answered} resp.
           </span>
-          {expanded ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
+          {expanded ? <ChevronUp className="w-4 h-4 text-gray-400 dark:text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-gray-400 dark:text-muted-foreground" />}
         </div>
       </div>
 
       {/* Card body */}
       {expanded && (
-        <div className="border-t border-[#f3f4f6] px-6 py-5">
+        <div className="border-t border-[#f3f4f6] dark:border-border px-6 py-5">
           {totalAnswers === 0 ? (
             <div className="flex flex-col items-center justify-center py-8 text-center">
-              <BarChart2 className="w-10 h-10 text-gray-200 mb-3" />
-              <p className="text-[13px] text-gray-400 font-medium">Sin respuestas aún</p>
-              <p className="text-[12px] text-gray-300 mt-1">Los resultados aparecerán aquí cuando lleguen respuestas.</p>
+              <BarChart2 className="w-10 h-10 text-gray-200 dark:text-muted-foreground mb-3" />
+              <p className="text-[13px] text-gray-400 dark:text-muted-foreground font-medium">Sin respuestas aún</p>
+              <p className="text-[12px] text-gray-300 dark:text-muted-foreground mt-1">Los resultados aparecerán aquí cuando lleguen respuestas.</p>
             </div>
           ) : (
             <>
@@ -402,40 +402,40 @@ function SectionSummary({ sectionQuestions, respuestasData }: { sectionQuestions
   }
 
   return (
-    <div className="bg-gray-50 rounded-[12px] border border-gray-200 p-6 mt-4">
-      <h3 className="text-[14px] font-semibold text-gray-900 mb-4">Resumen de Sección</h3>
+    <div className="bg-gray-50 dark:bg-background rounded-[12px] border border-gray-200 dark:border-border p-6 mt-4">
+      <h3 className="text-[14px] font-semibold text-gray-900 dark:text-foreground mb-4">Resumen de Sección</h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* CSAT Average */}
         {csatAvg !== null && (
-          <div className="flex flex-col items-center justify-center bg-white rounded-[8px] p-4 border border-gray-200">
+          <div className="flex flex-col items-center justify-center bg-white dark:bg-card rounded-[8px] p-4 border border-gray-200 dark:border-border">
             <ScoreGauge value={csatAvg} max={5} color="#00C4B3" />
-            <span className="text-[12px] text-gray-500 mt-2">Promedio CSAT</span>
+            <span className="text-[12px] text-gray-500 dark:text-muted-foreground mt-2">Promedio CSAT</span>
           </div>
         )}
 
         {/* SUS Average */}
         {susAvg !== null && (
-          <div className="flex flex-col items-center justify-center bg-white rounded-[8px] p-4 border border-gray-200">
+          <div className="flex flex-col items-center justify-center bg-white dark:bg-card rounded-[8px] p-4 border border-gray-200 dark:border-border">
             <ScoreGauge value={susAvg} max={susMax} color="#8C59FE" />
-            <span className="text-[12px] text-gray-500 mt-2">Promedio SUS</span>
+            <span className="text-[12px] text-gray-500 dark:text-muted-foreground mt-2">Promedio SUS</span>
           </div>
         )}
 
         {/* NPS Score */}
         {npsScore !== null && (
-          <div className="flex flex-col items-center justify-center bg-white rounded-[8px] p-4 border border-gray-200">
+          <div className="flex flex-col items-center justify-center bg-white dark:bg-card rounded-[8px] p-4 border border-gray-200 dark:border-border">
             <NPSGauge score={npsScore} />
-            <span className="text-[12px] text-gray-500 mt-2">Net Promoter Score</span>
+            <span className="text-[12px] text-gray-500 dark:text-muted-foreground mt-2">Net Promoter Score</span>
           </div>
         )}
 
         {/* Word Cloud */}
         {frequencyTags.length > 0 && (
-          <div className="bg-white rounded-[8px] p-4 border border-gray-200 col-span-full">
+          <div className="bg-white dark:bg-card rounded-[8px] p-4 border border-gray-200 dark:border-border col-span-full">
             <div className="flex items-center gap-2 mb-3">
-              <Cloud className="w-4 h-4 text-gray-500" />
-              <span className="text-[12px] font-semibold text-gray-700">Palabras clave (preguntas abiertas)</span>
+              <Cloud className="w-4 h-4 text-gray-500 dark:text-muted-foreground" />
+              <span className="text-[12px] font-semibold text-gray-700 dark:text-muted-foreground">Palabras clave (preguntas abiertas)</span>
             </div>
             <WordCloud tags={frequencyTags} />
           </div>
@@ -453,10 +453,10 @@ function SectionContainer({ section, questions, respuestasData, startIndex }: {
   startIndex: number;
 }) {
   return (
-    <div className="border border-gray-200 rounded-[12px] p-6 bg-gray-50/30">
+    <div className="border border-gray-200 dark:border-border rounded-[12px] p-6 bg-gray-50 dark:bg-background/30">
       {/* Section Title */}
-      <h2 className="text-[16px] font-bold text-gray-900 mb-4 flex items-center gap-2">
-        <span className="text-gray-400">#</span>
+      <h2 className="text-[16px] font-bold text-gray-900 dark:text-foreground mb-4 flex items-center gap-2">
+        <span className="text-gray-400 dark:text-muted-foreground">#</span>
         {section.title}
       </h2>
 
@@ -500,7 +500,7 @@ function LikertChart({ question, values, meta }: { question: any; values: any[];
       {avg !== null && (
         <div className="flex flex-col items-center justify-center gap-2 shrink-0">
           <ScoreGauge value={avg} max={opciones.length} color={meta.bar} />
-          <span className="text-[11px] text-gray-400 text-center">Promedio</span>
+          <span className="text-[11px] text-gray-400 dark:text-muted-foreground text-center">Promedio</span>
         </div>
       )}
     </div>
@@ -552,7 +552,7 @@ function SusChart({ question, values, meta }: { question: any; values: any[]; me
       {avg !== null && (
         <div className="flex flex-col items-center justify-center gap-2 shrink-0">
           <ScoreGauge value={avg} max={scale} color={meta.bar} />
-          <span className="text-[11px] text-gray-400 text-center">Promedio</span>
+          <span className="text-[11px] text-gray-400 dark:text-muted-foreground text-center">Promedio</span>
         </div>
       )}
     </div>
@@ -630,23 +630,23 @@ function NpsChart({ values }: { values: any[] }) {
         {/* Center label */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-[28px] font-bold leading-none" style={{ color: scoreColor }}>{score}</span>
-          <span className="text-[11px] text-gray-400 font-medium mt-0.5">NPS</span>
+          <span className="text-[11px] text-gray-400 dark:text-muted-foreground font-medium mt-0.5">NPS</span>
         </div>
       </div>
 
       {/* Right side: legend + count */}
       <div className="flex flex-col-2 gap-4 flex-1">
         <div className="flex flex-col gap-1">
-          <span className="text-[12px] text-gray-400">Total respuestas</span>
-          <span className="text-[22px] font-bold text-gray-800">{total}</span>
+          <span className="text-[12px] text-gray-400 dark:text-muted-foreground">Total respuestas</span>
+          <span className="text-[22px] font-bold text-gray-800 dark:text-foreground">{total}</span>
         </div>
         <div className="space-y-2.5">
           {legendItems.map(({ label, color, count, pct }) => (
             <div key={label} className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
-              <span className="text-[13px] text-gray-600 flex-1">{label}</span>
-              <span className="text-[12px] font-semibold text-gray-800">{count}</span>
-              <span className="text-[11px] text-gray-400 w-9 text-right">{Math.round(pct)}%</span>
+              <span className="text-[13px] text-gray-600 dark:text-muted-foreground flex-1">{label}</span>
+              <span className="text-[12px] font-semibold text-gray-800 dark:text-foreground">{count}</span>
+              <span className="text-[11px] text-gray-400 dark:text-muted-foreground w-9 text-right">{Math.round(pct)}%</span>
             </div>
           ))}
         </div>
@@ -674,8 +674,8 @@ function CsatChart({ values, meta }: { values: any[]; meta: any }) {
           <>
             <ScoreGauge value={avg} max={5} color={meta.bar} />
             <div className="text-center">
-              <p className="text-[20px] font-bold text-gray-900">{satisfiedPct}%</p>
-              <p className="text-[11px] text-gray-400">satisfechos</p>
+              <p className="text-[20px] font-bold text-gray-900 dark:text-foreground">{satisfiedPct}%</p>
+              <p className="text-[11px] text-gray-400 dark:text-muted-foreground">satisfechos</p>
             </div>
           </>
         )}
@@ -699,7 +699,7 @@ function MultipleChoiceChart({ question, values, meta }: { question: any; values
         <BarRow key={i} label={label} count={counts[i]} total={total} color={meta.bar} />
       ))}
       {opciones.length === 0 && (
-        <p className="text-[13px] text-gray-400 text-center py-4">Sin opciones definidas</p>
+        <p className="text-[13px] text-gray-400 dark:text-muted-foreground text-center py-4">Sin opciones definidas</p>
       )}
     </div>
   );
@@ -716,7 +716,7 @@ function ScoreMatrixChart({ question, values, meta }: { question: any; values: a
   const gaugeColor = useStars ? '#FDC700' : '#155DFC';
 
   if (rows.length === 0) {
-    return <p className="text-[13px] text-gray-400 text-center py-4">Sin filas definidas</p>;
+    return <p className="text-[13px] text-gray-400 dark:text-muted-foreground text-center py-4">Sin filas definidas</p>;
   }
 
   // Parse all matrix answers
@@ -745,12 +745,12 @@ function ScoreMatrixChart({ question, values, meta }: { question: any; values: a
           : null;
 
         return (
-          <div key={rowIdx} className="border-b border-gray-100 pb-4 last:border-0">
+          <div key={rowIdx} className="border-b border-gray-100 dark:border-border pb-4 last:border-0">
             <div className="flex gap-8 items-start">
               {/* Left side: Bars */}
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-[14px] font-semibold text-gray-700">{rowLabel}</h4>
+                  <h4 className="text-[14px] font-semibold text-gray-700 dark:text-muted-foreground">{rowLabel}</h4>
                   {avg !== null && useStars && (
                     <div className="flex items-center gap-2">
                       <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
@@ -774,7 +774,7 @@ function ScoreMatrixChart({ question, values, meta }: { question: any; values: a
               {avg !== null && (
                 <div className="flex flex-col items-center justify-center gap-2 shrink-0">
                   <ScoreGauge value={avg + 1} max={columns.length} color={gaugeColor} />
-                  <span className="text-[11px] text-gray-400 text-center">Promedio</span>
+                  <span className="text-[11px] text-gray-400 dark:text-muted-foreground text-center">Promedio</span>
                 </div>
               )}
             </div>
@@ -790,7 +790,7 @@ function RankingChart({ question, values, meta }: { question: any; values: any[]
   const total = values.length;
 
   if (options.length === 0) {
-    return <p className="text-[13px] text-gray-400 text-center py-4">Sin opciones definidas</p>;
+    return <p className="text-[13px] text-gray-400 dark:text-muted-foreground text-center py-4">Sin opciones definidas</p>;
   }
 
   // Parse all ranking answers
@@ -837,24 +837,24 @@ function RankingChart({ question, values, meta }: { question: any; values: any[]
         const percentage = total > 0 ? Math.round((item.count / total) * 100) : 0;
 
         return (
-          <div key={item.option} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-200">
+          <div key={item.option} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-background border border-gray-200 dark:border-border">
             <div className="flex items-center gap-2 w-12 shrink-0">
               {medal && <span className="text-2xl">{medal}</span>}
               {!medal && (
-                <span className="text-[16px] font-bold text-gray-400 w-full text-center">
+                <span className="text-[16px] font-bold text-gray-400 dark:text-muted-foreground w-full text-center">
                   {idx + 1}
                 </span>
               )}
             </div>
             <div className="flex-1">
-              <p className="text-[14px] font-semibold text-gray-900">{item.option}</p>
-              <p className="text-[11px] text-gray-500">
+              <p className="text-[14px] font-semibold text-gray-900 dark:text-foreground">{item.option}</p>
+              <p className="text-[11px] text-gray-500 dark:text-muted-foreground">
                 Posición promedio: {(item.avgPosition + 1).toFixed(1)} • Puntuación: {item.score.toFixed(1)}
               </p>
             </div>
             <div className="text-right shrink-0">
-              <p className="text-[12px] font-semibold text-gray-700">{item.count}</p>
-              <p className="text-[11px] text-gray-400">{percentage}%</p>
+              <p className="text-[12px] font-semibold text-gray-700 dark:text-muted-foreground">{item.count}</p>
+              <p className="text-[11px] text-gray-400 dark:text-muted-foreground">{percentage}%</p>
             </div>
           </div>
         );
@@ -962,16 +962,16 @@ function WordCloud({ tags }: { tags: FrequencyTag[] }) {
       </svg>
 
       {/* Legend in corner */}
-      <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-sm px-3 py-2 rounded-lg border border-purple-200/50 shadow-sm">
-        <p className="text-[10px] text-gray-600 font-medium flex items-center gap-1.5">
+      <div className="absolute bottom-3 right-3 bg-white dark:bg-card/95 backdrop-blur-sm px-3 py-2 rounded-lg border border-purple-200/50 shadow-sm">
+        <p className="text-[10px] text-gray-600 dark:text-muted-foreground font-medium flex items-center gap-1.5">
           <Cloud className="w-3 h-3 text-purple-500" />
           Tamaño = frecuencia de aparición
         </p>
       </div>
 
       {/* Count badge in top-left */}
-      <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm px-2.5 py-1.5 rounded-lg border border-indigo-200/50 shadow-sm">
-        <p className="text-[10px] text-gray-600 font-semibold">
+      <div className="absolute top-3 left-3 bg-white dark:bg-card/95 backdrop-blur-sm px-2.5 py-1.5 rounded-lg border border-indigo-200/50 shadow-sm">
+        <p className="text-[10px] text-gray-600 dark:text-muted-foreground font-semibold">
           {cloudItems.length} {cloudItems.length === 1 ? 'palabra' : 'palabras'}
         </p>
       </div>
@@ -1005,7 +1005,7 @@ function TextAnswers({ values, question }: { values: any[]; question: any }) {
             {frequencyTags.map((tag, i) => (
               <span
                 key={i}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-full border border-indigo-200 shadow-sm hover:shadow-md transition-shadow"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-card rounded-full border border-indigo-200 shadow-sm hover:shadow-md transition-shadow"
                 style={{
                   fontSize: `${Math.max(11, Math.min(16, 11 + tag.size * 5))}px`,
                   fontWeight: tag.size > 0.6 ? 600 : tag.size > 0.3 ? 500 : 400,
@@ -1023,16 +1023,16 @@ function TextAnswers({ values, question }: { values: any[]; question: any }) {
 
       {/* ── Switch: Respuestas vs Word Cloud (solo si NO es email y hay tags) ── */}
       {!isEmail && frequencyTags.length > 0 && (
-        <div className="flex items-center justify-between px-4 py-3 mb-3 bg-gray-50 rounded-lg border border-gray-200">
+        <div className="flex items-center justify-between px-4 py-3 mb-3 bg-gray-50 dark:bg-background rounded-lg border border-gray-200 dark:border-border">
           <div className="flex items-center gap-2">
-            <MessageSquare className="w-4 h-4 text-gray-500" />
-            <span className="text-[13px] font-medium text-gray-700">
+            <MessageSquare className="w-4 h-4 text-gray-500 dark:text-muted-foreground" />
+            <span className="text-[13px] font-medium text-gray-700 dark:text-muted-foreground">
               {showWordCloud ? 'Nube de palabras' : 'Respuestas completas'}
             </span>
           </div>
           <button
             onClick={() => setShowWordCloud(prev => !prev)}
-            className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-[12px] font-medium text-gray-700"
+            className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-card border border-gray-300 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-accent transition-colors text-[12px] font-medium text-gray-700 dark:text-muted-foreground"
           >
             {showWordCloud ? (
               <>
@@ -1064,9 +1064,9 @@ function TextAnswers({ values, question }: { values: any[]; question: any }) {
       ) : (
         <>
           {visible.map((text, i) => (
-            <div key={i} className="flex gap-3 px-4 py-3 bg-[#f9fafb] rounded-[8px] border border-[#f3f4f6]">
-              <span className="text-[11px] text-gray-400 font-mono shrink-0 mt-0.5">#{i + 1}</span>
-              <p className="text-[13px] text-gray-700 leading-relaxed break-words flex-1">{text}</p>
+            <div key={i} className="flex gap-3 px-4 py-3 bg-[#f9fafb] dark:bg-muted rounded-[8px] border border-[#f3f4f6] dark:border-border">
+              <span className="text-[11px] text-gray-400 dark:text-muted-foreground font-mono shrink-0 mt-0.5">#{i + 1}</span>
+              <p className="text-[13px] text-gray-700 dark:text-muted-foreground leading-relaxed break-words flex-1">{text}</p>
             </div>
           ))}
           {textValues.length > 5 && (
@@ -1210,20 +1210,20 @@ export function AnalyticsDashboard() {
   const preguntas: any[] = encuesta?.preguntas || [];
 
   return (
-    <div className="min-h-screen bg-[#f8f9fb]">
+    <div className="min-h-screen bg-[#f8f9fb] dark:bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-[9999] bg-white border-b border-gray-200 px-6 py-4">
+      <header className="sticky top-0 z-[9999] bg-white dark:bg-card border-b border-gray-200 dark:border-border px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="font-semibold text-[12px] text-[#99a1af]">Analytics & Resultados</h1>
-            {encuesta && <p className="mt-0.5 text-[#101828] font-bold text-[30px]">{encuesta.nombre_encuesta}</p>}
+            <h1 className="font-semibold text-[12px] text-[#99a1af] dark:text-muted-foreground">Analytics & Resultados</h1>
+            {encuesta && <p className="mt-0.5 text-[#101828] dark:text-foreground font-bold text-[30px]">{encuesta.nombre_encuesta}</p>}
           </div>
           <div className="flex items-center gap-3">
             {/* ── Descargar CSV ── */}
             <button
               disabled={responses === 0}
               onClick={handleDownloadCSV}
-              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-colors font-medium text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-card border border-gray-200 dark:border-border text-gray-700 dark:text-muted-foreground rounded-lg hover:bg-gray-50 dark:hover:bg-accent hover:border-gray-300 dark:hover:border-border transition-colors font-medium text-sm disabled:opacity-40 disabled:cursor-not-allowed"
               title={responses === 0 ? 'No hay respuestas para descargar' : `Descargar ${responses} respuesta(s) en CSV`}
             >
               <svg className="w-4 h-4 text-green-600" fill="none" viewBox="0 0 16 16">
@@ -1231,7 +1231,7 @@ export function AnalyticsDashboard() {
               </svg>
               Descargar CSV
               {responses > 0 && (
-                <span className="ml-0.5 px-1.5 py-0.5 bg-gray-100 text-gray-500 text-[10px] font-semibold rounded">
+                <span className="ml-0.5 px-1.5 py-0.5 bg-gray-100 dark:bg-muted text-gray-500 dark:text-muted-foreground text-[10px] font-semibold rounded">
                   {responses}
                 </span>
               )}
@@ -1241,7 +1241,7 @@ export function AnalyticsDashboard() {
               onClick={handleToggleStatus}
               disabled={isTogglingStatus}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
-                isLive ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                isLive ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-gray-100 dark:bg-muted text-gray-700 dark:text-muted-foreground hover:bg-gray-200 dark:hover:bg-accent'
               } disabled:opacity-50`}
             >
               <Power className="w-4 h-4" />
@@ -1249,7 +1249,7 @@ export function AnalyticsDashboard() {
             </button>
             <button
               onClick={() => navigate(`/builder/${id}`)}
-              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-colors font-medium text-sm"
+              className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-card border border-gray-200 dark:border-border text-gray-700 dark:text-muted-foreground rounded-lg hover:bg-gray-50 dark:hover:bg-accent hover:border-gray-300 dark:hover:border-border transition-colors font-medium text-sm"
               title="Editar encuesta"
             >
               <Edit className="w-4 h-4" />
@@ -1274,31 +1274,31 @@ export function AnalyticsDashboard() {
           {[
             { label: 'Total Respuestas', value: responses, sub: 'guardadas en BD', icon: Users, color: 'text-blue-600' },
             { label: 'Preguntas', value: preguntas.length, sub: 'en esta encuesta', icon: BarChart2, color: 'text-purple-600' },
-            { label: 'Estado', value: isLive ? 'Live' : 'Draft', sub: isLive ? 'aceptando respuestas' : 'pausada', icon: Power, color: isLive ? 'text-green-600' : 'text-gray-500' },
+            { label: 'Estado', value: isLive ? 'Live' : 'Draft', sub: isLive ? 'aceptando respuestas' : 'pausada', icon: Power, color: isLive ? 'text-green-600' : 'text-gray-500 dark:text-muted-foreground' },
             { label: 'Activa desde', value: getDaysSinceCreation(), sub: 'días', icon: Calendar, color: 'text-orange-600' },
           ].map((kpi) => (
-            <div key={kpi.label} className="bg-white rounded-[12px] border border-[#e5e7eb] p-5">
+            <div key={kpi.label} className="bg-white dark:bg-card rounded-[12px] border border-[#e5e7eb] dark:border-border p-5">
               <div className="flex items-center justify-between mb-3">
-                <p className="text-[12px] text-gray-500 font-medium">{kpi.label}</p>
+                <p className="text-[12px] text-gray-500 dark:text-muted-foreground font-medium">{kpi.label}</p>
                 <kpi.icon className={`w-4 h-4 ${kpi.color}`} />
               </div>
-              <p className="text-[28px] font-bold text-gray-900 leading-none">{kpi.value}</p>
-              <p className="text-[11px] text-gray-400 mt-1">{kpi.sub}</p>
+              <p className="text-[28px] font-bold text-gray-900 dark:text-foreground leading-none">{kpi.value}</p>
+              <p className="text-[11px] text-gray-400 dark:text-muted-foreground mt-1">{kpi.sub}</p>
             </div>
           ))}
         </div>
 
         {/* ── Deployment & Links ── */}
         <div>
-          <h2 className="text-[15px] font-semibold text-gray-900 mb-4">Deployment & Links</h2>
-          <div className="bg-white rounded-[12px] border border-[#e5e7eb] px-[25px] py-[24px]">
+          <h2 className="text-[15px] font-semibold text-gray-900 dark:text-foreground mb-4">Deployment & Links</h2>
+          <div className="bg-white dark:bg-card rounded-[12px] border border-[#e5e7eb] dark:border-border px-[25px] py-[24px]">
             {/* Status row */}
-            <div className="flex items-center justify-between mb-5 pb-5 border-b border-gray-100">
+            <div className="flex items-center justify-between mb-5 pb-5 border-b border-gray-100 dark:border-border">
               <div className="flex items-center gap-3">
                 <div className={`w-2.5 h-2.5 rounded-full ${isLive ? 'bg-gray-300' : 'bg-gray-300'}`} />
                 <div>
-                  <p className="text-[13px] font-semibold text-gray-900">{isLive ? 'Survey is Live' : 'Survey is Offline'}</p>
-                  <p className="text-[11px] text-gray-400">{isLive ? 'Publicada y aceptando respuestas' : 'Pausada - no acepta respuestas'}</p>
+                  <p className="text-[13px] font-semibold text-gray-900 dark:text-foreground">{isLive ? 'Survey is Live' : 'Survey is Offline'}</p>
+                  <p className="text-[11px] text-gray-400 dark:text-muted-foreground">{isLive ? 'Publicada y aceptando respuestas' : 'Pausada - no acepta respuestas'}</p>
                 </div>
               </div>
             </div>
@@ -1310,7 +1310,7 @@ export function AnalyticsDashboard() {
                 <div className="bg-gradient-to-r from-[#eff6ff] to-[#eef2ff] rounded-[10px] border border-[#bedbff] px-4 py-2">
                   <div className="flex items-center gap-2 mb-2.5">
                     <span className="w-2 h-2 rounded-full bg-[#00c950]" />
-                    <span className="text-[11px] font-semibold text-[#364153] uppercase tracking-[0.34px]">Encuesta en vivo</span>
+                    <span className="text-[11px] font-semibold text-[#364153] dark:text-foreground uppercase tracking-[0.34px]">Encuesta en vivo</span>
                   </div>
                   <p className="text-[11px] text-[#155dfc] font-mono break-all mb-2.5 leading-[16.5px]">{surveyLink}</p>
                   <div className="flex gap-2 flex-wrap">
@@ -1320,7 +1320,7 @@ export function AnalyticsDashboard() {
                       {copied ? 'Copiado!' : 'Copiar link'}
                     </button>
                     <a href={surveyLink} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#d1d5dc] text-[#364153] rounded-[10px] text-[12px] font-medium hover:bg-gray-50 transition-colors">
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-card border border-[#d1d5dc] dark:border-border text-[#364153] dark:text-foreground rounded-[10px] text-[12px] font-medium hover:bg-gray-50 dark:hover:bg-accent transition-colors">
                       <Eye className="w-3.5 h-3.5" /> Ver
                     </a>
                   </div>
@@ -1330,8 +1330,8 @@ export function AnalyticsDashboard() {
                 <div className="bg-[#fefce8] rounded-[10px] border border-[#fff085] px-4 py-2">
                   <div className="flex items-center gap-1 mb-2.5">
                     <span className="w-2 h-2 rounded-full bg-[#fdc700]" />
-                    <span className="text-[11px] font-semibold text-[#364153] uppercase tracking-[0.34px]">Preview</span>
-                    <span className="text-[10px] text-[#99a1af] tracking-[0.12px]">No guarda en BD</span>
+                    <span className="text-[11px] font-semibold text-[#364153] dark:text-foreground uppercase tracking-[0.34px]">Preview</span>
+                    <span className="text-[10px] text-[#99a1af] dark:text-muted-foreground tracking-[0.12px]">No guarda en BD</span>
                   </div>
                   <p className="text-[11px] text-[#a65f00] font-mono break-all mb-2.5 leading-[16.5px]">{previewLink}</p>
                   <div className="flex gap-2">
@@ -1340,7 +1340,7 @@ export function AnalyticsDashboard() {
                       <Copy className="w-3.5 h-3.5" /> Copiar link
                     </button>
                     <a href={previewLink} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#fff085] text-[#894b00] rounded-[10px] text-[12px] font-medium hover:bg-yellow-50 transition-colors">
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-card border border-[#fff085] text-[#894b00] rounded-[10px] text-[12px] font-medium hover:bg-yellow-50 transition-colors">
                       <Eye className="w-3.5 h-3.5" /> Preview
                     </a>
                   </div>
@@ -1350,10 +1350,10 @@ export function AnalyticsDashboard() {
               {/* QR section - only show if published */}
               {isLive && (
                 <div className="w-[364px] shrink-0">
-                  <div className="bg-[#f8f9fb] rounded-[10px] border border-[#d1d5dc] px-4 py-2 relative min-h-[240px]">
+                  <div className="bg-[#f8f9fb] dark:bg-background rounded-[10px] border border-[#d1d5dc] dark:border-border px-4 py-2 relative min-h-[240px]">
                     <div className="flex flex-col gap-6">
                       <div className="flex items-start gap-2 justify-end">
-                        <p className="text-[11px] font-semibold text-[#364153] uppercase tracking-[0.34px] w-[113px]">QR – encuesta en vivo</p>
+                        <p className="text-[11px] font-semibold text-[#364153] dark:text-foreground uppercase tracking-[0.34px] w-[113px]">QR – encuesta en vivo</p>
                         <span className="w-2 h-2 rounded-full bg-[#00c950] mt-[5px]" />
                       </div>
                       <button
@@ -1396,8 +1396,8 @@ export function AnalyticsDashboard() {
         {/* ── Resultados por pregunta ── */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[15px] font-semibold text-gray-900">Resultados por Pregunta</h2>
-            <span className="text-[12px] text-gray-400 bg-white border border-[#e5e7eb] rounded-full px-3 py-1">
+            <h2 className="text-[15px] font-semibold text-gray-900 dark:text-foreground">Resultados por Pregunta</h2>
+            <span className="text-[12px] text-gray-400 dark:text-muted-foreground bg-white dark:bg-card border border-[#e5e7eb] dark:border-border rounded-full px-3 py-1">
               {responses} respuesta{responses !== 1 ? 's' : ''} · {preguntas.length} pregunta{preguntas.length !== 1 ? 's' : ''}
             </span>
           </div>
@@ -1406,14 +1406,14 @@ export function AnalyticsDashboard() {
             <div className="flex items-center justify-center py-16">
               <div className="flex flex-col items-center gap-3">
                 <div className="w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                <p className="text-[13px] text-gray-400">Cargando datos...</p>
+                <p className="text-[13px] text-gray-400 dark:text-muted-foreground">Cargando datos...</p>
               </div>
             </div>
           ) : preguntas.length === 0 ? (
-            <div className="bg-white rounded-[12px] border border-[#e5e7eb] p-12 text-center">
-              <BarChart2 className="w-12 h-12 text-gray-200 mx-auto mb-4" />
-              <p className="text-[14px] text-gray-500 font-medium">Esta encuesta no tiene preguntas</p>
-              <p className="text-[12px] text-gray-400 mt-1">Agrega preguntas desde el constructor de encuestas.</p>
+            <div className="bg-white dark:bg-card rounded-[12px] border border-[#e5e7eb] dark:border-border p-12 text-center">
+              <BarChart2 className="w-12 h-12 text-gray-200 dark:text-muted-foreground mx-auto mb-4" />
+              <p className="text-[14px] text-gray-500 dark:text-muted-foreground font-medium">Esta encuesta no tiene preguntas</p>
+              <p className="text-[12px] text-gray-400 dark:text-muted-foreground mt-1">Agrega preguntas desde el constructor de encuestas.</p>
             </div>
           ) : (
             <div className="space-y-6">
@@ -1468,39 +1468,39 @@ export function AnalyticsDashboard() {
               onClick={() => setShowIndividualResponses(!showIndividualResponses)}
               className="flex items-center justify-between w-full mb-4 text-left"
             >
-              <h2 className="text-[15px] font-semibold text-gray-900">Respuestas Individuales</h2>
+              <h2 className="text-[15px] font-semibold text-gray-900 dark:text-foreground">Respuestas Individuales</h2>
               {showIndividualResponses ? (
-                <ChevronUp className="w-5 h-5 text-gray-500" />
+                <ChevronUp className="w-5 h-5 text-gray-500 dark:text-muted-foreground" />
               ) : (
-                <ChevronDown className="w-5 h-5 text-gray-500" />
+                <ChevronDown className="w-5 h-5 text-gray-500 dark:text-muted-foreground" />
               )}
             </button>
 
             {showIndividualResponses && (
-              <div className="bg-white rounded-[12px] border border-[#e5e7eb] overflow-hidden">
+              <div className="bg-white dark:bg-card rounded-[12px] border border-[#e5e7eb] dark:border-border overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left">
                     <thead>
-                      <tr className="border-b border-[#f3f4f6] bg-[#f9fafb]">
-                        <th className="px-5 py-3 text-[11px] font-semibold text-gray-500 uppercase tracking-wide">#</th>
-                        <th className="px-5 py-3 text-[11px] font-semibold text-gray-500 uppercase tracking-wide">ID Respuesta</th>
-                        <th className="px-5 py-3 text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Fecha</th>
-                        <th className="px-5 py-3 text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Respuestas</th>
+                      <tr className="border-b border-[#f3f4f6] dark:border-border bg-[#f9fafb] dark:bg-muted">
+                        <th className="px-5 py-3 text-[11px] font-semibold text-gray-500 dark:text-muted-foreground uppercase tracking-wide">#</th>
+                        <th className="px-5 py-3 text-[11px] font-semibold text-gray-500 dark:text-muted-foreground uppercase tracking-wide">ID Respuesta</th>
+                        <th className="px-5 py-3 text-[11px] font-semibold text-gray-500 dark:text-muted-foreground uppercase tracking-wide">Fecha</th>
+                        <th className="px-5 py-3 text-[11px] font-semibold text-gray-500 dark:text-muted-foreground uppercase tracking-wide">Respuestas</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#f3f4f6]">
+                    <tbody className="divide-y divide-[#f3f4f6] dark:divide-border">
                       {respuestasData.map((r, idx) => {
                         const answers = r.respuestas?.answers || [];
                         const date = new Date(r.created_at).toLocaleDateString('es-MX', {
                           year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
                         });
                         return (
-                          <tr key={r.id} className="hover:bg-[#f9fafb] transition-colors">
-                            <td className="px-5 py-3 text-[12px] text-gray-400 font-mono">{idx + 1}</td>
-                            <td className="px-5 py-3 text-[11px] text-gray-400 font-mono truncate max-w-[140px]">
+                          <tr key={r.id} className="hover:bg-[#f9fafb] dark:hover:bg-accent transition-colors">
+                            <td className="px-5 py-3 text-[12px] text-gray-400 dark:text-muted-foreground font-mono">{idx + 1}</td>
+                            <td className="px-5 py-3 text-[11px] text-gray-400 dark:text-muted-foreground font-mono truncate max-w-[140px]">
                               {(r.respuestas?.responseID || r.id || '').slice(0, 20)}…
                             </td>
-                            <td className="px-5 py-3 text-[12px] text-gray-500 whitespace-nowrap">{date}</td>
+                            <td className="px-5 py-3 text-[12px] text-gray-500 dark:text-muted-foreground whitespace-nowrap">{date}</td>
                             <td className="px-5 py-3">
                               <div className="flex flex-wrap gap-1.5">
                                 {preguntas.map((q: any) => {

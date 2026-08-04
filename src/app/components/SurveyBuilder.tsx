@@ -213,7 +213,7 @@ function DraggableQuestionCard({
   return (
     <div
       ref={cardRef}
-      className="bg-white rounded-[10px] relative w-full shrink-0"
+      className="bg-white dark:bg-card rounded-[10px] relative w-full shrink-0"
       style={{ opacity: isDragging ? 0.35 : 1 }}
     >
       {/* Border overlay — highlights when a card is being dragged over */}
@@ -222,7 +222,7 @@ function DraggableQuestionCard({
         className={`absolute inset-0 pointer-events-none rounded-[10px] border transition-all ${
           isOver
             ? 'border-2 border-[#8C59FE] shadow-[0_0_0_3px_rgba(140,89,254,0.15)]'
-            : 'border border-[#e5e7eb]'
+            : 'border border-[#e5e7eb] dark:border-border'
         } hover:shadow-md group`}
       />
 
@@ -232,7 +232,7 @@ function DraggableQuestionCard({
           {/* ── Drag handle ── */}
           <button
             ref={dragHandleRef}
-            className="text-[#99a1af] hover:text-[#364153] cursor-grab active:cursor-grabbing mt-0.5 touch-none select-none"
+            className="text-[#99a1af] dark:text-muted-foreground hover:text-[#364153] dark:text-foreground cursor-grab active:cursor-grabbing mt-0.5 touch-none select-none"
             title="Arrastrar para reordenar"
             // Prevent click events from bubbling so the handle doesn't interfere
             onClick={(e) => e.preventDefault()}
@@ -244,7 +244,7 @@ function DraggableQuestionCard({
             {/* Question meta + actions */}
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <span className="text-[11px] font-semibold text-[#6a7282] uppercase tracking-[0.5px]">
+                <span className="text-[11px] font-semibold text-[#6a7282] dark:text-muted-foreground uppercase tracking-[0.5px]">
                   Pregunta {index + 1} · {question.tipo}
                 </span>
                 {/* Logic badge */}
@@ -260,7 +260,7 @@ function DraggableQuestionCard({
                     className={`flex items-center gap-1 px-2 py-0.5 rounded-[4px] text-[10px] font-semibold uppercase tracking-[0.5px] transition-colors ${
                       activeRules > 0
                         ? 'bg-gradient-to-r from-[#597AFF] to-[#8C59FE] text-white'
-                        : 'bg-[#f3f4f6] text-[#6a7282] hover:bg-[#e5e7eb]'
+                        : 'bg-[#f3f4f6] dark:bg-muted text-[#6a7282] dark:text-muted-foreground hover:bg-[#e5e7eb]'
                     }`}
                     title={`Configurar lógica condicional${activeRules > 0 ? ` (${activeRules} regla${activeRules > 1 ? 's' : ''} activa${activeRules > 1 ? 's' : ''})` : ''}`}
                   >
@@ -278,7 +278,7 @@ function DraggableQuestionCard({
                 <div className="relative">
                   <button
                     onClick={() => setShowSectionMenu(!showSectionMenu)}
-                    className="text-[#99a1af] hover:text-[#8C59FE] transition-colors p-1.5 rounded-[6px] hover:bg-[#8C59FE]/10"
+                    className="text-[#99a1af] dark:text-muted-foreground hover:text-[#8C59FE] transition-colors p-1.5 rounded-[6px] hover:bg-[#8C59FE]/10"
                     title="Mover a sección"
                   >
                     <Layers className="w-4 h-4" />
@@ -286,13 +286,13 @@ function DraggableQuestionCard({
                   {showSectionMenu && (
                     <>
                       <div className="fixed inset-0 z-10" onClick={() => setShowSectionMenu(false)} />
-                      <div className="absolute right-0 top-full mt-1 bg-white border border-[#e5e7eb] rounded-[8px] shadow-[0_4px_16px_rgba(0,0,0,0.10)] z-20 min-w-[180px] overflow-hidden">
+                      <div className="absolute right-0 top-full mt-1 bg-white dark:bg-card border border-[#e5e7eb] dark:border-border rounded-[8px] shadow-[0_4px_16px_rgba(0,0,0,0.10)] z-20 min-w-[180px] overflow-hidden">
                         <button
                           onClick={() => {
                             moveQuestionToSection(index, undefined);
                             setShowSectionMenu(false);
                           }}
-                          className={`w-full flex items-center gap-2 px-3 py-2 text-left text-sm hover:bg-[#f9fafb] transition-colors ${!question.section_id ? 'bg-[#f0f4ff] text-[#8C59FE]' : 'text-[#364153]'}`}
+                          className={`w-full flex items-center gap-2 px-3 py-2 text-left text-sm hover:bg-[#f9fafb] dark:hover:bg-accent transition-colors ${!question.section_id ? 'bg-[#f0f4ff] dark:bg-accent text-[#8C59FE]' : 'text-[#364153] dark:text-foreground'}`}
                         >
                           {!question.section_id && <Check className="w-3 h-3" />}
                           <span className="flex-1">Sin sección</span>
@@ -304,7 +304,7 @@ function DraggableQuestionCard({
                               moveQuestionToSection(index, section.id);
                               setShowSectionMenu(false);
                             }}
-                            className={`w-full flex items-center gap-2 px-3 py-2 text-left text-sm hover:bg-[#f9fafb] transition-colors border-t border-[#f3f4f6] ${question.section_id === section.id ? 'bg-[#f0f4ff] text-[#8C59FE]' : 'text-[#364153]'}`}
+                            className={`w-full flex items-center gap-2 px-3 py-2 text-left text-sm hover:bg-[#f9fafb] dark:hover:bg-accent transition-colors border-t border-[#f3f4f6] dark:border-border ${question.section_id === section.id ? 'bg-[#f0f4ff] dark:bg-accent text-[#8C59FE]' : 'text-[#364153] dark:text-foreground'}`}
                           >
                             {question.section_id === section.id && <Check className="w-3 h-3" />}
                             <span className="flex-1">{section.title}</span>
@@ -316,14 +316,14 @@ function DraggableQuestionCard({
                 </div>
                 <button
                   onClick={() => duplicateQuestion(index)}
-                  className="text-[#99a1af] hover:text-[#8C59FE] transition-colors p-1.5 rounded-[6px] hover:bg-[#8C59FE]/10"
+                  className="text-[#99a1af] dark:text-muted-foreground hover:text-[#8C59FE] transition-colors p-1.5 rounded-[6px] hover:bg-[#8C59FE]/10"
                   title="Duplicar"
                 >
                   <Copy className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => deleteQuestion(index)}
-                  className="text-[#99a1af] hover:text-red-500 transition-colors p-1.5 rounded-[6px] hover:bg-red-50"
+                  className="text-[#99a1af] dark:text-muted-foreground hover:text-red-500 transition-colors p-1.5 rounded-[6px] hover:bg-red-50"
                   title="Eliminar"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -378,7 +378,7 @@ function DraggableQuestionCard({
               type="text"
               value={question.titulo_pregunta}
               onChange={(e) => updateQuestion(index, 'titulo_pregunta', e.target.value)}
-              className="w-full text-[16px] font-medium text-[#101828] border-0 border-b-2 border-transparent hover:border-[#d1d5dc] focus:border-blue-400 focus:ring-0 px-0 py-1 mb-4 outline-none tracking-[-0.3125px]"
+              className="w-full text-[16px] font-medium text-[#101828] dark:text-foreground border-0 border-b-2 border-transparent hover:border-[#d1d5dc] dark:border-border focus:border-blue-400 focus:ring-0 px-0 py-1 mb-4 outline-none tracking-[-0.3125px]"
               placeholder="Título de la pregunta..."
             />
 
@@ -387,13 +387,13 @@ function DraggableQuestionCard({
               /* ── Separador informativo ── */
               <div className="flex flex-col gap-[12px]">
                 <div className="flex flex-col gap-[6px]">
-                  <label className="font-medium text-[12px] leading-[16px] text-[#6a7282]">
-                    Descripción <span className="font-normal text-[#99a1af]">(opcional)</span>
+                  <label className="font-medium text-[12px] leading-[16px] text-[#6a7282] dark:text-muted-foreground">
+                    Descripción <span className="font-normal text-[#99a1af] dark:text-muted-foreground">(opcional)</span>
                   </label>
                   <textarea
                     value={question.subtitulo_pregunta ?? ''}
                     onChange={(e) => updateQuestion(index, 'subtitulo_pregunta', e.target.value)}
-                    className="w-full h-[64px] px-[12px] py-[8px] text-[14px] border border-[#d1d5dc] rounded-[8px] focus:border-blue-400 focus:ring-0 outline-none tracking-[-0.1504px] placeholder:text-[rgba(10,10,10,0.35)] resize-none"
+                    className="w-full h-[64px] px-[12px] py-[8px] text-[14px] border border-[#d1d5dc] dark:border-border rounded-[8px] focus:border-blue-400 focus:ring-0 outline-none tracking-[-0.1504px] placeholder:text-[rgba(10,10,10,0.35)] resize-none"
                     placeholder="Información adicional o instrucciones para esta sección..."
                   />
                 </div>
@@ -402,29 +402,29 @@ function DraggableQuestionCard({
               /* ── Pregunta abierta ── */
               <div className="flex flex-col gap-[12px]">
                 <div className="flex flex-col gap-[6px]">
-                  <label className="font-medium text-[12px] leading-[16px] text-[#6a7282]">
-                    Subtítulo <span className="font-normal text-[#99a1af]">(opcional)</span>
+                  <label className="font-medium text-[12px] leading-[16px] text-[#6a7282] dark:text-muted-foreground">
+                    Subtítulo <span className="font-normal text-[#99a1af] dark:text-muted-foreground">(opcional)</span>
                   </label>
                   <input
                     type="text"
                     value={question.subtitulo_pregunta ?? ''}
                     onChange={(e) => updateQuestion(index, 'subtitulo_pregunta', e.target.value)}
-                    className="w-full h-[36px] px-[12px] text-[14px] border border-[#d1d5dc] rounded-[8px] focus:border-blue-400 focus:ring-0 outline-none tracking-[-0.1504px] placeholder:text-[rgba(10,10,10,0.35)]"
+                    className="w-full h-[36px] px-[12px] text-[14px] border border-[#d1d5dc] dark:border-border rounded-[8px] focus:border-blue-400 focus:ring-0 outline-none tracking-[-0.1504px] placeholder:text-[rgba(10,10,10,0.35)]"
                     placeholder="Ej. Por favor escribe tu respuesta aquí..."
                   />
                 </div>
 
                 {/* Solo email toggle */}
-                <div className="flex items-center justify-between h-[36px] px-[12px] rounded-[8px] border border-[#d1d5dc] bg-[#f9fafb]">
+                <div className="flex items-center justify-between h-[36px] px-[12px] rounded-[8px] border border-[#d1d5dc] dark:border-border bg-[#f9fafb] dark:bg-muted">
                   <div className="flex items-center gap-[8px]">
                     <svg className="w-[14px] h-[14px] shrink-0" fill="none" viewBox="0 0 16 16">
                       <path d="M2.667 2.667h10.666c.737 0 1.334.597 1.334 1.333v8c0 .736-.597 1.333-1.334 1.333H2.667A1.333 1.333 0 0 1 1.333 12V4c0-.736.597-1.333 1.334-1.333Z" stroke="#6A7282" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.2"/>
                       <path d="m14.667 4-6.667 4.667L1.333 4" stroke="#6A7282" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.2"/>
                     </svg>
-                    <span className="font-medium text-[13px] leading-[18px] text-[#364153] tracking-[-0.1px]">
+                    <span className="font-medium text-[13px] leading-[18px] text-[#364153] dark:text-foreground tracking-[-0.1px]">
                       Solo acepta emails
                     </span>
-                    <span className="text-[11px] text-[#99a1af]">
+                    <span className="text-[11px] text-[#99a1af] dark:text-muted-foreground">
                       — valida formato correo electrónico
                     </span>
                   </div>
@@ -435,7 +435,7 @@ function DraggableQuestionCard({
                     }`}
                   >
                     <span
-                      className={`inline-block h-[14px] w-[14px] transform rounded-full bg-white shadow-sm transition-transform ${
+                      className={`inline-block h-[14px] w-[14px] transform rounded-full bg-white dark:bg-card shadow-sm transition-transform ${
                         question.solo_email ? 'translate-x-[19px]' : 'translate-x-[3px]'
                       }`}
                     />
@@ -443,15 +443,15 @@ function DraggableQuestionCard({
                 </div>
 
                 {/* Opcional toggle */}
-                <div className="flex items-center justify-between h-[36px] px-[12px] rounded-[8px] border border-[#d1d5dc] bg-[#f9fafb]">
+                <div className="flex items-center justify-between h-[36px] px-[12px] rounded-[8px] border border-[#d1d5dc] dark:border-border bg-[#f9fafb] dark:bg-muted">
                   <div className="flex items-center gap-[8px]">
                     <svg className="w-[14px] h-[14px] shrink-0 text-[#6A7282]" fill="none" viewBox="0 0 16 16" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.2" d="M8 8v4m0 0h4m-4 0H4M8 1v3m0 0a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/>
                     </svg>
-                    <span className="font-medium text-[13px] leading-[18px] text-[#364153] tracking-[-0.1px]">
+                    <span className="font-medium text-[13px] leading-[18px] text-[#364153] dark:text-foreground tracking-[-0.1px]">
                       Pregunta opcional
                     </span>
-                    <span className="text-[11px] text-[#99a1af]">
+                    <span className="text-[11px] text-[#99a1af] dark:text-muted-foreground">
                       — permite avanzar sin responder
                     </span>
                   </div>
@@ -462,7 +462,7 @@ function DraggableQuestionCard({
                     }`}
                   >
                     <span
-                      className={`inline-block h-[14px] w-[14px] transform rounded-full bg-white shadow-sm transition-transform ${
+                      className={`inline-block h-[14px] w-[14px] transform rounded-full bg-white dark:bg-card shadow-sm transition-transform ${
                         question.opcional ? 'translate-x-[19px]' : 'translate-x-[3px]'
                       }`}
                     />
@@ -474,7 +474,7 @@ function DraggableQuestionCard({
               <div className="flex flex-col gap-[12px]">
                 {/* Selector de escala */}
                 <div className="flex flex-col gap-[6px]">
-                  <label className="font-medium text-[12px] leading-[16px] text-[#6a7282]">
+                  <label className="font-medium text-[12px] leading-[16px] text-[#6a7282] dark:text-muted-foreground">
                     Escala de puntos
                   </label>
                   <div className="flex gap-[8px]">
@@ -485,7 +485,7 @@ function DraggableQuestionCard({
                         className={`flex-1 h-[36px] rounded-[8px] border-2 font-medium text-[14px] transition-all ${
                           (question.escala_sus || 5) === scale
                             ? 'border-purple-500 bg-purple-50 text-purple-700'
-                            : 'border-[#d1d5dc] bg-white text-[#6a7282] hover:border-purple-300'
+                            : 'border-[#d1d5dc] dark:border-border bg-white dark:bg-card text-[#6a7282] dark:text-muted-foreground hover:border-purple-300'
                         }`}
                       >
                         {scale} puntos
@@ -495,26 +495,26 @@ function DraggableQuestionCard({
                 </div>
                 
                 <div className="flex flex-col gap-[6px]">
-                  <label className="font-medium text-[12px] leading-[16px] text-[#6a7282]">
-                    Label izquierdo <span className="font-normal text-[#99a1af]">(valor mínimo)</span>
+                  <label className="font-medium text-[12px] leading-[16px] text-[#6a7282] dark:text-muted-foreground">
+                    Label izquierdo <span className="font-normal text-[#99a1af] dark:text-muted-foreground">(valor mínimo)</span>
                   </label>
                   <input
                     type="text"
                     value={question.label_izquierda ?? 'Totalmente en desacuerdo'}
                     onChange={(e) => updateQuestion(index, 'label_izquierda', e.target.value)}
-                    className="w-full h-[36px] px-[12px] text-[14px] border border-[#d1d5dc] rounded-[8px] focus:border-blue-400 focus:ring-0 outline-none tracking-[-0.1504px] placeholder:text-[rgba(10,10,10,0.35)]"
+                    className="w-full h-[36px] px-[12px] text-[14px] border border-[#d1d5dc] dark:border-border rounded-[8px] focus:border-blue-400 focus:ring-0 outline-none tracking-[-0.1504px] placeholder:text-[rgba(10,10,10,0.35)]"
                     placeholder="Totalmente en desacuerdo"
                   />
                 </div>
                 <div className="flex flex-col gap-[6px]">
-                  <label className="font-medium text-[12px] leading-[16px] text-[#6a7282]">
-                    Label derecho <span className="font-normal text-[#99a1af]">(valor máximo)</span>
+                  <label className="font-medium text-[12px] leading-[16px] text-[#6a7282] dark:text-muted-foreground">
+                    Label derecho <span className="font-normal text-[#99a1af] dark:text-muted-foreground">(valor máximo)</span>
                   </label>
                   <input
                     type="text"
                     value={question.label_derecha ?? 'Totalmente de acuerdo'}
                     onChange={(e) => updateQuestion(index, 'label_derecha', e.target.value)}
-                    className="w-full h-[36px] px-[12px] text-[14px] border border-[#d1d5dc] rounded-[8px] focus:border-blue-400 focus:ring-0 outline-none tracking-[-0.1504px] placeholder:text-[rgba(10,10,10,0.35)]"
+                    className="w-full h-[36px] px-[12px] text-[14px] border border-[#d1d5dc] dark:border-border rounded-[8px] focus:border-blue-400 focus:ring-0 outline-none tracking-[-0.1504px] placeholder:text-[rgba(10,10,10,0.35)]"
                     placeholder="Totalmente de acuerdo"
                   />
                 </div>
@@ -523,8 +523,8 @@ function DraggableQuestionCard({
               /* ── Score Matrix ── */
               <div className="flex flex-col gap-[12px]">
                 <div className="flex flex-col gap-[6px]">
-                  <label className="font-medium text-[12px] leading-[16px] text-[#6a7282]">
-                    Statement <span className="font-normal text-[#99a1af]">(mínimo 2)</span>:
+                  <label className="font-medium text-[12px] leading-[16px] text-[#6a7282] dark:text-muted-foreground">
+                    Statement <span className="font-normal text-[#99a1af] dark:text-muted-foreground">(mínimo 2)</span>:
                   </label>
                   {(question.matrix_rows || []).map((row, rowIndex) => (
                     <div key={rowIndex} className="flex gap-2 items-center">
@@ -536,7 +536,7 @@ function DraggableQuestionCard({
                           rows[rowIndex] = e.target.value;
                           updateQuestion(index, 'matrix_rows', rows);
                         }}
-                        className="flex-1 h-[36px] px-[12px] text-[14px] border border-[#d1d5dc] rounded-[8px] focus:border-blue-400 focus:ring-0 outline-none tracking-[-0.1504px]"
+                        className="flex-1 h-[36px] px-[12px] text-[14px] border border-[#d1d5dc] dark:border-border rounded-[8px] focus:border-blue-400 focus:ring-0 outline-none tracking-[-0.1504px]"
                         placeholder={`Fila ${rowIndex + 1}`}
                       />
                       {(question.matrix_rows || []).length > 2 && (
@@ -546,7 +546,7 @@ function DraggableQuestionCard({
                             rows.splice(rowIndex, 1);
                             updateQuestion(index, 'matrix_rows', rows);
                           }}
-                          className="text-[#99a1af] hover:text-red-500 transition-colors p-1.5 rounded-[6px] hover:bg-red-50"
+                          className="text-[#99a1af] dark:text-muted-foreground hover:text-red-500 transition-colors p-1.5 rounded-[6px] hover:bg-red-50"
                         >
                           <X className="w-4 h-4" />
                         </button>
@@ -558,20 +558,20 @@ function DraggableQuestionCard({
                       const rows = [...(question.matrix_rows || []), `Fila ${(question.matrix_rows || []).length + 1}`];
                       updateQuestion(index, 'matrix_rows', rows);
                     }}
-                    className="h-[32px] rounded-[6px] border border-dashed border-[#d1d5dc] text-[#99a1af] hover:text-[#6a7282] hover:border-[#6a7282] transition-all text-[12px] font-medium flex items-center justify-center gap-2"
+                    className="h-[32px] rounded-[6px] border border-dashed border-[#d1d5dc] dark:border-border text-[#99a1af] dark:text-muted-foreground hover:text-[#6a7282] dark:text-muted-foreground hover:border-[#6a7282] transition-all text-[12px] font-medium flex items-center justify-center gap-2"
                   >
                     <Plus className="w-4 h-4" /> Agregar fila
                   </button>
                 </div>
 
                 {/* Toggle: Estrellas vs Radio Buttons */}
-                <div className="flex items-center justify-between h-[36px] px-[12px] rounded-[8px] border border-[#d1d5dc] bg-[#f9fafb]">
+                <div className="flex items-center justify-between h-[36px] px-[12px] rounded-[8px] border border-[#d1d5dc] dark:border-border bg-[#f9fafb] dark:bg-muted">
                   <div className="flex items-center gap-[8px]">
                     <span className="text-[13px]">⭐️</span>
-                    <span className="font-medium text-[13px] leading-[18px] text-[#364153] tracking-[-0.1px]">
+                    <span className="font-medium text-[13px] leading-[18px] text-[#364153] dark:text-foreground tracking-[-0.1px]">
                       Estrellas
                     </span>
-                    <span className="text-[11px] text-[#99a1af]">
+                    <span className="text-[11px] text-[#99a1af] dark:text-muted-foreground">
                       Al apagar esta opción el usuario verá radio buttons
                     </span>
                   </div>
@@ -582,7 +582,7 @@ function DraggableQuestionCard({
                     }`}
                   >
                     <span
-                      className={`inline-block h-[14px] w-[14px] transform rounded-full bg-white shadow-sm transition-transform ${
+                      className={`inline-block h-[14px] w-[14px] transform rounded-full bg-white dark:bg-card shadow-sm transition-transform ${
                         question.use_stars ? 'translate-x-[19px]' : 'translate-x-[3px]'
                       }`}
                     />
@@ -590,8 +590,8 @@ function DraggableQuestionCard({
                 </div>
 
                 <div className="flex flex-col gap-[6px]">
-                  <label className="font-medium text-[12px] leading-[16px] text-[#6a7282]">
-                    Columnas con valor <span className="font-normal text-[#99a1af]">(etiquetas de escala, mínimo 2, máximo 5)</span>:
+                  <label className="font-medium text-[12px] leading-[16px] text-[#6a7282] dark:text-muted-foreground">
+                    Columnas con valor <span className="font-normal text-[#99a1af] dark:text-muted-foreground">(etiquetas de escala, mínimo 2, máximo 5)</span>:
                   </label>
                   {(question.matrix_columns || []).map((col, colIndex) => (
                     <div key={colIndex} className="flex gap-2 items-center">
@@ -603,7 +603,7 @@ function DraggableQuestionCard({
                           cols[colIndex] = e.target.value;
                           updateQuestion(index, 'matrix_columns', cols);
                         }}
-                        className="flex-1 h-[36px] px-[12px] text-[14px] border border-[#d1d5dc] rounded-[8px] focus:border-blue-400 focus:ring-0 outline-none tracking-[-0.1504px]"
+                        className="flex-1 h-[36px] px-[12px] text-[14px] border border-[#d1d5dc] dark:border-border rounded-[8px] focus:border-blue-400 focus:ring-0 outline-none tracking-[-0.1504px]"
                         placeholder={`Columna ${colIndex + 1}`}
                       />
                       {(question.matrix_columns || []).length > 2 && (
@@ -613,7 +613,7 @@ function DraggableQuestionCard({
                             cols.splice(colIndex, 1);
                             updateQuestion(index, 'matrix_columns', cols);
                           }}
-                          className="text-[#99a1af] hover:text-red-500 transition-colors p-1.5 rounded-[6px] hover:bg-red-50"
+                          className="text-[#99a1af] dark:text-muted-foreground hover:text-red-500 transition-colors p-1.5 rounded-[6px] hover:bg-red-50"
                         >
                           <X className="w-4 h-4" />
                         </button>
@@ -626,13 +626,13 @@ function DraggableQuestionCard({
                         const cols = [...(question.matrix_columns || []), `Columna ${(question.matrix_columns || []).length + 1}`];
                         updateQuestion(index, 'matrix_columns', cols);
                       }}
-                      className="h-[32px] rounded-[6px] border border-dashed border-[#d1d5dc] text-[#99a1af] hover:text-[#6a7282] hover:border-[#6a7282] transition-all text-[12px] font-medium flex items-center justify-center gap-2"
+                      className="h-[32px] rounded-[6px] border border-dashed border-[#d1d5dc] dark:border-border text-[#99a1af] dark:text-muted-foreground hover:text-[#6a7282] dark:text-muted-foreground hover:border-[#6a7282] transition-all text-[12px] font-medium flex items-center justify-center gap-2"
                     >
                       <Plus className="w-4 h-4" /> Agregar columna
                     </button>
                   )}
                   {(question.matrix_columns || []).length >= 5 && (
-                    <div className="h-[32px] rounded-[6px] border border-[#e5e7eb] bg-[#f9fafb] text-[#99a1af] text-[11px] font-medium flex items-center justify-center gap-2">
+                    <div className="h-[32px] rounded-[6px] border border-[#e5e7eb] dark:border-border bg-[#f9fafb] dark:bg-muted text-[#99a1af] dark:text-muted-foreground text-[11px] font-medium flex items-center justify-center gap-2">
                       Máximo 5 columnas alcanzado
                     </div>
                   )}
@@ -642,20 +642,20 @@ function DraggableQuestionCard({
               /* ── Ranking ── */
               <div className="flex flex-col gap-[12px]">
                 <div className="flex flex-col gap-[6px]">
-                  <label className="font-medium text-[12px] leading-[16px] text-[#6a7282]">
+                  <label className="font-medium text-[12px] leading-[16px] text-[#6a7282] dark:text-muted-foreground">
                     Instrucción:
                   </label>
                   <input
                     type="text"
                     value={question.ranking_instruction ?? 'Arrastra y deja hasta arriba el favorito'}
                     onChange={(e) => updateQuestion(index, 'ranking_instruction', e.target.value)}
-                    className="w-full h-[36px] px-[12px] text-[14px] border border-[#d1d5dc] rounded-[8px] focus:border-blue-400 focus:ring-0 outline-none tracking-[-0.1504px] placeholder:text-[rgba(10,10,10,0.35)]"
+                    className="w-full h-[36px] px-[12px] text-[14px] border border-[#d1d5dc] dark:border-border rounded-[8px] focus:border-blue-400 focus:ring-0 outline-none tracking-[-0.1504px] placeholder:text-[rgba(10,10,10,0.35)]"
                     placeholder="Arrastra y deja hasta arriba el favorito"
                   />
                 </div>
                 <div className="flex flex-col gap-[6px]">
-                  <label className="font-medium text-[12px] leading-[16px] text-[#6a7282]">
-                    Opciones <span className="font-normal text-[#99a1af]">(mínimo 2)</span>:
+                  <label className="font-medium text-[12px] leading-[16px] text-[#6a7282] dark:text-muted-foreground">
+                    Opciones <span className="font-normal text-[#99a1af] dark:text-muted-foreground">(mínimo 2)</span>:
                   </label>
                   {question.opciones.map((option, optIndex) => (
                     <div key={optIndex} className="flex gap-2 items-center">
@@ -663,13 +663,13 @@ function DraggableQuestionCard({
                         type="text"
                         value={option}
                         onChange={(e) => updateOption(index, optIndex, e.target.value)}
-                        className="flex-1 h-[36px] px-[12px] text-[14px] border border-[#d1d5dc] rounded-[8px] focus:border-blue-400 focus:ring-0 outline-none tracking-[-0.1504px]"
+                        className="flex-1 h-[36px] px-[12px] text-[14px] border border-[#d1d5dc] dark:border-border rounded-[8px] focus:border-blue-400 focus:ring-0 outline-none tracking-[-0.1504px]"
                         placeholder={`Opción ${optIndex + 1}`}
                       />
                       {question.opciones.length > 2 && (
                         <button
                           onClick={() => removeOption(index, optIndex)}
-                          className="text-[#99a1af] hover:text-red-500 transition-colors p-1.5 rounded-[6px] hover:bg-red-50"
+                          className="text-[#99a1af] dark:text-muted-foreground hover:text-red-500 transition-colors p-1.5 rounded-[6px] hover:bg-red-50"
                         >
                           <X className="w-4 h-4" />
                         </button>
@@ -678,7 +678,7 @@ function DraggableQuestionCard({
                   ))}
                   <button
                     onClick={() => addOption(index)}
-                    className="h-[32px] rounded-[6px] border border-dashed border-[#d1d5dc] text-[#99a1af] hover:text-[#6a7282] hover:border-[#6a7282] transition-all text-[12px] font-medium flex items-center justify-center gap-2"
+                    className="h-[32px] rounded-[6px] border border-dashed border-[#d1d5dc] dark:border-border text-[#99a1af] dark:text-muted-foreground hover:text-[#6a7282] dark:text-muted-foreground hover:border-[#6a7282] transition-all text-[12px] font-medium flex items-center justify-center gap-2"
                   >
                     <Plus className="w-4 h-4" /> Agregar opción
                   </button>
@@ -690,13 +690,13 @@ function DraggableQuestionCard({
                 {/* Single/Multiple choice toggle for multiple-choice type */}
                 {question.tipo === 'multiple-choice' && (
                   <>
-                    <div className="flex items-center justify-between h-[36px] px-[12px] rounded-[8px] border border-[#d1d5dc] bg-[#f9fafb] mb-2">
+                    <div className="flex items-center justify-between h-[36px] px-[12px] rounded-[8px] border border-[#d1d5dc] dark:border-border bg-[#f9fafb] dark:bg-muted mb-2">
                       <div className="flex items-center gap-[8px]">
                         <CheckSquare className="w-[14px] h-[14px] shrink-0 text-[#6A7282]" />
-                        <span className="font-medium text-[13px] leading-[18px] text-[#364153] tracking-[-0.1px]">
+                        <span className="font-medium text-[13px] leading-[18px] text-[#364153] dark:text-foreground tracking-[-0.1px]">
                           Respuesta única
                         </span>
-                        <span className="text-[11px] text-[#99a1af]">
+                        <span className="text-[11px] text-[#99a1af] dark:text-muted-foreground">
                           — radio button vs checkbox
                         </span>
                       </div>
@@ -707,19 +707,19 @@ function DraggableQuestionCard({
                         }`}
                       >
                         <span
-                          className={`inline-block h-[14px] w-[14px] transform rounded-full bg-white shadow-sm transition-transform ${
+                          className={`inline-block h-[14px] w-[14px] transform rounded-full bg-white dark:bg-card shadow-sm transition-transform ${
                             question.respuesta_unica ? 'translate-x-[19px]' : 'translate-x-[3px]'
                           }`}
                         />
                       </button>
                     </div>
-                    <div className="flex items-center justify-between h-[36px] px-[12px] rounded-[8px] border border-[#d1d5dc] bg-[#f9fafb] mb-2">
+                    <div className="flex items-center justify-between h-[36px] px-[12px] rounded-[8px] border border-[#d1d5dc] dark:border-border bg-[#f9fafb] dark:bg-muted mb-2">
                       <div className="flex items-center gap-[8px]">
                         <LayoutList className="w-[14px] h-[14px] shrink-0 text-[#6A7282]" />
-                        <span className="font-medium text-[13px] leading-[18px] text-[#364153] tracking-[-0.1px]">
+                        <span className="font-medium text-[13px] leading-[18px] text-[#364153] dark:text-foreground tracking-[-0.1px]">
                           Mostrar como dropdown
                         </span>
-                        <span className="text-[11px] text-[#99a1af]">
+                        <span className="text-[11px] text-[#99a1af] dark:text-muted-foreground">
                           — menú desplegable vs lista
                         </span>
                       </div>
@@ -730,7 +730,7 @@ function DraggableQuestionCard({
                         }`}
                       >
                         <span
-                          className={`inline-block h-[14px] w-[14px] transform rounded-full bg-white shadow-sm transition-transform ${
+                          className={`inline-block h-[14px] w-[14px] transform rounded-full bg-white dark:bg-card shadow-sm transition-transform ${
                             question.usar_dropdown ? 'translate-x-[19px]' : 'translate-x-[3px]'
                           }`}
                         />
@@ -741,13 +741,13 @@ function DraggableQuestionCard({
 
                 {/* Slider/Numbers toggle for NPS type */}
                 {question.tipo === 'nps' && (
-                  <div className="flex items-center justify-between h-[36px] px-[12px] rounded-[8px] border border-[#d1d5dc] bg-[#f9fafb] mb-2">
+                  <div className="flex items-center justify-between h-[36px] px-[12px] rounded-[8px] border border-[#d1d5dc] dark:border-border bg-[#f9fafb] dark:bg-muted mb-2">
                     <div className="flex items-center gap-[8px]">
                       <Gauge className="w-[14px] h-[14px] shrink-0 text-[#6A7282]" />
-                      <span className="font-medium text-[13px] leading-[18px] text-[#364153] tracking-[-0.1px]">
+                      <span className="font-medium text-[13px] leading-[18px] text-[#364153] dark:text-foreground tracking-[-0.1px]">
                         Usar slider
                       </span>
-                      <span className="text-[11px] text-[#99a1af]">
+                      <span className="text-[11px] text-[#99a1af] dark:text-muted-foreground">
                         — deslizador vs botones numéricos
                       </span>
                     </div>
@@ -758,7 +758,7 @@ function DraggableQuestionCard({
                       }`}
                     >
                       <span
-                        className={`inline-block h-[14px] w-[14px] transform rounded-full bg-white shadow-sm transition-transform ${
+                        className={`inline-block h-[14px] w-[14px] transform rounded-full bg-white dark:bg-card shadow-sm transition-transform ${
                           question.usar_slider ? 'translate-x-[19px]' : 'translate-x-[3px]'
                         }`}
                       />
@@ -767,8 +767,8 @@ function DraggableQuestionCard({
                 )}
 
                 {question.tipo !== 'nps' && (
-                  <label className="font-medium text-[12px] leading-[16px] text-[#6a7282]">
-                    Opciones{question.tipo === 'multiple-choice' && <span className="font-normal text-[#99a1af]"> (mínimo 2)</span>}:
+                  <label className="font-medium text-[12px] leading-[16px] text-[#6a7282] dark:text-muted-foreground">
+                    Opciones{question.tipo === 'multiple-choice' && <span className="font-normal text-[#99a1af] dark:text-muted-foreground"> (mínimo 2)</span>}:
                   </label>
                 )}
                 {question.tipo !== 'nps' && question.opciones.map((option, optIndex) => (
@@ -777,14 +777,14 @@ function DraggableQuestionCard({
                       type="text"
                       value={option}
                       onChange={(e) => updateOption(index, optIndex, e.target.value)}
-                      className="flex-1 h-[36px] px-[12px] text-[14px] border border-[#d1d5dc] rounded-[8px] focus:border-blue-400 focus:ring-0 outline-none tracking-[-0.1504px]"
+                      className="flex-1 h-[36px] px-[12px] text-[14px] border border-[#d1d5dc] dark:border-border rounded-[8px] focus:border-blue-400 focus:ring-0 outline-none tracking-[-0.1504px]"
                       placeholder={`Opción ${optIndex + 1}`}
                     />
-                    <span className="text-[11px] text-[#99a1af] font-mono shrink-0">[{optIndex}]</span>
+                    <span className="text-[11px] text-[#99a1af] dark:text-muted-foreground font-mono shrink-0">[{optIndex}]</span>
                     {question.tipo === 'multiple-choice' && question.opciones.length > 2 && (
                       <button
                         onClick={() => removeOption(index, optIndex)}
-                        className="text-[#99a1af] hover:text-red-500 transition-colors p-1.5 rounded-[6px] hover:bg-red-50"
+                        className="text-[#99a1af] dark:text-muted-foreground hover:text-red-500 transition-colors p-1.5 rounded-[6px] hover:bg-red-50"
                         title="Eliminar opción"
                       >
                         <X className="w-4 h-4" />
@@ -795,7 +795,7 @@ function DraggableQuestionCard({
                 {question.tipo === 'multiple-choice' && (
                   <button
                     onClick={() => addOption(index)}
-                    className="flex items-center gap-2 text-[#99a1af] hover:text-blue-500 transition-colors p-1.5 rounded-[6px] hover:bg-blue-50 w-full justify-center border border-dashed border-[#d1d5dc] hover:border-blue-400"
+                    className="flex items-center gap-2 text-[#99a1af] dark:text-muted-foreground hover:text-blue-500 transition-colors p-1.5 rounded-[6px] hover:bg-blue-50 w-full justify-center border border-dashed border-[#d1d5dc] dark:border-border hover:border-blue-400"
                     title="Agregar opción"
                   >
                     <Plus className="w-4 h-4" />
@@ -811,18 +811,18 @@ function DraggableQuestionCard({
         {showLogicModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30" onClick={() => setShowLogicModal(false)}>
             <div
-              className="bg-white rounded-[12px] shadow-[0_8px_32px_rgba(0,0,0,0.12)] w-[520px] max-h-[600px] overflow-hidden"
+              className="bg-white dark:bg-card rounded-[12px] shadow-[0_8px_32px_rgba(0,0,0,0.12)] w-[520px] max-h-[600px] overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e7eb]">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e7eb] dark:border-border">
                 <div className="flex items-center gap-2">
                   <GitBranch className="w-5 h-5 text-[#8C59FE]" />
-                  <h3 className="font-semibold text-[16px] text-[#101828]">Lógica Condicional</h3>
+                  <h3 className="font-semibold text-[16px] text-[#101828] dark:text-foreground">Lógica Condicional</h3>
                 </div>
                 <button
                   onClick={() => setShowLogicModal(false)}
-                  className="text-[#99a1af] hover:text-[#364153] transition-colors"
+                  className="text-[#99a1af] dark:text-muted-foreground hover:text-[#364153] dark:text-foreground transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -835,12 +835,12 @@ function DraggableQuestionCard({
                 {question.tipo === 'text' ? (() => {
                   const TEXT_CONDITIONS: { condition: TextCondition; label: string; description: string; color: string }[] = [
                     { condition: 'answered', label: 'Respondió', description: 'Escribió cualquier texto', color: 'bg-green-50 border-green-200 text-green-700' },
-                    { condition: 'skipped',  label: 'Omitió',    description: 'No escribió nada (pregunta opcional)', color: 'bg-gray-50 border-gray-200 text-gray-600' },
+                    { condition: 'skipped',  label: 'Omitió',    description: 'No escribió nada (pregunta opcional)', color: 'bg-gray-50 dark:bg-background border-gray-200 dark:border-border text-gray-600 dark:text-muted-foreground' },
                   ];
 
                   return (
                     <>
-                      <p className="text-[13px] text-[#6a7282] mb-4">
+                      <p className="text-[13px] text-[#6a7282] dark:text-muted-foreground mb-4">
                         Define a qué pregunta saltar según si el usuario respondió o dejó vacía la pregunta.
                       </p>
                       {!question.opcional && (
@@ -862,14 +862,14 @@ function DraggableQuestionCard({
                               className={`p-3 rounded-[8px] border transition-all ${
                                 existingRule
                                   ? 'bg-gradient-to-r from-[#597AFF]/5 to-[#8C59FE]/5 border-[#8C59FE]/30'
-                                  : 'bg-[#f9fafb] border-[#e5e7eb]'
+                                  : 'bg-[#f9fafb] dark:bg-muted border-[#e5e7eb] dark:border-border'
                               }`}
                             >
                               <div className="flex items-center gap-2 mb-2">
                                 <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${color}`}>
                                   {label}
                                 </span>
-                                <span className="text-[12px] text-[#6a7282]">{description}</span>
+                                <span className="text-[12px] text-[#6a7282] dark:text-muted-foreground">{description}</span>
                                 {existingRule && (isEndSurvey || targetQ) && (
                                   <span className="text-[10px] text-[#8C59FE] font-medium flex items-center gap-1">
                                     <ArrowRight className="w-3 h-3" />
@@ -887,7 +887,7 @@ function DraggableQuestionCard({
                                   if (e.target.value) newLogic.push({ condition, jump_to_question_id: e.target.value });
                                   updateTextLogic(index, newLogic);
                                 }}
-                                className="w-full h-[32px] px-3 text-[13px] border border-[#d1d5dc] rounded-[6px] bg-white focus:border-[#8C59FE] focus:ring-0 outline-none"
+                                className="w-full h-[32px] px-3 text-[13px] border border-[#d1d5dc] dark:border-border rounded-[6px] bg-white dark:bg-card focus:border-[#8C59FE] focus:ring-0 outline-none"
                               >
                                 <option value="">Sin lógica (continuar normalmente)</option>
                                 <option value="END_SURVEY">🏁 Finalizar formulario (enviar respuestas)</option>
@@ -923,7 +923,7 @@ function DraggableQuestionCard({
 
                   return (
                     <>
-                      <p className="text-[13px] text-[#6a7282] mb-4">
+                      <p className="text-[13px] text-[#6a7282] dark:text-muted-foreground mb-4">
                         Define a qué pregunta saltar según el grupo NPS seleccionado.
                       </p>
                       <div className="space-y-3">
@@ -940,14 +940,14 @@ function DraggableQuestionCard({
                               className={`p-3 rounded-[8px] border transition-all ${
                                 existingRule
                                   ? 'bg-gradient-to-r from-[#597AFF]/5 to-[#8C59FE]/5 border-[#8C59FE]/30'
-                                  : 'bg-[#f9fafb] border-[#e5e7eb]'
+                                  : 'bg-[#f9fafb] dark:bg-muted border-[#e5e7eb] dark:border-border'
                               }`}
                             >
                               <div className="flex items-center gap-2 mb-2">
                                 <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${color}`}>
                                   {range}
                                 </span>
-                                <span className="text-[13px] font-medium text-[#364153]">{label}</span>
+                                <span className="text-[13px] font-medium text-[#364153] dark:text-foreground">{label}</span>
                                 {existingRule && (isEndSurvey || targetQ) && (
                                   <span className="text-[10px] text-[#8C59FE] font-medium flex items-center gap-1">
                                     <ArrowRight className="w-3 h-3" />
@@ -967,7 +967,7 @@ function DraggableQuestionCard({
                                   }
                                   updateNPSGroupLogic(index, newLogic);
                                 }}
-                                className="w-full h-[32px] px-3 text-[13px] border border-[#d1d5dc] rounded-[6px] bg-white focus:border-[#8C59FE] focus:ring-0 outline-none"
+                                className="w-full h-[32px] px-3 text-[13px] border border-[#d1d5dc] dark:border-border rounded-[6px] bg-white dark:bg-card focus:border-[#8C59FE] focus:ring-0 outline-none"
                               >
                                 <option value="">Sin lógica (continuar normalmente)</option>
                                 <option value="END_SURVEY">🏁 Finalizar formulario (enviar respuestas)</option>
@@ -997,7 +997,7 @@ function DraggableQuestionCard({
                 })() : (
                   /* ── Standard conditional logic (multiple-choice, likert, csat) ── */
                   <>
-                    <p className="text-[13px] text-[#6a7282] mb-4">
+                    <p className="text-[13px] text-[#6a7282] dark:text-muted-foreground mb-4">
                       Define a qué pregunta saltar cuando se selecciona una opción específica.
                     </p>
 
@@ -1036,7 +1036,7 @@ function DraggableQuestionCard({
                                   const isInvalid = !isEndSurvey && (!targetQ || targetIndex <= index);
                                   return (
                                     <div key={idx} className={`text-[11px] flex items-center gap-1 ${isInvalid ? 'text-red-700' : ''}`}>
-                                      <span className="font-mono bg-white px-1.5 py-0.5 rounded">[{logic.option_index}]</span>
+                                      <span className="font-mono bg-white dark:bg-card px-1.5 py-0.5 rounded">[{logic.option_index}]</span>
                                       <span className="font-medium">{optionName}</span>
                                       <ArrowRight className="w-3 h-3 mx-1" />
                                       <span>
@@ -1069,13 +1069,13 @@ function DraggableQuestionCard({
                             className={`flex items-center gap-3 p-3 rounded-[8px] border transition-all ${
                               existingLogic
                                 ? 'bg-gradient-to-r from-[#597AFF]/5 to-[#8C59FE]/5 border-[#8C59FE]/30'
-                                : 'bg-[#f9fafb] border-[#e5e7eb]'
+                                : 'bg-[#f9fafb] dark:bg-muted border-[#e5e7eb] dark:border-border'
                             }`}
                           >
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
-                                <span className="text-[11px] font-mono text-[#99a1af] bg-white px-2 py-0.5 rounded">[{optIndex}]</span>
-                                <span className="text-[13px] font-medium text-[#364153]">{option}</span>
+                                <span className="text-[11px] font-mono text-[#99a1af] dark:text-muted-foreground bg-white dark:bg-card px-2 py-0.5 rounded">[{optIndex}]</span>
+                                <span className="text-[13px] font-medium text-[#364153] dark:text-foreground">{option}</span>
                                 {existingLogic && (isEndSurvey || targetQuestion) && (
                                   <span className="text-[10px] text-[#8C59FE] font-medium flex items-center gap-1">
                                     <ArrowRight className="w-3 h-3" />
@@ -1093,7 +1093,7 @@ function DraggableQuestionCard({
                                   if (e.target.value) newLogic.push({ option_index: optIndex, jump_to_question_id: e.target.value });
                                   updateConditionalLogic(index, newLogic);
                                 }}
-                                className="w-full h-[32px] px-3 text-[13px] border border-[#d1d5dc] rounded-[6px] bg-white focus:border-[#8C59FE] focus:ring-0 outline-none"
+                                className="w-full h-[32px] px-3 text-[13px] border border-[#d1d5dc] dark:border-border rounded-[6px] bg-white dark:bg-card focus:border-[#8C59FE] focus:ring-0 outline-none"
                               >
                                 <option value="">Sin lógica (continuar normalmente)</option>
                                 <option value="END_SURVEY">🏁 Finalizar formulario (enviar respuestas)</option>
@@ -1118,7 +1118,7 @@ function DraggableQuestionCard({
                     </div>
 
                     {question.opciones.length === 0 && (
-                      <div className="text-center py-6 text-[13px] text-[#99a1af]">
+                      <div className="text-center py-6 text-[13px] text-[#99a1af] dark:text-muted-foreground">
                         Agrega opciones a esta pregunta para configurar lógica condicional.
                       </div>
                     )}
@@ -1127,7 +1127,7 @@ function DraggableQuestionCard({
               </div>
 
               {/* Modal Footer */}
-              <div className="flex items-center justify-between px-6 py-4 border-t border-[#e5e7eb]">
+              <div className="flex items-center justify-between px-6 py-4 border-t border-[#e5e7eb] dark:border-border">
                 <button
                   onClick={() => {
                     if (question.tipo === 'text') {
@@ -1190,7 +1190,7 @@ function DraggableQuestionCard({
                       alert('No hay reglas de lógica condicional configuradas.');
                     }
                   }}
-                  className="px-3 py-2 text-[12px] font-medium text-[#6a7282] bg-[#f3f4f6] rounded-[8px] hover:bg-[#e5e7eb] transition-colors"
+                  className="px-3 py-2 text-[12px] font-medium text-[#6a7282] dark:text-muted-foreground bg-[#f3f4f6] dark:bg-muted rounded-[8px] hover:bg-[#e5e7eb] transition-colors"
                 >
                   🔍 Verificar y Limpiar
                 </button>
@@ -1494,7 +1494,7 @@ export function SurveyBuilder() {
     { type: 'csat',            icon: MessageCircle,label: 'CSAT',                color: 'bg-green-50 text-green-600', defaultOptions: ['😞', '😕', '😐', '🙂', '😄'] },
     { type: 'nps',             icon: Gauge,        label: 'NPS (Net Promoter)',  color: 'bg-teal-50 text-teal-600', defaultOptions: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'] },
     { type: 'multiple-choice', icon: CheckSquare,  label: 'Opción Múltiple',     color: 'bg-orange-50 text-orange-600', defaultOptions: ['Opción 1', 'Opción 2', 'Opción 3'] },
-    { type: 'text',            icon: MessageCircle,label: 'Pregunta abierta',    color: 'bg-gray-50 text-gray-600',  defaultOptions: [] },
+    { type: 'text',            icon: MessageCircle,label: 'Pregunta abierta',    color: 'bg-gray-50 dark:bg-background text-gray-600 dark:text-muted-foreground',  defaultOptions: [] },
     { type: 'separator',       icon: Minus,        label: 'Separador',           color: 'bg-slate-50 text-slate-600', defaultOptions: [] },
     { type: 'score-matrix',    icon: Grid3x3,      label: 'Score Matrix',        color: 'bg-yellow-50 text-yellow-600', defaultOptions: [] },
     { type: 'ranking',         icon: ArrowUpDown,  label: 'Ranking',             color: 'bg-pink-50 text-pink-600', defaultOptions: ['Opción 1', 'Opción 2', 'Opción 3'] },
@@ -1766,9 +1766,9 @@ export function SurveyBuilder() {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="flex flex-col h-screen bg-gray-50">
+      <div className="flex flex-col h-screen bg-gray-50 dark:bg-background">
         {/* ── Top Bar ── */}
-        <header className="bg-white border-b border-gray-200 px-6 py-4">
+        <header className="bg-white dark:bg-card border-b border-gray-200 dark:border-border px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div>
@@ -1777,11 +1777,11 @@ export function SurveyBuilder() {
                     type="text"
                     value={encuestaData.nombre_encuesta}
                     onChange={(e) => setEncuestaData({ ...encuestaData, nombre_encuesta: e.target.value, updated_at: new Date().toISOString() })}
-                    className="text-xl font-semibold text-gray-900 border-0 border-b-2 border-transparent hover:border-gray-300 focus:border-blue-500 focus:ring-0 px-2 py-1"
+                    className="text-xl font-semibold text-gray-900 dark:text-foreground border-0 border-b-2 border-transparent hover:border-gray-300 dark:hover:border-border focus:border-blue-500 focus:ring-0 px-2 py-1"
                     placeholder="Nombre de la encuesta"
                   />
                   {isSaving && (
-                    <span className="text-xs text-gray-500 flex items-center gap-1">
+                    <span className="text-xs text-gray-500 dark:text-muted-foreground flex items-center gap-1">
                       <Loader className="w-3 h-3 animate-spin" /> Guardando...
                     </span>
                   )}
@@ -1791,11 +1791,11 @@ export function SurveyBuilder() {
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-gray-500 font-mono">Document ID: {encuestaData.id}</p>
+                <p className="text-xs text-gray-500 dark:text-muted-foreground font-mono">Document ID: {encuestaData.id}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <button onClick={() => navigate(`/survey/${id}`)} className="flex items-center gap-2 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+              <button onClick={() => navigate(`/survey/${id}`)} className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-muted-foreground bg-white dark:bg-card border border-gray-300 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-accent">
                 <Eye className="w-4 h-4" /> Preview
               </button>
               <button
@@ -1853,9 +1853,9 @@ export function SurveyBuilder() {
 
         <div className="flex flex-1 overflow-hidden">
           {/* ── Left Sidebar ── */}
-          <aside className="w-72 bg-white border-r border-gray-200 overflow-auto">
+          <aside className="w-72 bg-white dark:bg-card border-r border-gray-200 dark:border-border overflow-auto">
             <div className="p-6">
-              <h3 className="text-sm font-semibold text-gray-900 mb-4">Question Types</h3>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-foreground mb-4">Question Types</h3>
               <div className="space-y-2">
                 {questionTypes.map((qt) => (
                   <button key={qt.type} onClick={() => addQuestion(qt.type)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg ${qt.color} hover:opacity-80 transition-opacity`}>
@@ -1866,7 +1866,7 @@ export function SurveyBuilder() {
               </div>
 
               <div className="mt-6">
-                <h3 className="text-sm font-semibold text-gray-900 mb-4">Agrupación</h3>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-foreground mb-4">Agrupación</h3>
                 <button
                   onClick={() => {
                     const sectionId = `section_${Date.now()}`;
@@ -1886,12 +1886,12 @@ export function SurveyBuilder() {
                   <Layers className="w-5 h-5 text-[#8C59FE]" />
                   <span className="text-sm font-medium text-[#8C59FE]">Crear Sección</span>
                 </button>
-                <p className="text-xs text-gray-500 mt-2 px-1">
+                <p className="text-xs text-gray-500 dark:text-muted-foreground mt-2 px-1">
                   Agrupa preguntas con lógica condicional
                 </p>
               </div>
 
-              <div className="mt-6 p-4 bg-gray-50 rounded-lg text-xs text-gray-600" style={{ display: 'none' }}>
+              <div className="mt-6 p-4 bg-gray-50 dark:bg-background rounded-lg text-xs text-gray-600 dark:text-muted-foreground" style={{ display: 'none' }}>
                 <p className="font-semibold mb-2">Estructura de Datos:</p>
                 <code className="block font-mono text-[10px] leading-relaxed">
                   /encuestas/{'{id}'}<br/>
@@ -1909,8 +1909,8 @@ export function SurveyBuilder() {
             <div className="flex flex-col gap-[40px] items-start pt-[32px] px-[32px] pb-[32px] max-w-3xl mx-auto">
 
               {/* Welcome screen card */}
-              <div className="bg-white rounded-[10px] relative w-full shrink-0">
-                <div aria-hidden="true" className="absolute border border-[#e5e7eb] border-solid inset-0 pointer-events-none rounded-[10px]" />
+              <div className="bg-white dark:bg-card rounded-[10px] relative w-full shrink-0">
+                <div aria-hidden="true" className="absolute border border-[#e5e7eb] dark:border-border border-solid inset-0 pointer-events-none rounded-[10px]" />
                 <div className="flex flex-col gap-[16px] items-start p-[25px] relative w-full">
                   <div className="flex gap-[8px] h-[20px] items-center w-full shrink-0">
                     <div className="relative shrink-0 size-[20px]">
@@ -1920,29 +1920,29 @@ export function SurveyBuilder() {
                         <path d="M17.5 12.5L14.9283 9.92833C14.6158 9.61588 14.1919 9.44036 13.75 9.44036C13.3081 9.44036 12.8842 9.61588 12.5717 9.92833L5 17.5" stroke="#6A7282" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
                       </svg>
                     </div>
-                    <h3 className="font-semibold text-[14px] leading-[20px] text-[#101828] tracking-[-0.1504px]">Pantalla de Bienvenida</h3>
+                    <h3 className="font-semibold text-[14px] leading-[20px] text-[#101828] dark:text-foreground tracking-[-0.1504px]">Pantalla de Bienvenida</h3>
                   </div>
 
                   <div className="flex flex-col gap-[16px] items-start w-full shrink-0">
                     {/* Título */}
                     <div className="flex flex-col gap-[8px] items-start w-full shrink-0">
-                      <label className="block font-medium text-[14px] leading-[20px] text-[#364153] tracking-[-0.1504px]">Título</label>
+                      <label className="block font-medium text-[14px] leading-[20px] text-[#364153] dark:text-foreground tracking-[-0.1504px]">Título</label>
                       <input
                         type="text"
                         value={encuestaData.pantalla_bienvenida.titulo}
                         onChange={(e) => setEncuestaData({ ...encuestaData, pantalla_bienvenida: { ...encuestaData.pantalla_bienvenida, titulo: e.target.value } })}
-                        className="w-full h-[42px] px-[16px] py-[8px] rounded-[10px] text-[16px] text-[rgba(10,10,10,0.8)] tracking-[-0.3125px] outline-none border border-[#d1d5dc] focus:border-blue-400 placeholder:text-[rgba(10,10,10,0.5)]"
+                        className="w-full h-[42px] px-[16px] py-[8px] rounded-[10px] text-[16px] text-[rgba(10,10,10,0.8)] tracking-[-0.3125px] outline-none border border-[#d1d5dc] dark:border-border focus:border-blue-400 placeholder:text-[rgba(10,10,10,0.5)]"
                         placeholder="Bienvenido a Nuestra Encuesta"
                       />
                     </div>
 
                     {/* Descripción */}
                     <div className="flex flex-col gap-[8px] items-start w-full shrink-0">
-                      <label className="block font-medium text-[14px] leading-[20px] text-[#364153] tracking-[-0.1504px]">Descripción</label>
+                      <label className="block font-medium text-[14px] leading-[20px] text-[#364153] dark:text-foreground tracking-[-0.1504px]">Descripción</label>
                       <textarea
                         value={encuestaData.pantalla_bienvenida.descripcion}
                         onChange={(e) => setEncuestaData({ ...encuestaData, pantalla_bienvenida: { ...encuestaData.pantalla_bienvenida, descripcion: e.target.value } })}
-                        className="w-full h-[90px] px-[16px] py-[8px] rounded-[10px] text-[16px] text-[rgba(10,10,10,0.8)] tracking-[-0.3125px] outline-none border border-[#d1d5dc] resize-none focus:border-blue-400 placeholder:text-[rgba(10,10,10,0.5)]"
+                        className="w-full h-[90px] px-[16px] py-[8px] rounded-[10px] text-[16px] text-[rgba(10,10,10,0.8)] tracking-[-0.3125px] outline-none border border-[#d1d5dc] dark:border-border resize-none focus:border-blue-400 placeholder:text-[rgba(10,10,10,0.5)]"
                         placeholder="Enter description..."
                       />
                     </div>
@@ -1950,13 +1950,13 @@ export function SurveyBuilder() {
                     {/* ── Imagen de fondo ───────────────────────────── */}
                     <div className="flex flex-col gap-[8px] items-start w-full shrink-0">
                       <div className="flex items-center justify-between w-full">
-                        <label className="block font-medium text-[14px] leading-[20px] text-[#364153] tracking-[-0.1504px]">Imagen de fondo</label>
+                        <label className="block font-medium text-[14px] leading-[20px] text-[#364153] dark:text-foreground tracking-[-0.1504px]">Imagen de fondo</label>
                         <button
                           type="button"
                           onClick={() => setEncuestaData((prev) => ({ ...prev, pantalla_bienvenida: { ...prev.pantalla_bienvenida, imagen_fondo_enabled: !(prev.pantalla_bienvenida.imagen_fondo_enabled ?? true) } }))}
                           className={`relative inline-flex h-[22px] w-[40px] items-center rounded-full transition-colors shrink-0 ${(encuestaData.pantalla_bienvenida.imagen_fondo_enabled ?? true) ? 'bg-[#8C59FE]' : 'bg-[#D1D5DC]'}`}
                         >
-                          <span className={`inline-block size-[16px] transform rounded-full bg-white shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.1)] transition-transform ${(encuestaData.pantalla_bienvenida.imagen_fondo_enabled ?? true) ? 'translate-x-[20px]' : 'translate-x-[2px]'}`} />
+                          <span className={`inline-block size-[16px] transform rounded-full bg-white dark:bg-card shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.1)] transition-transform ${(encuestaData.pantalla_bienvenida.imagen_fondo_enabled ?? true) ? 'translate-x-[20px]' : 'translate-x-[2px]'}`} />
                         </button>
                       </div>
                       {(encuestaData.pantalla_bienvenida.imagen_fondo_enabled ?? true) && (
@@ -1964,7 +1964,7 @@ export function SurveyBuilder() {
                           <input type="file" ref={fileInputRef} onChange={handleImageUpload} className="hidden" accept="image/jpeg,image/png" />
                           <div
                             onClick={() => !isUploadingImage && fileInputRef.current?.click()}
-                            className={`h-[128px] relative rounded-[10px] w-full shrink-0 overflow-hidden flex items-center justify-center transition-colors ${isUploadingImage ? 'border-2 border-blue-300 cursor-wait' : 'border-2 border-[#d1d5dc] hover:border-blue-400 cursor-pointer'}`}
+                            className={`h-[128px] relative rounded-[10px] w-full shrink-0 overflow-hidden flex items-center justify-center transition-colors ${isUploadingImage ? 'border-2 border-blue-300 cursor-wait' : 'border-2 border-[#d1d5dc] dark:border-border hover:border-blue-400 cursor-pointer'}`}
                           >
                             {encuestaData.pantalla_bienvenida.imagen_url && !isUploadingImage && (
                               <img src={encuestaData.pantalla_bienvenida.imagen_url} alt="Imagen de fondo" className="absolute inset-0 w-full h-full object-cover opacity-60" />
@@ -1975,7 +1975,7 @@ export function SurveyBuilder() {
                               ) : encuestaData.pantalla_bienvenida.imagen_url ? (
                                 <><div className="relative size-[32px] mb-[8px]"><svg className="absolute block size-full" fill="none" viewBox="0 0 32 32"><path d="M25.3333 4H6.66667C5.19391 4 4 5.19391 4 6.66667V25.3333C4 26.8061 5.19391 28 6.66667 28H25.3333C26.8061 28 28 26.8061 28 25.3333V6.66667C28 5.19391 26.8061 4 25.3333 4Z" stroke="white" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /><path d="M12 14.6667C13.4728 14.6667 14.6667 13.4728 14.6667 12C14.6667 10.5272 13.4728 9.33333 12 9.33333C10.5272 9.33333 9.33333 10.5272 9.33333 12C9.33333 13.4728 10.5272 14.6667 12 14.6667Z" stroke="white" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /><path d="M28 20L23.8853 15.8853C23.3853 15.3854 22.7071 15.1046 22 15.1046C21.2929 15.1046 20.6147 15.3854 20.1147 15.8853L8 28" stroke="white" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /></svg></div><p className="text-[14px] text-white drop-shadow font-medium">Cambiar imagen</p></>
                               ) : (
-                                <><div className="relative size-[32px] mb-[8px]"><svg className="absolute block size-full" fill="none" viewBox="0 0 32 32"><path d="M25.3333 4H6.66667C5.19391 4 4 5.19391 4 6.66667V25.3333C4 26.8061 5.19391 28 6.66667 28H25.3333C26.8061 28 28 26.8061 28 25.3333V6.66667C28 5.19391 26.8061 4 25.3333 4Z" stroke="#99A1AF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /><path d="M12 14.6667C13.4728 14.6667 14.6667 13.4728 14.6667 12C14.6667 10.5272 13.4728 9.33333 12 9.33333C10.5272 9.33333 9.33333 10.5272 9.33333 12C9.33333 13.4728 10.5272 14.6667 12 14.6667Z" stroke="#99A1AF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /><path d="M28 20L23.8853 15.8853C23.3853 15.3854 22.7071 15.1046 22 15.1046C21.2929 15.1046 20.6147 15.3854 20.1147 15.8853L8 28" stroke="#99A1AF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /></svg></div><p className="font-normal leading-[20px] text-[#6a7282] text-[14px] text-center tracking-[-0.3008px]">Recomendado 1080x1900 px</p><p className="font-normal leading-[18px] text-[#99a1af] text-[12px] text-center mt-px">JPG o PNG · Máx. 200 KB</p></>
+                                <><div className="relative size-[32px] mb-[8px]"><svg className="absolute block size-full" fill="none" viewBox="0 0 32 32"><path d="M25.3333 4H6.66667C5.19391 4 4 5.19391 4 6.66667V25.3333C4 26.8061 5.19391 28 6.66667 28H25.3333C26.8061 28 28 26.8061 28 25.3333V6.66667C28 5.19391 26.8061 4 25.3333 4Z" stroke="#99A1AF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /><path d="M12 14.6667C13.4728 14.6667 14.6667 13.4728 14.6667 12C14.6667 10.5272 13.4728 9.33333 12 9.33333C10.5272 9.33333 9.33333 10.5272 9.33333 12C9.33333 13.4728 10.5272 14.6667 12 14.6667Z" stroke="#99A1AF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /><path d="M28 20L23.8853 15.8853C23.3853 15.3854 22.7071 15.1046 22 15.1046C21.2929 15.1046 20.6147 15.3854 20.1147 15.8853L8 28" stroke="#99A1AF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /></svg></div><p className="font-normal leading-[20px] text-[#6a7282] dark:text-muted-foreground text-[14px] text-center tracking-[-0.3008px]">Recomendado 1080x1900 px</p><p className="font-normal leading-[18px] text-[#99a1af] dark:text-muted-foreground text-[12px] text-center mt-px">JPG o PNG · Máx. 200 KB</p></>
                               )}
                             </div>
                           </div>
@@ -1990,11 +1990,11 @@ export function SurveyBuilder() {
                     </div>
 
                     {/* ── Imagen Open Graph ─────────────────────────── */}
-                    <div className="relative shrink-0 w-full border-t border-[#EBEEF4] pt-[17px]">
+                    <div className="relative shrink-0 w-full border-t border-[#EBEEF4] dark:border-border pt-[17px]">
                       <div className="flex flex-col gap-[8px] items-start w-full">
                         <div className="flex items-center justify-between w-full">
                           <div>
-                            <p className="font-medium leading-[20px] text-[#364153] text-[14px] tracking-[-0.3008px]">Imagen Open Graph</p>
+                            <p className="font-medium leading-[20px] text-[#364153] dark:text-foreground text-[14px] tracking-[-0.3008px]">Imagen Open Graph</p>
                             <p className="font-normal leading-[16px] text-[#81878e] text-[12px]">Vista previa en redes sociales y mensajería</p>
                           </div>
                           <button
@@ -2002,7 +2002,7 @@ export function SurveyBuilder() {
                             onClick={() => setEncuestaData((prev) => ({ ...prev, pantalla_bienvenida: { ...prev.pantalla_bienvenida, opengraph_enabled: !(prev.pantalla_bienvenida.opengraph_enabled ?? true) } }))}
                             className={`relative inline-flex h-[22px] w-[40px] items-center rounded-full transition-colors shrink-0 ${(encuestaData.pantalla_bienvenida.opengraph_enabled ?? true) ? 'bg-[#8C59FE]' : 'bg-[#D1D5DC]'}`}
                           >
-                            <span className={`inline-block size-[16px] transform rounded-full bg-white shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.1)] transition-transform ${(encuestaData.pantalla_bienvenida.opengraph_enabled ?? true) ? 'translate-x-[20px]' : 'translate-x-[2px]'}`} />
+                            <span className={`inline-block size-[16px] transform rounded-full bg-white dark:bg-card shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.1)] transition-transform ${(encuestaData.pantalla_bienvenida.opengraph_enabled ?? true) ? 'translate-x-[20px]' : 'translate-x-[2px]'}`} />
                           </button>
                         </div>
                         {(encuestaData.pantalla_bienvenida.opengraph_enabled ?? true) && (
@@ -2010,7 +2010,7 @@ export function SurveyBuilder() {
                             <input type="file" ref={fileInputOGRef} onChange={handleOGImageUpload} className="hidden" accept="image/jpeg,image/png" />
                             <div
                               onClick={() => !isUploadingOGImage && fileInputOGRef.current?.click()}
-                              className={`h-[128px] relative rounded-[10px] w-full shrink-0 overflow-hidden flex items-center justify-center transition-colors ${isUploadingOGImage ? 'border-2 border-blue-300 cursor-wait' : 'border-2 border-[#d1d5dc] hover:border-blue-400 cursor-pointer'}`}
+                              className={`h-[128px] relative rounded-[10px] w-full shrink-0 overflow-hidden flex items-center justify-center transition-colors ${isUploadingOGImage ? 'border-2 border-blue-300 cursor-wait' : 'border-2 border-[#d1d5dc] dark:border-border hover:border-blue-400 cursor-pointer'}`}
                             >
                               {encuestaData.pantalla_bienvenida.opengraph_url && !isUploadingOGImage && (
                                 <img src={encuestaData.pantalla_bienvenida.opengraph_url} alt="Open Graph" className="absolute inset-0 w-full h-full object-cover opacity-60" />
@@ -2021,7 +2021,7 @@ export function SurveyBuilder() {
                                 ) : encuestaData.pantalla_bienvenida.opengraph_url ? (
                                   <><div className="relative size-[32px] mb-[8px]"><svg className="absolute block size-full" fill="none" viewBox="0 0 32 32"><path d="M25.3333 4H6.66667C5.19391 4 4 5.19391 4 6.66667V25.3333C4 26.8061 5.19391 28 6.66667 28H25.3333C26.8061 28 28 26.8061 28 25.3333V6.66667C28 5.19391 26.8061 4 25.3333 4Z" stroke="white" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /><path d="M12 14.6667C13.4728 14.6667 14.6667 13.4728 14.6667 12C14.6667 10.5272 13.4728 9.33333 12 9.33333C10.5272 9.33333 9.33333 10.5272 9.33333 12C9.33333 13.4728 10.5272 14.6667 12 14.6667Z" stroke="white" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /><path d="M28 20L23.8853 15.8853C23.3853 15.3854 22.7071 15.1046 22 15.1046C21.2929 15.1046 20.6147 15.3854 20.1147 15.8853L8 28" stroke="white" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /></svg></div><p className="text-[14px] text-white drop-shadow font-medium">Cambiar imagen OG</p></>
                                 ) : (
-                                  <><div className="relative size-[32px] mb-[8px]"><svg className="absolute block size-full" fill="none" viewBox="0 0 32 32"><path d="M25.3333 4H6.66667C5.19391 4 4 5.19391 4 6.66667V25.3333C4 26.8061 5.19391 28 6.66667 28H25.3333C26.8061 28 28 26.8061 28 25.3333V6.66667C28 5.19391 26.8061 4 25.3333 4Z" stroke="#99A1AF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /><path d="M12 14.6667C13.4728 14.6667 14.6667 13.4728 14.6667 12C14.6667 10.5272 13.4728 9.33333 12 9.33333C10.5272 9.33333 9.33333 10.5272 9.33333 12C9.33333 13.4728 10.5272 14.6667 12 14.6667Z" stroke="#99A1AF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /><path d="M28 20L23.8853 15.8853C23.3853 15.3854 22.7071 15.1046 22 15.1046C21.2929 15.1046 20.6147 15.3854 20.1147 15.8853L8 28" stroke="#99A1AF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /></svg></div><p className="font-normal leading-[18px] text-[#6a7282] text-[13px] text-center tracking-[-0.0762px]">Recomendado 1200×630 px</p><p className="font-normal leading-[16.5px] text-[#99a1af] text-[11px] text-center mt-px">JPG o PNG · Máx. 200 KB</p></>
+                                  <><div className="relative size-[32px] mb-[8px]"><svg className="absolute block size-full" fill="none" viewBox="0 0 32 32"><path d="M25.3333 4H6.66667C5.19391 4 4 5.19391 4 6.66667V25.3333C4 26.8061 5.19391 28 6.66667 28H25.3333C26.8061 28 28 26.8061 28 25.3333V6.66667C28 5.19391 26.8061 4 25.3333 4Z" stroke="#99A1AF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /><path d="M12 14.6667C13.4728 14.6667 14.6667 13.4728 14.6667 12C14.6667 10.5272 13.4728 9.33333 12 9.33333C10.5272 9.33333 9.33333 10.5272 9.33333 12C9.33333 13.4728 10.5272 14.6667 12 14.6667Z" stroke="#99A1AF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /><path d="M28 20L23.8853 15.8853C23.3853 15.3854 22.7071 15.1046 22 15.1046C21.2929 15.1046 20.6147 15.3854 20.1147 15.8853L8 28" stroke="#99A1AF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /></svg></div><p className="font-normal leading-[18px] text-[#6a7282] dark:text-muted-foreground text-[13px] text-center tracking-[-0.0762px]">Recomendado 1200×630 px</p><p className="font-normal leading-[16.5px] text-[#99a1af] dark:text-muted-foreground text-[11px] text-center mt-px">JPG o PNG · Máx. 200 KB</p></>
                                 )}
                               </div>
                             </div>
@@ -2037,11 +2037,11 @@ export function SurveyBuilder() {
                     </div>
 
                     {/* ── Imagen Thumbnail de bienvenida ────────────── */}
-                    <div className="relative shrink-0 w-full border-t border-[#EBEEF4] pt-[17px]">
+                    <div className="relative shrink-0 w-full border-t border-[#EBEEF4] dark:border-border pt-[17px]">
                       <div className="flex flex-col gap-[8px] items-start w-full">
                         <div className="flex items-center justify-between w-full">
                           <div>
-                            <p className="font-medium leading-[20px] text-[#364153] text-[14px] tracking-[-0.3008px]">Imagen de bienvenida</p>
+                            <p className="font-medium leading-[20px] text-[#364153] dark:text-foreground text-[14px] tracking-[-0.3008px]">Imagen de bienvenida</p>
                             <p className="font-normal leading-[16px] text-[#81878e] text-[12px]">Se muestra junto al texto en desktop (dos columnas)</p>
                           </div>
                           <button
@@ -2049,7 +2049,7 @@ export function SurveyBuilder() {
                             onClick={() => setEncuestaData((prev) => ({ ...prev, pantalla_bienvenida: { ...prev.pantalla_bienvenida, thumbnail_enabled: !(prev.pantalla_bienvenida.thumbnail_enabled ?? false) } }))}
                             className={`relative inline-flex h-[22px] w-[40px] items-center rounded-full transition-colors shrink-0 ${(encuestaData.pantalla_bienvenida.thumbnail_enabled ?? false) ? 'bg-[#8C59FE]' : 'bg-[#D1D5DC]'}`}
                           >
-                            <span className={`inline-block size-[16px] transform rounded-full bg-white shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.1)] transition-transform ${(encuestaData.pantalla_bienvenida.thumbnail_enabled ?? false) ? 'translate-x-[20px]' : 'translate-x-[2px]'}`} />
+                            <span className={`inline-block size-[16px] transform rounded-full bg-white dark:bg-card shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.1)] transition-transform ${(encuestaData.pantalla_bienvenida.thumbnail_enabled ?? false) ? 'translate-x-[20px]' : 'translate-x-[2px]'}`} />
                           </button>
                         </div>
                         {(encuestaData.pantalla_bienvenida.thumbnail_enabled ?? false) && (
@@ -2057,7 +2057,7 @@ export function SurveyBuilder() {
                             <input type="file" ref={fileInputThumbnailRef} onChange={handleThumbnailImageUpload} className="hidden" accept="image/jpeg,image/png" />
                             <div
                               onClick={() => !isUploadingThumbnail && fileInputThumbnailRef.current?.click()}
-                              className={`h-[128px] relative rounded-[10px] w-full shrink-0 overflow-hidden flex items-center justify-center transition-colors ${isUploadingThumbnail ? 'border-2 border-blue-300 cursor-wait' : 'border-2 border-[#d1d5dc] hover:border-blue-400 cursor-pointer'}`}
+                              className={`h-[128px] relative rounded-[10px] w-full shrink-0 overflow-hidden flex items-center justify-center transition-colors ${isUploadingThumbnail ? 'border-2 border-blue-300 cursor-wait' : 'border-2 border-[#d1d5dc] dark:border-border hover:border-blue-400 cursor-pointer'}`}
                             >
                               {encuestaData.pantalla_bienvenida.thumbnail_url && !isUploadingThumbnail && (
                                 <img src={encuestaData.pantalla_bienvenida.thumbnail_url} alt="Thumbnail" className="absolute inset-0 w-full h-full object-cover opacity-60" />
@@ -2068,7 +2068,7 @@ export function SurveyBuilder() {
                                 ) : encuestaData.pantalla_bienvenida.thumbnail_url ? (
                                   <><div className="relative size-[32px] mb-[8px]"><svg className="absolute block size-full" fill="none" viewBox="0 0 32 32"><path d="M25.3333 4H6.66667C5.19391 4 4 5.19391 4 6.66667V25.3333C4 26.8061 5.19391 28 6.66667 28H25.3333C26.8061 28 28 26.8061 28 25.3333V6.66667C28 5.19391 26.8061 4 25.3333 4Z" stroke="white" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /><path d="M12 14.6667C13.4728 14.6667 14.6667 13.4728 14.6667 12C14.6667 10.5272 13.4728 9.33333 12 9.33333C10.5272 9.33333 9.33333 10.5272 9.33333 12C9.33333 13.4728 10.5272 14.6667 12 14.6667Z" stroke="white" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /><path d="M28 20L23.8853 15.8853C23.3853 15.3854 22.7071 15.1046 22 15.1046C21.2929 15.1046 20.6147 15.3854 20.1147 15.8853L8 28" stroke="white" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /></svg></div><p className="text-[14px] text-white drop-shadow font-medium">Cambiar imagen</p></>
                                 ) : (
-                                  <><div className="relative size-[32px] mb-[8px]"><svg className="absolute block size-full" fill="none" viewBox="0 0 32 32"><path d="M25.3333 4H6.66667C5.19391 4 4 5.19391 4 6.66667V25.3333C4 26.8061 5.19391 28 6.66667 28H25.3333C26.8061 28 28 26.8061 28 25.3333V6.66667C28 5.19391 26.8061 4 25.3333 4Z" stroke="#99A1AF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /><path d="M12 14.6667C13.4728 14.6667 14.6667 13.4728 14.6667 12C14.6667 10.5272 13.4728 9.33333 12 9.33333C10.5272 9.33333 9.33333 10.5272 9.33333 12C9.33333 13.4728 10.5272 14.6667 12 14.6667Z" stroke="#99A1AF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /><path d="M28 20L23.8853 15.8853C23.3853 15.3854 22.7071 15.1046 22 15.1046C21.2929 15.1046 20.6147 15.3854 20.1147 15.8853L8 28" stroke="#99A1AF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /></svg></div><p className="font-normal leading-[18px] text-[#6a7282] text-[13px] text-center tracking-[-0.0762px]">Recomendado 600×800 px</p><p className="font-normal leading-[16.5px] text-[#99a1af] text-[11px] text-center mt-px">JPG o PNG · Máx. 200 KB</p></>
+                                  <><div className="relative size-[32px] mb-[8px]"><svg className="absolute block size-full" fill="none" viewBox="0 0 32 32"><path d="M25.3333 4H6.66667C5.19391 4 4 5.19391 4 6.66667V25.3333C4 26.8061 5.19391 28 6.66667 28H25.3333C26.8061 28 28 26.8061 28 25.3333V6.66667C28 5.19391 26.8061 4 25.3333 4Z" stroke="#99A1AF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /><path d="M12 14.6667C13.4728 14.6667 14.6667 13.4728 14.6667 12C14.6667 10.5272 13.4728 9.33333 12 9.33333C10.5272 9.33333 9.33333 10.5272 9.33333 12C9.33333 13.4728 10.5272 14.6667 12 14.6667Z" stroke="#99A1AF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /><path d="M28 20L23.8853 15.8853C23.3853 15.3854 22.7071 15.1046 22 15.1046C21.2929 15.1046 20.6147 15.3854 20.1147 15.8853L8 28" stroke="#99A1AF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.66667" /></svg></div><p className="font-normal leading-[18px] text-[#6a7282] dark:text-muted-foreground text-[13px] text-center tracking-[-0.0762px]">Recomendado 600×800 px</p><p className="font-normal leading-[16.5px] text-[#99a1af] dark:text-muted-foreground text-[11px] text-center mt-px">JPG o PNG · Máx. 200 KB</p></>
                                 )}
                               </div>
                             </div>
@@ -2087,34 +2087,34 @@ export function SurveyBuilder() {
               </div>
 
               {/* Add question card */}
-              <div className="bg-white rounded-[10px] relative w-full shrink-0">
-                <div aria-hidden="true" className="absolute border border-[#e5e7eb] border-solid inset-0 pointer-events-none rounded-[10px]" />
+              <div className="bg-white dark:bg-card rounded-[10px] relative w-full shrink-0">
+                <div aria-hidden="true" className="absolute border border-[#e5e7eb] dark:border-border border-solid inset-0 pointer-events-none rounded-[10px]" />
                 <div className="flex flex-col gap-[16px] items-start pb-px pt-[25px] px-[25px] relative w-full">
                   <div className="flex gap-[8px] h-[20px] items-center w-full shrink-0">
                     <div className="shrink-0 size-[20px]" />
-                    <h3 className="font-semibold text-[14px] leading-[20px] text-[#101828] tracking-[-0.1504px]">Agregar una pregunta</h3>
+                    <h3 className="font-semibold text-[14px] leading-[20px] text-[#101828] dark:text-foreground tracking-[-0.1504px]">Agregar una pregunta</h3>
                   </div>
                   <div className="flex flex-col items-start w-full shrink-0 pb-[27px] relative">
                     <button
                       onClick={() => setShowQuestionTypeMenu((prev) => !prev)}
-                      className="w-full h-[42px] rounded-[10px] border border-[#d1d5dc] flex items-center justify-center text-[16px] text-[rgba(10,10,10,0.5)] tracking-[-0.3125px] hover:border-blue-400 hover:text-blue-500 transition-colors"
+                      className="w-full h-[42px] rounded-[10px] border border-[#d1d5dc] dark:border-border flex items-center justify-center text-[16px] text-[rgba(10,10,10,0.5)] tracking-[-0.3125px] hover:border-blue-400 hover:text-blue-500 transition-colors"
                     >
                       +
                     </button>
                     {showQuestionTypeMenu && (
                       <>
                         <div className="fixed inset-0 z-10" onClick={() => setShowQuestionTypeMenu(false)} />
-                        <div className="absolute top-[44px] left-0 right-0 bg-white border border-[#e5e7eb] rounded-[10px] shadow-[0_4px_16px_rgba(0,0,0,0.10)] z-20 overflow-hidden">
+                        <div className="absolute top-[44px] left-0 right-0 bg-white dark:bg-card border border-[#e5e7eb] dark:border-border rounded-[10px] shadow-[0_4px_16px_rgba(0,0,0,0.10)] z-20 overflow-hidden">
                           {questionTypes.map((qt, i) => (
                             <button
                               key={qt.type}
                               onClick={() => { addQuestion(qt.type); setShowQuestionTypeMenu(false); }}
-                              className={`w-full flex items-center gap-[10px] px-[16px] py-[12px] hover:bg-[#f9fafb] transition-colors text-left ${i < questionTypes.length - 1 ? 'border-b border-[#f3f4f6]' : ''}`}
+                              className={`w-full flex items-center gap-[10px] px-[16px] py-[12px] hover:bg-[#f9fafb] dark:hover:bg-accent transition-colors text-left ${i < questionTypes.length - 1 ? 'border-b border-[#f3f4f6] dark:border-border' : ''}`}
                             >
                               <div className={`flex items-center justify-center w-[28px] h-[28px] rounded-[6px] shrink-0 ${qt.color}`}>
                                 <qt.icon className="w-[14px] h-[14px]" />
                               </div>
-                              <span className="font-medium text-[14px] leading-[20px] text-[#101828] tracking-[-0.1504px]">{qt.label}</span>
+                              <span className="font-medium text-[14px] leading-[20px] text-[#101828] dark:text-foreground tracking-[-0.1504px]">{qt.label}</span>
                             </button>
                           ))}
                         </div>
@@ -2153,7 +2153,7 @@ export function SurveyBuilder() {
                           className="font-semibold text-[15px] text-[#8C59FE] bg-transparent border-0 border-b-2 border-transparent hover:border-[#8C59FE]/30 focus:border-[#8C59FE] focus:ring-0 px-2 py-1 outline-none flex-1"
                           placeholder="Título de la sección"
                         />
-                        <span className="text-xs text-[#8C59FE] bg-white/70 px-2 py-1 rounded-full">
+                        <span className="text-xs text-[#8C59FE] bg-white dark:bg-card/70 px-2 py-1 rounded-full">
                           {sectionQuestions.length} pregunta{sectionQuestions.length !== 1 ? 's' : ''}
                         </span>
                         <button
@@ -2212,21 +2212,21 @@ export function SurveyBuilder() {
                                     return (
                                       <div
                                         key={logicIndex}
-                                        className="flex items-center gap-3 py-2 px-4 bg-white border-l-4 border-[#8C59FE] rounded-[6px] mb-2 shadow-sm"
+                                        className="flex items-center gap-3 py-2 px-4 bg-white dark:bg-card border-l-4 border-[#8C59FE] rounded-[6px] mb-2 shadow-sm"
                                       >
                                         <GitBranch className="w-4 h-4 text-[#8C59FE] shrink-0" />
                                         <div className="flex-1">
-                                          <p className="text-[12px] font-medium text-[#364153]">
+                                          <p className="text-[12px] font-medium text-[#364153] dark:text-foreground">
                                             Si selecciona{' '}
-                                            <span className="font-mono bg-[#f0f4ff] px-2 py-0.5 rounded text-[#8C59FE]">
+                                            <span className="font-mono bg-[#f0f4ff] dark:bg-accent px-2 py-0.5 rounded text-[#8C59FE]">
                                               {q.opciones[logic.option_index]}
                                             </span>
                                           </p>
                                         </div>
                                         <ArrowRight className="w-4 h-4 text-[#8C59FE] shrink-0" />
                                         <div className="flex-1 text-right">
-                                          <p className="text-[12px] text-[#6a7282]">
-                                            Saltar a <span className="font-semibold text-[#364153]">Pregunta {targetIndex + 1}</span>
+                                          <p className="text-[12px] text-[#6a7282] dark:text-muted-foreground">
+                                            Saltar a <span className="font-semibold text-[#364153] dark:text-foreground">Pregunta {targetIndex + 1}</span>
                                           </p>
                                         </div>
                                       </div>
@@ -2239,11 +2239,11 @@ export function SurveyBuilder() {
 
                           {/* Section Logic Control - At the bottom of section questions */}
                           <div className="pt-4 pb-2 border-t-2 border-dashed border-[#8C59FE]/20">
-                            <div className="bg-white rounded-[10px] border-2 border-[#8C59FE]/30 p-4">
+                            <div className="bg-white dark:bg-card rounded-[10px] border-2 border-[#8C59FE]/30 p-4">
                               <div className="flex items-center justify-between mb-3">
                                 <div className="flex items-center gap-2">
                                   <GitBranch className="w-4 h-4 text-[#8C59FE]" />
-                                  <span className="font-semibold text-[13px] text-[#364153]">Lógica de Sección</span>
+                                  <span className="font-semibold text-[13px] text-[#364153] dark:text-foreground">Lógica de Sección</span>
                                 </div>
                                 <button
                                   onClick={() => {
@@ -2259,7 +2259,7 @@ export function SurveyBuilder() {
                                   title={section.section_logic?.enabled ? 'Desactivar lógica de sección' : 'Activar lógica de sección'}
                                 >
                                   <span
-                                    className={`inline-block h-[14px] w-[14px] transform rounded-full bg-white shadow-sm transition-transform ${
+                                    className={`inline-block h-[14px] w-[14px] transform rounded-full bg-white dark:bg-card shadow-sm transition-transform ${
                                       section.section_logic?.enabled ? 'translate-x-[19px]' : 'translate-x-[3px]'
                                     }`}
                                   />
@@ -2268,7 +2268,7 @@ export function SurveyBuilder() {
 
                               {section.section_logic?.enabled && (
                                 <div className="flex flex-col gap-2">
-                                  <p className="text-[11px] text-[#6a7282] mb-1">
+                                  <p className="text-[11px] text-[#6a7282] dark:text-muted-foreground mb-1">
                                     Al completar esta sección:
                                   </p>
                                   <select
@@ -2279,7 +2279,7 @@ export function SurveyBuilder() {
                                         jump_to_section_id: e.target.value || undefined,
                                       });
                                     }}
-                                    className="w-full h-[32px] px-3 text-[13px] border border-[#d1d5dc] rounded-[6px] bg-white focus:border-[#8C59FE] focus:ring-0 outline-none"
+                                    className="w-full h-[32px] px-3 text-[13px] border border-[#d1d5dc] dark:border-border rounded-[6px] bg-white dark:bg-card focus:border-[#8C59FE] focus:ring-0 outline-none"
                                   >
                                     <option value="">Continuar normalmente</option>
                                     <option value="END_SURVEY">🏁 Finalizar formulario (enviar respuestas)</option>
@@ -2312,7 +2312,7 @@ export function SurveyBuilder() {
                               )}
 
                               {!section.section_logic?.enabled && (
-                                <p className="text-[11px] text-[#99a1af] italic">
+                                <p className="text-[11px] text-[#99a1af] dark:text-muted-foreground italic">
                                   Activa el switch para configurar hacia dónde saltar al completar esta sección
                                 </p>
                               )}
@@ -2322,8 +2322,8 @@ export function SurveyBuilder() {
                       ) : (
                         /* Empty section - show add question button */
                         <div className="px-6 pb-6 min-h-[150px]">
-                          <div className="flex flex-col items-center justify-center py-8 border-2 border-dashed border-[#8C59FE]/30 rounded-[8px] bg-white/50 min-h-[120px]">
-                            <p className="text-sm text-[#6a7282] mb-3">Sección vacía</p>
+                          <div className="flex flex-col items-center justify-center py-8 border-2 border-dashed border-[#8C59FE]/30 rounded-[8px] bg-white dark:bg-card/50 min-h-[120px]">
+                            <p className="text-sm text-[#6a7282] dark:text-muted-foreground mb-3">Sección vacía</p>
                             <div className="relative">
                               <button
                                 onClick={() => {
@@ -2334,7 +2334,7 @@ export function SurveyBuilder() {
                                     overlay.classList.toggle('hidden');
                                   }
                                 }}
-                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#8C59FE] bg-white border-2 border-[#8C59FE] rounded-[8px] hover:bg-[#8C59FE]/5 transition-colors"
+                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#8C59FE] bg-white dark:bg-card border-2 border-[#8C59FE] rounded-[8px] hover:bg-[#8C59FE]/5 transition-colors"
                               >
                                 <Plus className="w-4 h-4" />
                                 Agregar pregunta
@@ -2353,7 +2353,7 @@ export function SurveyBuilder() {
                               />
                               <div
                                 id={`section-menu-${section.id}`}
-                                className="hidden absolute top-full left-0 mt-2 bg-white border border-[#e5e7eb] rounded-[10px] shadow-[0_4px_16px_rgba(0,0,0,0.10)] z-20 min-w-[200px] max-h-[300px] overflow-y-auto"
+                                className="hidden absolute top-full left-0 mt-2 bg-white dark:bg-card border border-[#e5e7eb] dark:border-border rounded-[10px] shadow-[0_4px_16px_rgba(0,0,0,0.10)] z-20 min-w-[200px] max-h-[300px] overflow-y-auto"
                               >
                                 {questionTypes.map((qt, i) => (
                                   <button
@@ -2367,12 +2367,12 @@ export function SurveyBuilder() {
                                         overlay.classList.add('hidden');
                                       }
                                     }}
-                                    className={`w-full flex items-center gap-[10px] px-[16px] py-[12px] hover:bg-[#f9fafb] transition-colors text-left ${i < questionTypes.length - 1 ? 'border-b border-[#f3f4f6]' : ''}`}
+                                    className={`w-full flex items-center gap-[10px] px-[16px] py-[12px] hover:bg-[#f9fafb] dark:hover:bg-accent transition-colors text-left ${i < questionTypes.length - 1 ? 'border-b border-[#f3f4f6] dark:border-border' : ''}`}
                                   >
                                     <div className={`flex items-center justify-center w-[28px] h-[28px] rounded-[6px] shrink-0 ${qt.color}`}>
                                       <qt.icon className="w-[14px] h-[14px]" />
                                     </div>
-                                    <span className="font-medium text-[14px] leading-[20px] text-[#101828] tracking-[-0.1504px]">{qt.label}</span>
+                                    <span className="font-medium text-[14px] leading-[20px] text-[#101828] dark:text-foreground tracking-[-0.1504px]">{qt.label}</span>
                                   </button>
                                 ))}
                               </div>
@@ -2429,17 +2429,17 @@ export function SurveyBuilder() {
                                 >
                                   <GitBranch className="w-4 h-4 text-[#8C59FE] shrink-0" />
                                   <div className="flex-1">
-                                    <p className="text-[12px] font-medium text-[#364153]">
+                                    <p className="text-[12px] font-medium text-[#364153] dark:text-foreground">
                                       Si selecciona{' '}
-                                      <span className="font-mono bg-white px-2 py-0.5 rounded text-[#8C59FE]">
+                                      <span className="font-mono bg-white dark:bg-card px-2 py-0.5 rounded text-[#8C59FE]">
                                         {question.opciones[logic.option_index]}
                                       </span>
                                     </p>
                                   </div>
                                   <ArrowRight className="w-4 h-4 text-[#8C59FE] shrink-0" />
                                   <div className="flex-1 text-right">
-                                    <p className="text-[12px] text-[#6a7282]">
-                                      Saltar a <span className="font-semibold text-[#364153]">Pregunta {targetIndex + 1}</span>
+                                    <p className="text-[12px] text-[#6a7282] dark:text-muted-foreground">
+                                      Saltar a <span className="font-semibold text-[#364153] dark:text-foreground">Pregunta {targetIndex + 1}</span>
                                     </p>
                                   </div>
                                 </div>
@@ -2459,50 +2459,50 @@ export function SurveyBuilder() {
           </main>
 
           {/* ── Right Sidebar ── */}
-          <aside className="w-80 bg-white border-l border-gray-200 overflow-auto">
+          <aside className="w-80 bg-white dark:bg-card border-l border-gray-200 dark:border-border overflow-auto">
             <div className="p-6 space-y-6">
               <div>
-                <h3 className="text-sm font-semibold text-gray-900 mb-4">Configuración</h3>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-foreground mb-4">Configuración</h3>
 
                 {/* Color Picker */}
                 <div className="mb-6">
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-3">
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-muted-foreground mb-3">
                     <Palette className="w-4 h-4" /> Color principal
                   </label>
                   <div className="flex items-center gap-3">
-                    <input type="color" value={encuestaData.configuracion.color_primario} onChange={(e) => setEncuestaData({ ...encuestaData, configuracion: { ...encuestaData.configuracion, color_primario: e.target.value } })} className="w-12 h-12 rounded-lg border border-gray-300 cursor-pointer" />
-                    <input type="text" value={encuestaData.configuracion.color_primario} onChange={(e) => setEncuestaData({ ...encuestaData, configuracion: { ...encuestaData.configuracion, color_primario: e.target.value } })} className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm font-mono" />
+                    <input type="color" value={encuestaData.configuracion.color_primario} onChange={(e) => setEncuestaData({ ...encuestaData, configuracion: { ...encuestaData.configuracion, color_primario: e.target.value } })} className="w-12 h-12 rounded-lg border border-gray-300 dark:border-border cursor-pointer" />
+                    <input type="text" value={encuestaData.configuracion.color_primario} onChange={(e) => setEncuestaData({ ...encuestaData, configuracion: { ...encuestaData.configuracion, color_primario: e.target.value } })} className="flex-1 px-3 py-2 border border-gray-300 dark:border-border rounded-lg text-sm font-mono" />
                   </div>
                 </div>
 
                 {/* Display mode toggle */}
-                <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="p-4 bg-gray-50 dark:bg-background rounded-lg">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <LayoutList className="w-4 h-4 text-gray-500" />
+                      <LayoutList className="w-4 h-4 text-gray-500 dark:text-muted-foreground" />
                       <div>
-                        <p className="text-sm font-medium text-gray-900">Display Mode</p>
-                        <p className="text-xs text-gray-500">{encuestaData.configuracion.modo_visualizacion === 'paginated' ? 'Paginated Steps' : 'Scroll View'}</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-foreground">Display Mode</p>
+                        <p className="text-xs text-gray-500 dark:text-muted-foreground">{encuestaData.configuracion.modo_visualizacion === 'paginated' ? 'Paginated Steps' : 'Scroll View'}</p>
                       </div>
                     </div>
                     <button
                       onClick={() => setEncuestaData({ ...encuestaData, configuracion: { ...encuestaData.configuracion, modo_visualizacion: encuestaData.configuracion.modo_visualizacion === 'scroll' ? 'paginated' : 'scroll' } })}
                       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${encuestaData.configuracion.modo_visualizacion === 'paginated' ? 'bg-blue-600' : 'bg-gray-300'}`}
                     >
-                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${encuestaData.configuracion.modo_visualizacion === 'paginated' ? 'translate-x-6' : 'translate-x-1'}`} />
+                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white dark:bg-card transition-transform ${encuestaData.configuracion.modo_visualizacion === 'paginated' ? 'translate-x-6' : 'translate-x-1'}`} />
                     </button>
                   </div>
                 </div>
 
                 {/* Status */}
-                <div className="mt-6 p-4 border border-gray-200 rounded-lg">
+                <div className="mt-6 p-4 border border-gray-200 dark:border-border rounded-lg">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700">Estado</span>
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${encuestaData.estado ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
+                    <span className="text-sm font-medium text-gray-700 dark:text-muted-foreground">Estado</span>
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${encuestaData.estado ? 'bg-green-100 text-green-800' : 'bg-gray-100 dark:bg-muted text-gray-600 dark:text-muted-foreground'}`}>
                       {encuestaData.estado ? 'Live' : 'Draft'}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-2">Last updated: {encuestaData.updated_at}</p>
+                  <p className="text-xs text-gray-500 dark:text-muted-foreground mt-2">Last updated: {encuestaData.updated_at}</p>
                 </div>
               </div>
             </div>
