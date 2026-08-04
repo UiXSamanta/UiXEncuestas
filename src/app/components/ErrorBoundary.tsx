@@ -47,15 +47,15 @@ export class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError && this.state.error) {
       return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-lg p-8 max-w-lg w-full">
+        <div className="min-h-screen bg-gray-50 dark:bg-background flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-card rounded-lg shadow-lg p-8 max-w-lg w-full">
             <h1 className="text-2xl font-bold text-red-600 mb-4">
               Something went wrong
             </h1>
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-600 dark:text-muted-foreground mb-4">
               An error occurred while loading the application.
             </p>
-            <pre className="bg-gray-100 p-4 rounded text-sm overflow-auto mb-4">
+            <pre className="bg-gray-100 dark:bg-muted text-gray-900 dark:text-foreground p-4 rounded text-sm overflow-auto mb-4">
               {this.state.error.message}
             </pre>
             <button

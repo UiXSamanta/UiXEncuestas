@@ -67,16 +67,16 @@ export function ChangePasswordModal({ onSuccess }: ChangePasswordModalProps) {
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+      <div className="bg-white dark:bg-card rounded-2xl shadow-2xl w-full max-w-md">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-[#597AFF]/5 to-[#8C59FE]/5">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-border bg-gradient-to-r from-[#597AFF]/5 to-[#8C59FE]/5">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#597AFF] to-[#8C59FE] flex items-center justify-center">
               <Lock className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">Cambio de Contraseña Obligatorio</h3>
-              <p className="text-xs text-gray-500">Por seguridad, debes cambiar tu contraseña temporal</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-foreground">Cambio de Contraseña Obligatorio</h3>
+              <p className="text-xs text-gray-500 dark:text-muted-foreground">Por seguridad, debes cambiar tu contraseña temporal</p>
             </div>
           </div>
         </div>
@@ -98,7 +98,7 @@ export function ChangePasswordModal({ onSuccess }: ChangePasswordModalProps) {
 
           {/* New Password */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-muted-foreground mb-2">
               Nueva Contraseña
             </label>
             <div className="relative">
@@ -106,14 +106,14 @@ export function ChangePasswordModal({ onSuccess }: ChangePasswordModalProps) {
                 type={showNewPassword ? 'text' : 'password'}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#597AFF]"
+                className="w-full px-4 py-2 pr-10 border border-gray-300 dark:border-border rounded-lg text-gray-900 dark:text-foreground focus:outline-none focus:ring-2 focus:ring-[#597AFF]"
                 placeholder="Escribe tu nueva contraseña"
                 autoFocus
               />
               <button
                 type="button"
                 onClick={() => setShowNewPassword(!showNewPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-muted-foreground hover:text-gray-600 dark:hover:text-foreground"
               >
                 {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
@@ -122,8 +122,8 @@ export function ChangePasswordModal({ onSuccess }: ChangePasswordModalProps) {
 
           {/* Password Requirements */}
           {newPassword && (
-            <div className="mb-4 p-3 bg-gray-50 rounded-lg space-y-1.5">
-              <p className="text-xs font-medium text-gray-700 mb-2">Requisitos de contraseña:</p>
+            <div className="mb-4 p-3 bg-gray-50 dark:bg-muted rounded-lg space-y-1.5">
+              <p className="text-xs font-medium text-gray-700 dark:text-muted-foreground mb-2">Requisitos de contraseña:</p>
               <div className="space-y-1">
                 <RequirementItem met={passwordChecks.length} text="Mínimo 8 caracteres" />
                 <RequirementItem met={passwordChecks.uppercase} text="Al menos una mayúscula (A-Z)" />
@@ -136,7 +136,7 @@ export function ChangePasswordModal({ onSuccess }: ChangePasswordModalProps) {
 
           {/* Confirm Password */}
           <div className="mb-5">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-muted-foreground mb-2">
               Confirmar Contraseña
             </label>
             <div className="relative">
@@ -144,17 +144,17 @@ export function ChangePasswordModal({ onSuccess }: ChangePasswordModalProps) {
                 type={showConfirmPassword ? 'text' : 'password'}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className={`w-full px-4 py-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 ${
+                className={`w-full px-4 py-2 pr-10 border rounded-lg text-gray-900 dark:text-foreground focus:outline-none focus:ring-2 ${
                   confirmPassword && !passwordsMatch
                     ? 'border-red-300 focus:ring-red-500'
-                    : 'border-gray-300 focus:ring-[#597AFF]'
+                    : 'border-gray-300 dark:border-border focus:ring-[#597AFF]'
                 }`}
                 placeholder="Confirma tu nueva contraseña"
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-muted-foreground hover:text-gray-600 dark:hover:text-foreground"
               >
                 {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
@@ -197,8 +197,8 @@ export function ChangePasswordModal({ onSuccess }: ChangePasswordModalProps) {
         </form>
 
         {/* Footer Info */}
-        <div className="px-6 py-3 bg-gray-50 border-t border-gray-200 rounded-b-2xl">
-          <p className="text-xs text-gray-600 text-center">
+        <div className="px-6 py-3 bg-gray-50 dark:bg-muted border-t border-gray-200 dark:border-border rounded-b-2xl">
+          <p className="text-xs text-gray-600 dark:text-muted-foreground text-center">
             🔒 Tu contraseña será encriptada y almacenada de forma segura
           </p>
         </div>
@@ -209,11 +209,11 @@ export function ChangePasswordModal({ onSuccess }: ChangePasswordModalProps) {
 
 function RequirementItem({ met, text }: { met: boolean; text: string }) {
   return (
-    <div className={`flex items-center gap-2 text-xs ${met ? 'text-green-600' : 'text-gray-500'}`}>
+    <div className={`flex items-center gap-2 text-xs ${met ? 'text-green-600' : 'text-gray-500 dark:text-muted-foreground'}`}>
       {met ? (
         <CheckCircle className="w-3.5 h-3.5 shrink-0" />
       ) : (
-        <div className="w-3.5 h-3.5 rounded-full border-2 border-gray-300 shrink-0" />
+        <div className="w-3.5 h-3.5 rounded-full border-2 border-gray-300 dark:border-border shrink-0" />
       )}
       <span>{text}</span>
     </div>

@@ -390,9 +390,9 @@ export function PreviewSurvey() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 dark:bg-background flex flex-col">
       {/* PREVIEW MODE BANNER */}
-      <div className="bg-yellow-500 text-gray-900 py-3 px-4 shadow-lg">
+      <div className="bg-yellow-500 text-gray-900 dark:text-foreground py-3 px-4 shadow-lg">
         <div className="max-w-7xl mx-auto flex items-center justify-center gap-3">
           <Eye className="w-5 h-5" />
           <span className="font-semibold text-sm md:text-base">
@@ -402,13 +402,13 @@ export function PreviewSurvey() {
       </div>
 
       {/* Progress Bar */}
-      <div className="relative w-full bg-gray-200 h-6">
+      <div className="relative w-full bg-gray-200 dark:bg-muted h-6">
         <div
           className="bg-blue-600 h-6 transition-all duration-300"
           style={{ width: `${progress}%` }}
         />
         <div className="absolute top-0 left-4 h-6 flex items-center">
-          <span className="text-xs font-medium text-gray-600">
+          <span className="text-xs font-medium text-gray-600 dark:text-muted-foreground">
             {currentStep} / {totalSteps}
           </span>
         </div>
@@ -417,22 +417,22 @@ export function PreviewSurvey() {
       {/* Main Content */}
       <div className="flex-1 flex items-center justify-center p-4 md:p-8">
         <div className="w-full max-w-2xl">
-          <div className="bg-white rounded-2xl shadow-lg p-6 md:p-10">
+          <div className="bg-white dark:bg-card rounded-2xl shadow-lg p-6 md:p-10">
             {/* Question Counter */}
             <div className="mb-6">
-              <span className="text-sm font-medium text-gray-500">
+              <span className="text-sm font-medium text-gray-500 dark:text-muted-foreground">
                 Question {currentStep} of {totalSteps}
               </span>
             </div>
 
             {/* Question Title */}
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-foreground mb-8">
               {currentQ.title}
             </h2>
 
             {/* Question Subtitle */}
             {currentQ.subtitle && currentQ.type !== 'separator' && (
-              <p className="text-sm text-gray-500 mb-8">
+              <p className="text-sm text-gray-500 dark:text-muted-foreground mb-8">
                 {currentQ.subtitle}
               </p>
             )}
@@ -441,13 +441,13 @@ export function PreviewSurvey() {
             {currentQ.type === 'separator' && (
               <div className="mb-8">
                 {currentQ.subtitle && (
-                  <div className="p-6 rounded-xl bg-slate-50 border-2 border-slate-200">
-                    <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                  <div className="p-6 rounded-xl bg-slate-50 dark:bg-muted border-2 border-slate-200 dark:border-border">
+                    <p className="text-gray-700 dark:text-foreground whitespace-pre-wrap leading-relaxed">
                       {currentQ.subtitle}
                     </p>
                   </div>
                 )}
-                <div className="mt-6 flex items-center justify-center gap-2 text-sm text-slate-500">
+                <div className="mt-6 flex items-center justify-center gap-2 text-sm text-slate-500 dark:text-muted-foreground">
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
@@ -475,7 +475,7 @@ export function PreviewSurvey() {
                     className={`w-full p-4 rounded-xl border-2 text-left font-medium transition-all ${
                       currentAnswer?.value === option.value
                         ? 'border-blue-600 bg-blue-50 text-blue-900'
-                        : 'border-gray-300 hover:border-gray-400 text-gray-700'
+                        : 'border-gray-300 dark:border-border hover:border-gray-400 text-gray-700 dark:text-foreground'
                     }`}
                   >
                     <div className="flex items-center justify-between">
@@ -504,7 +504,7 @@ export function PreviewSurvey() {
                         className={`flex-1 flex flex-col items-center gap-2 py-4 rounded-xl border-2 font-bold text-lg transition-all ${
                           currentAnswer?.value === val
                             ? 'border-purple-600 bg-purple-50 text-purple-900'
-                            : 'border-gray-300 hover:border-purple-400 text-gray-600'
+                            : 'border-gray-300 dark:border-border hover:border-purple-400 text-gray-600 dark:text-muted-foreground'
                         }`}
                       >
                         {val}
@@ -512,8 +512,8 @@ export function PreviewSurvey() {
                     ))}
                   </div>
                   <div className="flex justify-between mt-2 px-1">
-                    <span className="text-xs text-gray-500">{currentQ.label_izquierda || 'Totalmente en desacuerdo'}</span>
-                    <span className="text-xs text-gray-500">{currentQ.label_derecha || 'Totalmente de acuerdo'}</span>
+                    <span className="text-xs text-gray-500 dark:text-muted-foreground">{currentQ.label_izquierda || 'Totalmente en desacuerdo'}</span>
+                    <span className="text-xs text-gray-500 dark:text-muted-foreground">{currentQ.label_derecha || 'Totalmente de acuerdo'}</span>
                   </div>
                 </div>
               );
@@ -543,15 +543,15 @@ export function PreviewSurvey() {
                             className={`w-12 h-12 md:w-16 md:h-16 transition-all ${
                               starValue <= selectedValue
                                 ? 'fill-yellow-400 text-yellow-400'
-                                : 'fill-gray-300 text-gray-300'
+                                : 'fill-gray-300 text-gray-300 dark:fill-muted-foreground dark:text-muted-foreground'
                             }`}
                           />
                         </button>
                       ))}
                     </div>
                     <div className="hidden flex justify-between mt-2 px-1">
-                      <span className="hidden text-xs text-gray-500">Muy insatisfecho</span>
-                      <span className="hidden text-xs text-gray-500">Muy satisfecho</span>
+                      <span className="hidden text-xs text-gray-500 dark:text-muted-foreground">Muy insatisfecho</span>
+                      <span className="hidden text-xs text-gray-500 dark:text-muted-foreground">Muy satisfecho</span>
                     </div>
                   </div>
                 );
@@ -573,11 +573,11 @@ export function PreviewSurvey() {
                           className={`flex flex-col items-center gap-2 p-2 sm:p-4 rounded-xl transition-all ${
                             currentAnswer?.value === option.value
                               ? 'bg-blue-50 scale-110'
-                              : 'hover:bg-gray-50 hover:scale-105'
+                              : 'hover:bg-gray-50 dark:hover:bg-accent hover:scale-105'
                           }`}
                         >
                           <span className="text-4xl sm:text-4xl md:text-5xl">{option.emoji}</span>
-                          <span className="text-[10px] sm:text-xs md:text-xm text-gray-600 text-center whitespace-nowrap">
+                          <span className="text-[10px] sm:text-xs md:text-xm text-gray-600 dark:text-muted-foreground text-center whitespace-nowrap">
                             {option.label}
                           </span>
                         </button>
@@ -622,7 +622,7 @@ export function PreviewSurvey() {
                         <div className="text-5xl font-bold" style={{ color: getSliderColor(sliderValue) }}>
                           {sliderValue}
                         </div>
-                        <div className="text-sm text-gray-500 mt-1">
+                        <div className="text-sm text-gray-500 dark:text-muted-foreground mt-1">
                           {sliderValue === 0 && 'Nada probable'}
                           {(sliderValue === 1 || sliderValue === 2) && 'Muy poco probable'}
                           {(sliderValue >= 3 && sliderValue <= 6) && 'Poco probable'}
@@ -648,12 +648,12 @@ export function PreviewSurvey() {
                             background: `linear-gradient(to right, #fbbf24 0%, #fbbf24 60%, #60a5fa 60%, #60a5fa 80%, #34d399 80%, #34d399 100%)`,
                           }}
                         />
-                        <div className="flex justify-between text-xs text-gray-500 mt-2">
+                        <div className="flex justify-between text-xs text-gray-500 dark:text-muted-foreground mt-2">
                           <span>0</span>
                           <span>5</span>
                           <span>10</span>
                         </div>
-                        <div className="flex justify-between text-xs text-gray-600 mt-1 font-medium">
+                        <div className="flex justify-between text-xs text-gray-600 dark:text-muted-foreground mt-1 font-medium">
                           <span>Nada probable</span>
                           <span>Muy probable</span>
                         </div>
@@ -692,7 +692,7 @@ export function PreviewSurvey() {
                         );
                       })}
                     </div>
-                    <div className="flex justify-between text-xs text-gray-600 mt-4 px-4">
+                    <div className="flex justify-between text-xs text-gray-600 dark:text-muted-foreground mt-4 px-4">
                       <span className="font-medium">Nada probable</span>
                       <span className="font-medium">Muy probable</span>
                     </div>
@@ -823,10 +823,10 @@ export function PreviewSurvey() {
                 <div className="mb-8">
                   <div className="flex items-center justify-between mb-2">
                     {currentQ.subtitle && (
-                      <p className="hidden text-sm text-gray-600">{currentQ.subtitle}</p>
+                      <p className="hidden text-sm text-gray-600 dark:text-muted-foreground">{currentQ.subtitle}</p>
                     )}
                     {isOptional && (
-                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
+                      <span className="text-xs text-gray-500 dark:text-muted-foreground bg-gray-100 dark:bg-muted px-2 py-1 rounded-md">
                         Opcional
                       </span>
                     )}
@@ -836,10 +836,10 @@ export function PreviewSurvey() {
                       value={textValue}
                       onChange={(e) => handleAnswer(e.target.value)}
                       rows={6}
-                      className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:outline-none resize-none text-gray-900 ${
+                      className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:outline-none resize-none text-gray-900 dark:text-foreground ${
                         emailError
                           ? 'border-red-400 focus:border-red-500 focus:ring-red-200'
-                          : 'border-gray-300 focus:border-blue-500 focus:ring-blue-200'
+                          : 'border-gray-300 dark:border-border focus:border-blue-500 focus:ring-blue-200'
                       }`}
                       placeholder={isEmailMode ? 'ejemplo@correo.com' : 'Type your answer here...'}
                     />
@@ -866,7 +866,7 @@ export function PreviewSurvey() {
                           className={`p-2 rounded-full transition-all ${
                             isRecording
                               ? 'bg-red-100 text-red-600'
-                              : 'bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700'
+                              : 'bg-gray-100 dark:bg-muted text-gray-500 dark:text-muted-foreground hover:bg-gray-200 dark:hover:bg-muted hover:text-gray-700 dark:hover:text-foreground'
                           }`}
                         >
                           {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
@@ -881,7 +881,7 @@ export function PreviewSurvey() {
                     </p>
                   )}
                   {!emailError && (
-                    <p className="text-xs text-gray-500 mt-2">
+                    <p className="text-xs text-gray-500 dark:text-muted-foreground mt-2">
                       {textValue.length} characters{isEmailMode ? ' • Formato de email requerido' : ''}{isOptional && !hasText ? ' • Puedes dejar en blanco' : ''}
                     </p>
                   )}
@@ -915,7 +915,7 @@ export function PreviewSurvey() {
               return (
                 <div className="mb-8">
                   {currentQ.subtitle && (
-                    <p className="text-sm text-gray-600 mb-4">{currentQ.subtitle}</p>
+                    <p className="text-sm text-gray-600 dark:text-muted-foreground mb-4">{currentQ.subtitle}</p>
                   )}
 
                   <div className="flex flex-col gap-3">
@@ -923,7 +923,7 @@ export function PreviewSurvey() {
                     <div className="flex gap-2 pl-36">
                       {columns.map((col, colIdx) => (
                         <div key={colIdx} className="flex-1 flex justify-center">
-                          <p className="text-xs text-gray-600 font-medium">{col}</p>
+                          <p className="text-xs text-gray-600 dark:text-muted-foreground font-medium">{col}</p>
                         </div>
                       ))}
                     </div>
@@ -933,7 +933,7 @@ export function PreviewSurvey() {
                       <div key={rowIdx} className="flex gap-2 items-center">
                         {/* Row Label */}
                         <div className="w-32 flex-shrink-0">
-                          <p className="text-sm font-medium text-gray-700 text-right pr-4">{row}</p>
+                          <p className="text-sm font-medium text-gray-700 dark:text-foreground text-right pr-4">{row}</p>
                         </div>
 
                         {/* Column Buttons/Stars */}
@@ -955,7 +955,7 @@ export function PreviewSurvey() {
                                     className={`w-10 h-10 transition-all ${
                                       isLit
                                         ? 'fill-yellow-400 text-yellow-400'
-                                        : 'fill-gray-300 text-gray-300'
+                                        : 'fill-gray-300 text-gray-300 dark:fill-muted-foreground dark:text-muted-foreground'
                                     }`}
                                   />
                                 </button>
@@ -971,13 +971,13 @@ export function PreviewSurvey() {
                                   className={`flex-1 p-4 rounded-xl border-2 transition-all ${
                                     isSelected
                                       ? 'border-blue-600 bg-blue-50'
-                                      : 'border-gray-300 hover:border-gray-400 bg-white'
+                                      : 'border-gray-300 dark:border-border hover:border-gray-400 bg-white dark:bg-card'
                                   }`}
                                 >
                                   <div className={`w-4 h-4 rounded-full border-2 mx-auto ${
                                     isSelected
                                       ? 'border-blue-600 bg-blue-600'
-                                      : 'border-gray-300'
+                                      : 'border-gray-300 dark:border-border'
                                   }`} />
                                 </button>
                               );
@@ -1018,11 +1018,11 @@ export function PreviewSurvey() {
                     className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all cursor-move ${
                       isDragging
                         ? 'border-blue-600 bg-blue-50'
-                        : 'border-gray-300 bg-white hover:border-gray-400'
+                        : 'border-gray-300 dark:border-border bg-white dark:bg-card hover:border-gray-400'
                     }`}
                   >
-                    <GripVertical className={`w-5 h-5 ${isDragging ? 'text-blue-600' : 'text-gray-400'}`} />
-                    <p className={`font-medium ${isDragging ? 'text-blue-900' : 'text-gray-700'}`}>{item}</p>
+                    <GripVertical className={`w-5 h-5 ${isDragging ? 'text-blue-600' : 'text-gray-400 dark:text-muted-foreground'}`} />
+                    <p className={`font-medium ${isDragging ? 'text-blue-900' : 'text-gray-700 dark:text-foreground'}`}>{item}</p>
                   </div>
                 );
               };
@@ -1051,10 +1051,10 @@ export function PreviewSurvey() {
               return (
                 <div className="mb-8">
                   {currentQ.ranking_instruction && (
-                    <p className="text-sm text-gray-600 mb-4">{currentQ.ranking_instruction}</p>
+                    <p className="text-sm text-gray-600 dark:text-muted-foreground mb-4">{currentQ.ranking_instruction}</p>
                   )}
                   {!currentQ.ranking_instruction && currentQ.subtitle && (
-                    <p className="text-sm text-gray-600 mb-4">{currentQ.subtitle}</p>
+                    <p className="text-sm text-gray-600 dark:text-muted-foreground mb-4">{currentQ.subtitle}</p>
                   )}
 
                   <DndProvider backend={HTML5Backend}>
@@ -1070,7 +1070,7 @@ export function PreviewSurvey() {
                     </div>
                   </DndProvider>
 
-                  <p className="text-xs text-gray-500 mt-3 text-center">
+                  <p className="text-xs text-gray-500 dark:text-muted-foreground mt-3 text-center">
                     💡 Arrastra y suelta para ordenar tus preferencias
                   </p>
                 </div>
@@ -1078,11 +1078,11 @@ export function PreviewSurvey() {
             })()}
 
             {/* Navigation Buttons */}
-            <div className="flex gap-3 pt-6 border-t border-gray-200">
+            <div className="flex gap-3 pt-6 border-t border-gray-200 dark:border-border">
               <button
                 onClick={handlePrevious}
                 disabled={currentQuestion === 0}
-                className="flex-1 flex items-center gap-2 px-6 py-3 bg-white border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
+                className="flex-1 flex items-center gap-2 px-6 py-3 bg-white dark:bg-card border-2 border-gray-300 dark:border-border text-gray-700 dark:text-foreground rounded-lg hover:bg-gray-50 dark:hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
               >
                 <ArrowLeft className="w-5 h-5" />
                 Previous

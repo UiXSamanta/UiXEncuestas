@@ -321,7 +321,7 @@ export function AdminSettings() {
   };
 
   return (
-    <div className="flex h-screen bg-[#EBEEF4]">
+    <div className="flex h-screen bg-[#EBEEF4] dark:bg-background">
       <AdminSidebar unreadCount={unreadCount} />
 
       <main className="flex-1 overflow-auto">
@@ -339,9 +339,9 @@ export function AdminSettings() {
             <div>
               <div className="flex items-center gap-3">
                 <Settings className="w-7 h-7 text-[#8C59FE]" />
-                <h2 className="text-3xl font-semibold text-[#303C48]">Configuración de Cuentas</h2>
+                <h2 className="text-3xl font-semibold text-[#303C48] dark:text-foreground">Configuración de Cuentas</h2>
               </div>
-              <p className="text-sm text-[#81878E] mt-1">
+              <p className="text-sm text-[#81878E] dark:text-muted-foreground mt-1">
                 {admins.length} usuario{admins.length !== 1 ? 's' : ''} registrado{admins.length !== 1 ? 's' : ''}
               </p>
             </div>
@@ -351,7 +351,7 @@ export function AdminSettings() {
                   <button
                     onClick={handleDownloadCsv}
                     disabled={isExporting || isLoading}
-                    className="flex items-center gap-2 px-4 py-2 text-[#364153] bg-white border border-[#C3C5C9] rounded-lg hover:bg-[#F8F9FB] disabled:opacity-50 transition-colors text-sm font-medium"
+                    className="flex items-center gap-2 px-4 py-2 text-[#364153] dark:text-foreground bg-white dark:bg-card border border-[#C3C5C9] dark:border-border rounded-lg hover:bg-[#F8F9FB] dark:hover:bg-accent disabled:opacity-50 transition-colors text-sm font-medium"
                   >
                     <Download className={`w-4 h-4 ${isExporting ? 'animate-pulse' : ''}`} />
                     Descargar CSV
@@ -359,7 +359,7 @@ export function AdminSettings() {
                   <button
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isImporting}
-                    className="flex items-center gap-2 px-4 py-2 text-[#364153] bg-white border border-[#C3C5C9] rounded-lg hover:bg-[#F8F9FB] disabled:opacity-50 transition-colors text-sm font-medium"
+                    className="flex items-center gap-2 px-4 py-2 text-[#364153] dark:text-foreground bg-white dark:bg-card border border-[#C3C5C9] dark:border-border rounded-lg hover:bg-[#F8F9FB] dark:hover:bg-accent disabled:opacity-50 transition-colors text-sm font-medium"
                   >
                     <Upload className="w-4 h-4" />
                     Subir CSV
@@ -382,26 +382,26 @@ export function AdminSettings() {
             <div className="flex items-start gap-3">
               <Key className="w-5 h-5 text-[#597AFF] shrink-0 mt-0.5" />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-[#303C48] mb-1">
+                <p className="text-sm font-semibold text-[#303C48] dark:text-foreground mb-1">
                   Usuario "{newUserName}" creado exitosamente
                 </p>
-                <p className="text-xs text-gray-600 mb-3">
+                <p className="text-xs text-gray-600 dark:text-muted-foreground mb-3">
                   Comparte esta contraseña temporal con el usuario. Deberá cambiarla al iniciar sesión por primera vez.
                 </p>
                 <div className="flex items-center gap-2">
-                  <code className="flex-1 px-3 py-2 bg-white border border-[#597AFF]/40 rounded-lg text-sm font-mono text-[#303C48] tracking-wider">
+                  <code className="flex-1 px-3 py-2 bg-white dark:bg-card border border-[#597AFF]/40 rounded-lg text-sm font-mono text-[#303C48] dark:text-foreground tracking-wider">
                     {newTempPassword}
                   </code>
                   <button
                     onClick={() => handleCopy(newTempPassword, 'new')}
-                    className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-[#597AFF] bg-white border border-[#597AFF]/40 rounded-lg hover:bg-[#597AFF]/10 transition-colors whitespace-nowrap"
+                    className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-[#597AFF] bg-white dark:bg-card border border-[#597AFF]/40 rounded-lg hover:bg-[#597AFF]/10 dark:hover:bg-accent transition-colors whitespace-nowrap"
                   >
                     <Copy className="w-3.5 h-3.5" />
                     {copiedId === 'new' ? '¡Copiado!' : 'Copiar'}
                   </button>
                 </div>
               </div>
-              <button onClick={() => setNewTempPassword('')} className="text-gray-400 hover:text-gray-600">
+              <button onClick={() => setNewTempPassword('')} className="text-gray-400 dark:text-muted-foreground hover:text-gray-600 dark:hover:text-muted-foreground">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -425,43 +425,43 @@ export function AdminSettings() {
         )}
 
         {/* Admins Table */}
-        <div className="bg-white rounded-lg border border-[#C3C5C9] overflow-x-auto shadow-sm">
-          <div className="px-6 py-4 border-b border-[#EBEEF4]">
-            <h3 className="text-base font-semibold text-[#303C48]">Administradores del sistema</h3>
-            <p className="text-xs text-[#81878E] mt-0.5">Gestiona accesos, roles y permisos de usuarios admin</p>
+        <div className="bg-white dark:bg-card rounded-lg border border-[#C3C5C9] dark:border-border overflow-x-auto shadow-sm">
+          <div className="px-6 py-4 border-b border-[#EBEEF4] dark:border-border">
+            <h3 className="text-base font-semibold text-[#303C48] dark:text-foreground">Administradores del sistema</h3>
+            <p className="text-xs text-[#81878E] dark:text-muted-foreground mt-0.5">Gestiona accesos, roles y permisos de usuarios admin</p>
           </div>
 
-          <table className="min-w-full divide-y divide-[#EBEEF4]">
-            <thead className="bg-[#EBEEF4] border-b border-[#C3C5C9]">
+          <table className="min-w-full divide-y divide-[#EBEEF4] dark:divide-border">
+            <thead className="bg-[#EBEEF4] dark:bg-muted border-b border-[#C3C5C9] dark:border-border">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#5C6671] uppercase tracking-wider">Usuario</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#5C6671] uppercase tracking-wider">Correo</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#5C6671] uppercase tracking-wider">Rol</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#5C6671] uppercase tracking-wider">Contraseña temporal</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#5C6671] uppercase tracking-wider">Permisos</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#5C6671] dark:text-muted-foreground uppercase tracking-wider">Usuario</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#5C6671] dark:text-muted-foreground uppercase tracking-wider">Correo</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#5C6671] dark:text-muted-foreground uppercase tracking-wider">Rol</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#5C6671] dark:text-muted-foreground uppercase tracking-wider">Contraseña temporal</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#5C6671] dark:text-muted-foreground uppercase tracking-wider">Permisos</th>
                 {isAdminPrincipal && (
-                  <th className="px-6 py-3 text-left text-xs font-medium text-[#5C6671] uppercase tracking-wider">Acciones</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-[#5C6671] dark:text-muted-foreground uppercase tracking-wider">Acciones</th>
                 )}
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#EBEEF4]">
+            <tbody className="divide-y divide-[#EBEEF4] dark:divide-border">
               {isLoading ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center">
                     <div className="flex flex-col items-center gap-3">
                       <Loader2 className="w-8 h-8 text-[#8C59FE] animate-spin" />
-                      <p className="text-sm text-gray-500">Cargando usuarios...</p>
+                      <p className="text-sm text-gray-500 dark:text-muted-foreground">Cargando usuarios...</p>
                     </div>
                   </td>
                 </tr>
               ) : admins.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-sm text-gray-500">
+                  <td colSpan={6} className="px-6 py-12 text-center text-sm text-gray-500 dark:text-muted-foreground">
                     No hay usuarios registrados
                   </td>
                 </tr>
               ) : admins.map((admin) => (
-                <tr key={admin.id} className={`transition-colors ${admin.isPrimary ? 'bg-[#8C59FE]/5' : 'hover:bg-[#EBEEF4]'}`}>
+                <tr key={admin.id} className={`transition-colors ${admin.isPrimary ? 'bg-[#8C59FE]/5' : 'hover:bg-[#EBEEF4] dark:hover:bg-accent'}`}>
                   {/* Name + avatar */}
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
@@ -469,7 +469,7 @@ export function AdminSettings() {
                         {admin.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-gray-900">{admin.name}</span>
+                        <span className="text-sm font-medium text-gray-900 dark:text-foreground">{admin.name}</span>
                         {admin.isPrimary && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#8C59FE]/10 text-[#8C59FE] text-[10px] font-semibold rounded-full uppercase tracking-wide">
                             <ShieldCheck className="w-3 h-3" />
@@ -482,15 +482,15 @@ export function AdminSettings() {
 
                   {/* Email */}
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-1.5 text-sm text-gray-600">
-                      <Mail className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                    <div className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-muted-foreground">
+                      <Mail className="w-3.5 h-3.5 text-gray-400 dark:text-muted-foreground shrink-0" />
                       <span className="truncate max-w-[180px]">{admin.email}</span>
                     </div>
                   </td>
 
                   {/* Role */}
                   <td className="px-6 py-4">
-                    <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${admin.isPrimary ? 'bg-[#8C59FE]/10 text-[#8C59FE]' : 'bg-gray-100 text-gray-700'}`}>
+                    <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${admin.isPrimary ? 'bg-[#8C59FE]/10 text-[#8C59FE]' : 'bg-gray-100 dark:bg-muted text-gray-700 dark:text-muted-foreground'}`}>
                       {admin.role}
                     </span>
                   </td>
@@ -498,7 +498,7 @@ export function AdminSettings() {
                   {/* Temp password — visible until user changes it */}
                   <td className="px-6 py-4">
                     {admin.isPrimary ? (
-                      <span className="text-xs text-gray-400 italic">—</span>
+                      <span className="text-xs text-gray-400 dark:text-muted-foreground italic">—</span>
                     ) : (
                       <div className="flex items-center gap-1.5 flex-wrap">
                         {admin.must_change_password && admin.temp_password ? (
@@ -546,7 +546,7 @@ export function AdminSettings() {
                   {/* Permissions */}
                   <td className="px-6 py-4">
                     {admin.isPrimary ? (
-                      <span className="text-xs text-gray-500 italic">Acceso completo</span>
+                      <span className="text-xs text-gray-500 dark:text-muted-foreground italic">Acceso completo</span>
                     ) : (
                       <div className="flex items-center gap-1.5 flex-wrap">
                         {admin.can_access_notifications && (
@@ -562,7 +562,7 @@ export function AdminSettings() {
                           </span>
                         )}
                         {!admin.can_access_notifications && !admin.can_access_settings && (
-                          <span className="text-xs text-gray-400 italic">Sin permisos</span>
+                          <span className="text-xs text-gray-400 dark:text-muted-foreground italic">Sin permisos</span>
                         )}
                       </div>
                     )}
@@ -572,19 +572,19 @@ export function AdminSettings() {
                   {isAdminPrincipal && (
                     <td className="px-6 py-4">
                       {admin.isPrimary ? (
-                        <span className="text-xs text-gray-400 italic">—</span>
+                        <span className="text-xs text-gray-400 dark:text-muted-foreground italic">—</span>
                       ) : (
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => openEditModal(admin)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#5C6671] bg-white border border-[#C3C5C9] rounded-lg hover:bg-[#EBEEF4] hover:border-[#8C59FE] hover:text-[#8C59FE] transition-colors"
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#5C6671] dark:text-muted-foreground bg-white dark:bg-card border border-[#C3C5C9] dark:border-border rounded-lg hover:bg-[#EBEEF4] dark:hover:bg-accent hover:border-[#8C59FE] hover:text-[#8C59FE] transition-colors"
                           >
                             <Edit2 className="w-3.5 h-3.5" />
                             Editar
                           </button>
                           <button
                             onClick={() => handleDelete(admin)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 bg-white border border-gray-200 rounded-lg hover:bg-red-50 hover:border-red-300 transition-colors"
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 bg-white dark:bg-card border border-gray-200 dark:border-border rounded-lg hover:bg-red-50 dark:hover:bg-accent hover:border-red-300 transition-colors"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                             Eliminar
@@ -611,11 +611,11 @@ export function AdminSettings() {
       {/* CSV Import Preview Modal */}
       {showImportModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[#EBEEF4]">
+          <div className="bg-white dark:bg-card rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#EBEEF4] dark:border-border">
               <div>
-                <h3 className="text-base font-semibold text-[#303C48]">Importar usuarios desde CSV</h3>
-                <p className="text-xs text-[#81878E] mt-0.5">
+                <h3 className="text-base font-semibold text-[#303C48] dark:text-foreground">Importar usuarios desde CSV</h3>
+                <p className="text-xs text-[#81878E] dark:text-muted-foreground mt-0.5">
                   Se crearán usuarios nuevos y se actualizarán existentes por email. No se eliminarán usuarios.
                 </p>
               </div>
@@ -625,7 +625,7 @@ export function AdminSettings() {
                   setImportRows([]);
                   setImportErrors([]);
                 }}
-                className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-1.5 text-gray-400 dark:text-muted-foreground hover:text-gray-600 dark:hover:text-muted-foreground hover:bg-gray-100 dark:hover:bg-accent rounded-lg transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -641,46 +641,46 @@ export function AdminSettings() {
               )}
 
               <div className="grid grid-cols-3 gap-3">
-                <div className="rounded-lg border border-[#EBEEF4] p-3 bg-[#F8F9FB]">
-                  <p className="text-xs text-[#81878E]">Filas válidas</p>
-                  <p className="text-xl font-semibold text-[#303C48]">{importRows.length}</p>
+                <div className="rounded-lg border border-[#EBEEF4] dark:border-border p-3 bg-[#F8F9FB] dark:bg-muted">
+                  <p className="text-xs text-[#81878E] dark:text-muted-foreground">Filas válidas</p>
+                  <p className="text-xl font-semibold text-[#303C48] dark:text-foreground">{importRows.length}</p>
                 </div>
-                <div className="rounded-lg border border-[#EBEEF4] p-3 bg-[#F8F9FB]">
-                  <p className="text-xs text-[#81878E]">Nuevos</p>
-                  <p className="text-xl font-semibold text-[#303C48]">
+                <div className="rounded-lg border border-[#EBEEF4] dark:border-border p-3 bg-[#F8F9FB] dark:bg-muted">
+                  <p className="text-xs text-[#81878E] dark:text-muted-foreground">Nuevos</p>
+                  <p className="text-xl font-semibold text-[#303C48] dark:text-foreground">
                     {importRows.filter((row) => !admins.some((admin) => admin.email.toLowerCase() === row.email.toLowerCase())).length}
                   </p>
                 </div>
-                <div className="rounded-lg border border-[#EBEEF4] p-3 bg-[#F8F9FB]">
-                  <p className="text-xs text-[#81878E]">Actualizaciones</p>
-                  <p className="text-xl font-semibold text-[#303C48]">
+                <div className="rounded-lg border border-[#EBEEF4] dark:border-border p-3 bg-[#F8F9FB] dark:bg-muted">
+                  <p className="text-xs text-[#81878E] dark:text-muted-foreground">Actualizaciones</p>
+                  <p className="text-xl font-semibold text-[#303C48] dark:text-foreground">
                     {importRows.filter((row) => admins.some((admin) => admin.email.toLowerCase() === row.email.toLowerCase())).length}
                   </p>
                 </div>
               </div>
 
               {importRows.length > 0 && (
-                <div className="border border-[#EBEEF4] rounded-lg overflow-hidden">
+                <div className="border border-[#EBEEF4] dark:border-border rounded-lg overflow-hidden">
                   <table className="w-full text-sm">
-                    <thead className="bg-[#EBEEF4]">
+                    <thead className="bg-[#EBEEF4] dark:bg-muted">
                       <tr>
-                        <th className="px-4 py-2 text-left text-xs text-[#5C6671]">Nombre</th>
-                        <th className="px-4 py-2 text-left text-xs text-[#5C6671]">Email</th>
-                        <th className="px-4 py-2 text-left text-xs text-[#5C6671]">Rol</th>
+                        <th className="px-4 py-2 text-left text-xs text-[#5C6671] dark:text-muted-foreground">Nombre</th>
+                        <th className="px-4 py-2 text-left text-xs text-[#5C6671] dark:text-muted-foreground">Email</th>
+                        <th className="px-4 py-2 text-left text-xs text-[#5C6671] dark:text-muted-foreground">Rol</th>
                       </tr>
                     </thead>
                     <tbody>
                       {importRows.slice(0, 8).map((row) => (
-                        <tr key={`${row.email}-${row.nombre}`} className="border-t border-[#EBEEF4]">
-                          <td className="px-4 py-2 text-[#303C48]">{row.nombre}</td>
-                          <td className="px-4 py-2 text-[#5C6671]">{row.email}</td>
-                          <td className="px-4 py-2 text-[#5C6671]">{row.rol}</td>
+                        <tr key={`${row.email}-${row.nombre}`} className="border-t border-[#EBEEF4] dark:border-border">
+                          <td className="px-4 py-2 text-[#303C48] dark:text-foreground">{row.nombre}</td>
+                          <td className="px-4 py-2 text-[#5C6671] dark:text-muted-foreground">{row.email}</td>
+                          <td className="px-4 py-2 text-[#5C6671] dark:text-muted-foreground">{row.rol}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                   {importRows.length > 8 && (
-                    <p className="px-4 py-2 text-xs text-[#81878E] border-t border-[#EBEEF4]">
+                    <p className="px-4 py-2 text-xs text-[#81878E] dark:text-muted-foreground border-t border-[#EBEEF4] dark:border-border">
                       + {importRows.length - 8} fila(s) adicional(es)
                     </p>
                   )}
@@ -688,14 +688,14 @@ export function AdminSettings() {
               )}
             </div>
 
-            <div className="px-6 py-4 border-t border-[#EBEEF4] flex items-center justify-end gap-3">
+            <div className="px-6 py-4 border-t border-[#EBEEF4] dark:border-border flex items-center justify-end gap-3">
               <button
                 onClick={() => {
                   setShowImportModal(false);
                   setImportRows([]);
                   setImportErrors([]);
                 }}
-                className="px-4 py-2 text-sm font-medium text-[#5C6671] bg-[#EBEEF4] rounded-lg hover:bg-[#E2E6ED] transition-colors"
+                className="px-4 py-2 text-sm font-medium text-[#5C6671] dark:text-muted-foreground bg-[#EBEEF4] dark:bg-muted rounded-lg hover:bg-[#E2E6ED] dark:hover:bg-accent transition-colors"
               >
                 Cancelar
               </button>
@@ -714,12 +714,12 @@ export function AdminSettings() {
       {/* Add / Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-              <h3 className="text-base font-semibold text-gray-900">
+          <div className="bg-white dark:bg-card rounded-2xl shadow-2xl w-full max-w-md">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-border">
+              <h3 className="text-base font-semibold text-gray-900 dark:text-foreground">
                 {editingAdmin ? 'Editar usuario' : 'Agregar usuario'}
               </h3>
-              <button onClick={closeModal} className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+              <button onClick={closeModal} className="p-1.5 text-gray-400 dark:text-muted-foreground hover:text-gray-600 dark:hover:text-muted-foreground hover:bg-gray-100 dark:hover:bg-accent rounded-lg transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -741,34 +741,34 @@ export function AdminSettings() {
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Nombre completo</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-muted-foreground mb-1.5">Nombre completo</label>
                 <input
                   type="text"
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                  className="w-full px-3 py-2.5 border border-gray-300 dark:border-border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                   placeholder="Nombre Apellido"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Correo electrónico</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-muted-foreground mb-1.5">Correo electrónico</label>
                 <input
                   type="email"
                   value={formEmail}
                   onChange={(e) => setFormEmail(e.target.value)}
                   disabled={!!editingAdmin}
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none disabled:bg-gray-50 disabled:text-gray-500"
+                  className="w-full px-3 py-2.5 border border-gray-300 dark:border-border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none disabled:bg-gray-50 dark:disabled:bg-muted disabled:text-gray-500 dark:disabled:text-muted-foreground"
                   placeholder="usuario@empresa.com"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Rol</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-muted-foreground mb-1.5">Rol</label>
                 <select
                   value={formRole}
                   onChange={(e) => setFormRole(e.target.value)}
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white"
+                  className="w-full px-3 py-2.5 border border-gray-300 dark:border-border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white dark:bg-card"
                 >
                   <option>Administrador</option>
                   <option>Editor</option>
@@ -776,18 +776,18 @@ export function AdminSettings() {
                 </select>
               </div>
 
-              <div className="border-t border-gray-200 pt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-3">Permisos de acceso</label>
+              <div className="border-t border-gray-200 dark:border-border pt-4">
+                <label className="block text-sm font-medium text-gray-700 dark:text-muted-foreground mb-3">Permisos de acceso</label>
                 <div className="space-y-2.5">
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={formCanAccessNotifications}
                       onChange={(e) => setFormCanAccessNotifications(e.target.checked)}
-                      className="w-4 h-4 rounded border-gray-300 text-[#8C59FE] focus:ring-[#8C59FE] cursor-pointer"
+                      className="w-4 h-4 rounded border-gray-300 dark:border-border text-[#8C59FE] focus:ring-[#8C59FE] cursor-pointer"
                     />
-                    <div className="flex items-center gap-2 text-sm text-gray-700">
-                      <Bell className="w-4 h-4 text-gray-500" />
+                    <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-muted-foreground">
+                      <Bell className="w-4 h-4 text-gray-500 dark:text-muted-foreground" />
                       <span>Acceso a Notificaciones</span>
                     </div>
                   </label>
@@ -796,10 +796,10 @@ export function AdminSettings() {
                       type="checkbox"
                       checked={formCanAccessSettings}
                       onChange={(e) => setFormCanAccessSettings(e.target.checked)}
-                      className="w-4 h-4 rounded border-gray-300 text-[#8C59FE] focus:ring-[#8C59FE] cursor-pointer"
+                      className="w-4 h-4 rounded border-gray-300 dark:border-border text-[#8C59FE] focus:ring-[#8C59FE] cursor-pointer"
                     />
-                    <div className="flex items-center gap-2 text-sm text-gray-700">
-                      <Cog className="w-4 h-4 text-gray-500" />
+                    <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-muted-foreground">
+                      <Cog className="w-4 h-4 text-gray-500 dark:text-muted-foreground" />
                       <span>Acceso a Configuración</span>
                     </div>
                   </label>
@@ -807,8 +807,8 @@ export function AdminSettings() {
               </div>
             </div>
 
-            <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-end gap-3">
-              <button onClick={closeModal} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+            <div className="px-6 py-4 border-t border-gray-200 dark:border-border flex items-center justify-end gap-3">
+              <button onClick={closeModal} className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-muted-foreground bg-gray-100 dark:bg-muted rounded-lg hover:bg-gray-200 dark:hover:bg-accent transition-colors">
                 Cancelar
               </button>
               <button onClick={handleSave} className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-[#597AFF] to-[#8C59FE] rounded-lg hover:shadow-lg transition-all">

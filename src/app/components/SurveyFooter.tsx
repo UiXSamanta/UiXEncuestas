@@ -8,7 +8,7 @@ export function SurveyFooter() {
           <Logo />
         </div>
       </div>
-      <p className="text-[#81878E] text-sm">
+      <p className="text-[#81878E] dark:text-muted-foreground text-sm">
         Plataforma creada por DesignOps de UiX
       </p>
     </footer>

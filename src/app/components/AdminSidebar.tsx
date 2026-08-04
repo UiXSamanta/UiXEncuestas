@@ -3,6 +3,7 @@ import Logo from '../../imports/Logo';
 import svgPaths from '../../imports/svg-w42kgq06su';
 import { Bell, GitCompare } from 'lucide-react';
 import * as api from '../lib/api';
+import { ThemeToggle } from './ThemeToggle';
 
 interface AdminSidebarProps {
   unreadCount?: number;
@@ -25,21 +26,21 @@ export function AdminSidebar({ unreadCount = 0 }: AdminSidebarProps) {
   const navItem = (active: boolean) =>
     active
       ? 'bg-gradient-to-r from-[#597AFF] to-[#8C59FE] h-[36px] rounded-[10px] w-full flex items-center px-[12px] gap-[8px] cursor-pointer shadow-md'
-      : 'h-[36px] rounded-[10px] w-full flex items-center px-[12px] gap-[8px] hover:bg-[#EBEEF4] transition-colors cursor-pointer';
+      : 'h-[36px] rounded-[10px] w-full flex items-center px-[12px] gap-[8px] hover:bg-[#EBEEF4] dark:hover:bg-accent transition-colors cursor-pointer';
 
   const textClass = (active: boolean) =>
     active
       ? 'font-medium leading-[20px] text-[14px] text-white tracking-[-0.1504px]'
-      : 'font-medium leading-[20px] text-[#303C48] text-[14px] tracking-[-0.1504px]';
+      : 'font-medium leading-[20px] text-[#303C48] dark:text-foreground text-[14px] tracking-[-0.1504px]';
 
   return (
-    <aside className="w-64 bg-white border-r border-[#EBEEF4] flex flex-col shrink-0">
+    <aside className="w-64 bg-white dark:bg-card border-r border-[#EBEEF4] dark:border-border flex flex-col shrink-0">
       {/* Header with Logo */}
       <div className="flex flex-col gap-[12px] pt-[24px] px-[24px] pb-[24px] shrink-0">
         <div className="w-16 h-7">
           <Logo />
         </div>
-        <h1 className="font-semibold leading-[28px] text-[#303C48] text-[20px] tracking-[-0.4492px]">Encuestas</h1>
+        <h1 className="font-semibold leading-[28px] text-[#303C48] dark:text-foreground text-[20px] tracking-[-0.4492px]">Encuestas</h1>
         <div className="flex items-center gap-[8px]">
           <div className="size-[12px] shrink-0">
             <svg className="block size-full" fill="none" viewBox="0 0 12 12">
@@ -48,7 +49,7 @@ export function AdminSidebar({ unreadCount = 0 }: AdminSidebarProps) {
               <path d={svgPaths.p39602200} stroke="#8C59FE" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
-          <p className="font-normal leading-[16px] text-[#81878E] text-[12px]">Supabase + LocalStorage</p>
+          <p className="font-normal leading-[16px] text-[#81878E] dark:text-muted-foreground text-[12px]">Supabase + LocalStorage</p>
         </div>
       </div>
 
@@ -128,11 +129,16 @@ export function AdminSidebar({ unreadCount = 0 }: AdminSidebarProps) {
         )}
       </nav>
 
+      {/* Theme toggle */}
+      <div className="px-[12px] mt-[4px] shrink-0">
+        <ThemeToggle />
+      </div>
+
       {/* Spacer */}
       <div className="flex-1" />
 
       {/* User section */}
-      <div className="border-t border-[#EBEEF4] pt-[17px] px-[16px] pb-[17px] shrink-0">
+      <div className="border-t border-[#EBEEF4] dark:border-border pt-[17px] px-[16px] pb-[17px] shrink-0">
         <div className="flex items-center gap-[12px]">
           <div className="bg-gradient-to-br from-[#597AFF] to-[#8C59FE] rounded-full size-[40px] flex items-center justify-center shrink-0 shadow-md">
             <span className="font-semibold leading-[24px] text-[16px] text-white tracking-[-0.3125px]">
@@ -140,10 +146,10 @@ export function AdminSidebar({ unreadCount = 0 }: AdminSidebarProps) {
             </span>
           </div>
           <div className="flex flex-col flex-1 min-w-0">
-            <p className="font-medium leading-[20px] text-[#303C48] text-[14px] tracking-[-0.1504px] truncate">
+            <p className="font-medium leading-[20px] text-[#303C48] dark:text-foreground text-[14px] tracking-[-0.1504px] truncate">
               {currentUser.name || 'Usuario'}
             </p>
-            <p className="font-normal leading-[16px] text-[#81878E] text-[12px] truncate">
+            <p className="font-normal leading-[16px] text-[#81878E] dark:text-muted-foreground text-[12px] truncate">
               {currentUser.email}
             </p>
             <button

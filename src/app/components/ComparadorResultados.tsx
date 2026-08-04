@@ -362,7 +362,7 @@ export function ComparadorResultados() {
   };
 
   return (
-    <div className="flex h-screen bg-[#EBEEF4]">
+    <div className="flex h-screen bg-[#EBEEF4] dark:bg-background">
       <AdminSidebar />
 
       <main className="flex-1 overflow-auto">
@@ -373,9 +373,9 @@ export function ComparadorResultados() {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#597AFF] to-[#8C59FE] flex items-center justify-center shadow-md">
                 <Brain className="w-5 h-5 text-white" />
               </div>
-              <h2 className="text-3xl font-semibold text-[#303C48]">Comparador de Resultados con IA</h2>
+              <h2 className="text-3xl font-semibold text-[#303C48] dark:text-foreground">Comparador de Resultados con IA</h2>
             </div>
-            <p className="text-sm text-[#81878E]">
+            <p className="text-sm text-[#81878E] dark:text-muted-foreground">
               Selecciona 2 o más encuestas para analizar resultados, identificar ganadores y obtener recomendaciones inteligentes
             </p>
           </div>
@@ -388,10 +388,10 @@ export function ComparadorResultados() {
                 <div className="flex items-start gap-4">
                   <Sparkles className="w-6 h-6 text-[#8C59FE] shrink-0 mt-1" />
                   <div>
-                    <h3 className="text-lg font-semibold text-[#303C48] mb-2">
+                    <h3 className="text-lg font-semibold text-[#303C48] dark:text-foreground mb-2">
                       ¿Cómo funciona el análisis con IA?
                     </h3>
-                    <ul className="space-y-2 text-sm text-[#5C6671]">
+                    <ul className="space-y-2 text-sm text-[#5C6671] dark:text-muted-foreground">
                       <li className="flex items-start gap-2">
                         <CheckCircle2 className="w-4 h-4 text-[#8C59FE] shrink-0 mt-0.5" />
                         <span>Identifica automáticamente las encuestas con mejor desempeño</span>
@@ -414,12 +414,12 @@ export function ComparadorResultados() {
               </div>
 
               {/* Survey Selection */}
-              <div className="bg-white rounded-xl border border-[#C3C5C9] overflow-hidden shadow-sm">
-                <div className="px-6 py-4 border-b border-[#C3C5C9] bg-[#EBEEF4]">
-                  <h3 className="text-lg font-semibold text-[#303C48]">
+              <div className="bg-white dark:bg-card rounded-xl border border-[#C3C5C9] dark:border-border overflow-hidden shadow-sm">
+                <div className="px-6 py-4 border-b border-[#C3C5C9] dark:border-border bg-[#EBEEF4] dark:bg-muted">
+                  <h3 className="text-lg font-semibold text-[#303C48] dark:text-foreground">
                     Selecciona Encuestas para Comparar
                   </h3>
-                  <p className="text-xs text-[#81878E] mt-1">
+                  <p className="text-xs text-[#81878E] dark:text-muted-foreground mt-1">
                     {selectedIds.length} de {encuestas.length} encuestas seleccionadas
                   </p>
                 </div>
@@ -427,13 +427,13 @@ export function ComparadorResultados() {
                 {isLoading ? (
                   <div className="p-12 text-center">
                     <Loader2 className="w-8 h-8 text-[#8C59FE] animate-spin mx-auto mb-3" />
-                    <p className="text-[#5C6671]">Cargando encuestas...</p>
+                    <p className="text-[#5C6671] dark:text-muted-foreground">Cargando encuestas...</p>
                   </div>
                 ) : encuestas.length === 0 ? (
                   <div className="p-12 text-center">
-                    <BarChart3 className="w-12 h-12 text-[#81878E] mx-auto mb-3" />
-                    <p className="text-[#5C6671] mb-2">No hay encuestas con respuestas disponibles</p>
-                    <p className="text-xs text-[#81878E]">
+                    <BarChart3 className="w-12 h-12 text-[#81878E] dark:text-muted-foreground mx-auto mb-3" />
+                    <p className="text-[#5C6671] dark:text-muted-foreground mb-2">No hay encuestas con respuestas disponibles</p>
+                    <p className="text-xs text-[#81878E] dark:text-muted-foreground">
                       Las encuestas deben tener al menos 1 respuesta para ser comparadas
                     </p>
                   </div>
@@ -446,15 +446,15 @@ export function ComparadorResultados() {
                         className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
                           selectedIds.includes(encuesta.id)
                             ? 'border-[#8C59FE] bg-[#8C59FE]/5 shadow-md'
-                            : 'border-[#C3C5C9] hover:border-[#8C59FE]/50 hover:bg-[#EBEEF4]'
+                            : 'border-[#C3C5C9] dark:border-border hover:border-[#8C59FE]/50 hover:bg-[#EBEEF4] dark:hover:bg-accent'
                         }`}
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex-1">
-                            <h4 className="font-semibold text-[#303C48] mb-1">
+                            <h4 className="font-semibold text-[#303C48] dark:text-foreground mb-1">
                               {encuesta.nombre_encuesta}
                             </h4>
-                            <p className="text-xs text-[#81878E]">
+                            <p className="text-xs text-[#81878E] dark:text-muted-foreground">
                               {encuesta.conteo_respuestas} respuestas • {encuesta.preguntas?.length || 0}{' '}
                               preguntas
                             </p>
@@ -463,7 +463,7 @@ export function ComparadorResultados() {
                             className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all ${
                               selectedIds.includes(encuesta.id)
                                 ? 'border-[#8C59FE] bg-gradient-to-r from-[#597AFF] to-[#8C59FE]'
-                                : 'border-[#C3C5C9]'
+                                : 'border-[#C3C5C9] dark:border-border'
                             }`}
                           >
                             {selectedIds.includes(encuesta.id) && (
@@ -477,7 +477,7 @@ export function ComparadorResultados() {
                 )}
 
                 {encuestas.length > 0 && (
-                  <div className="px-6 py-4 border-t border-[#C3C5C9] bg-[#EBEEF4] flex justify-end">
+                  <div className="px-6 py-4 border-t border-[#C3C5C9] dark:border-border bg-[#EBEEF4] dark:bg-muted flex justify-end">
                     <button
                       onClick={handleComparar}
                       disabled={selectedIds.length < 2 || isAnalyzing}
@@ -507,17 +507,17 @@ export function ComparadorResultados() {
               {/* Back Button */}
               <button
                 onClick={() => setShowResults(false)}
-                className="text-sm text-[#5C6671] hover:text-[#8C59FE] transition-colors"
+                className="text-sm text-[#5C6671] dark:text-muted-foreground hover:text-[#8C59FE] transition-colors"
               >
                 ← Volver a selección
               </button>
 
               {/* Winners Section */}
-              <div className="bg-white rounded-xl border border-[#C3C5C9] overflow-hidden shadow-sm">
-                <div className="px-6 py-4 border-b border-[#C3C5C9] bg-gradient-to-r from-[#ACE738]/10 to-[#00C4B3]/10">
+              <div className="bg-white dark:bg-card rounded-xl border border-[#C3C5C9] dark:border-border overflow-hidden shadow-sm">
+                <div className="px-6 py-4 border-b border-[#C3C5C9] dark:border-border bg-gradient-to-r from-[#ACE738]/10 to-[#00C4B3]/10">
                   <div className="flex items-center gap-3">
                     <Award className="w-6 h-6 text-[#00C4B3]" />
-                    <h3 className="text-lg font-semibold text-[#303C48]">Resultados Comparativos</h3>
+                    <h3 className="text-lg font-semibold text-[#303C48] dark:text-foreground">Resultados Comparativos</h3>
                   </div>
                 </div>
 
@@ -527,7 +527,7 @@ export function ComparadorResultados() {
                     .map((stat, index) => (
                       <div
                         key={stat.encuestaId}
-                        className="relative bg-white border-2 border-[#C3C5C9] rounded-xl p-5 hover:shadow-lg transition-all"
+                        className="relative bg-white dark:bg-card border-2 border-[#C3C5C9] dark:border-border rounded-xl p-5 hover:shadow-lg transition-all"
                       >
                         {/* Winner Badge */}
                         {index === 0 && (
@@ -538,7 +538,7 @@ export function ComparadorResultados() {
 
                         {/* Position */}
                         <div className="flex items-center justify-between mb-3">
-                          <span className="text-2xl font-bold text-[#81878E]">#{index + 1}</span>
+                          <span className="text-2xl font-bold text-[#81878E] dark:text-muted-foreground">#{index + 1}</span>
                           <div
                             className={`px-3 py-1 rounded-full text-white text-xs font-semibold bg-gradient-to-r ${getColorBySatisfaccion(
                               stat.satisfaccionGeneral
@@ -549,21 +549,21 @@ export function ComparadorResultados() {
                         </div>
 
                         {/* Survey Name */}
-                        <h4 className="font-semibold text-[#303C48] mb-4 line-clamp-2 min-h-[3rem]">
+                        <h4 className="font-semibold text-[#303C48] dark:text-foreground mb-4 line-clamp-2 min-h-[3rem]">
                           {stat.nombre}
                         </h4>
 
                         {/* Stats Grid */}
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
-                            <span className="text-[#81878E]">Respuestas:</span>
-                            <span className="font-semibold text-[#303C48]">{stat.totalRespuestas}</span>
+                            <span className="text-[#81878E] dark:text-muted-foreground">Respuestas:</span>
+                            <span className="font-semibold text-[#303C48] dark:text-foreground">{stat.totalRespuestas}</span>
                           </div>
 
                           {stat.promedioSUS !== undefined && (
                             <div className="flex justify-between">
-                              <span className="text-[#81878E]">SUS Score:</span>
-                              <span className="font-semibold text-[#303C48]">
+                              <span className="text-[#81878E] dark:text-muted-foreground">SUS Score:</span>
+                              <span className="font-semibold text-[#303C48] dark:text-foreground">
                                 {stat.promedioSUS.toFixed(1)}
                               </span>
                             </div>
@@ -571,8 +571,8 @@ export function ComparadorResultados() {
 
                           {stat.promedioCSAT !== undefined && (
                             <div className="flex justify-between">
-                              <span className="text-[#81878E]">CSAT:</span>
-                              <span className="font-semibold text-[#303C48]">
+                              <span className="text-[#81878E] dark:text-muted-foreground">CSAT:</span>
+                              <span className="font-semibold text-[#303C48] dark:text-foreground">
                                 {stat.promedioCSAT.toFixed(1)}/5
                               </span>
                             </div>
@@ -580,16 +580,16 @@ export function ComparadorResultados() {
 
                           {stat.promedioLikert !== undefined && (
                             <div className="flex justify-between">
-                              <span className="text-[#81878E]">Likert:</span>
-                              <span className="font-semibold text-[#303C48]">
+                              <span className="text-[#81878E] dark:text-muted-foreground">Likert:</span>
+                              <span className="font-semibold text-[#303C48] dark:text-foreground">
                                 {stat.promedioLikert.toFixed(1)}/5
                               </span>
                             </div>
                           )}
 
                           <div className="flex justify-between">
-                            <span className="text-[#81878E]">Promedio:</span>
-                            <span className="font-semibold text-[#303C48]">
+                            <span className="text-[#81878E] dark:text-muted-foreground">Promedio:</span>
+                            <span className="font-semibold text-[#303C48] dark:text-foreground">
                               {stat.promedioGeneral.toFixed(1)}/5
                             </span>
                           </div>
@@ -597,9 +597,9 @@ export function ComparadorResultados() {
 
                         {/* Best/Worst Questions */}
                         {stat.mejorPregunta && (
-                          <div className="mt-4 pt-4 border-t border-[#C3C5C9]">
-                            <p className="text-xs text-[#81878E] mb-1">Mejor pregunta:</p>
-                            <p className="text-xs text-[#303C48] font-medium line-clamp-2">
+                          <div className="mt-4 pt-4 border-t border-[#C3C5C9] dark:border-border">
+                            <p className="text-xs text-[#81878E] dark:text-muted-foreground mb-1">Mejor pregunta:</p>
+                            <p className="text-xs text-[#303C48] dark:text-foreground font-medium line-clamp-2">
                               {stat.mejorPregunta.titulo} ({stat.mejorPregunta.promedio.toFixed(1)})
                             </p>
                           </div>
@@ -610,15 +610,15 @@ export function ComparadorResultados() {
               </div>
 
               {/* AI Recommendations */}
-              <div className="bg-white rounded-xl border border-[#C3C5C9] overflow-hidden shadow-sm">
-                <div className="px-6 py-4 border-b border-[#C3C5C9] bg-gradient-to-r from-[#597AFF]/10 to-[#8C59FE]/10">
+              <div className="bg-white dark:bg-card rounded-xl border border-[#C3C5C9] dark:border-border overflow-hidden shadow-sm">
+                <div className="px-6 py-4 border-b border-[#C3C5C9] dark:border-border bg-gradient-to-r from-[#597AFF]/10 to-[#8C59FE]/10">
                   <div className="flex items-center gap-3">
                     <Brain className="w-6 h-6 text-[#8C59FE]" />
                     <div>
-                      <h3 className="text-lg font-semibold text-[#303C48]">
+                      <h3 className="text-lg font-semibold text-[#303C48] dark:text-foreground">
                         Análisis y Recomendaciones con IA
                       </h3>
-                      <p className="text-xs text-[#81878E]">
+                      <p className="text-xs text-[#81878E] dark:text-muted-foreground">
                         Insights automáticos basados en {comparacionData.length} encuestas analizadas
                       </p>
                     </div>
@@ -648,8 +648,8 @@ export function ComparadorResultados() {
                             <Icon className="w-5 h-5 text-white" />
                           </div>
                           <div className="flex-1">
-                            <h4 className="font-semibold text-[#303C48] mb-2">{rec.titulo}</h4>
-                            <p className="text-sm text-[#5C6671] leading-relaxed">{rec.descripcion}</p>
+                            <h4 className="font-semibold text-[#303C48] dark:text-foreground mb-2">{rec.titulo}</h4>
+                            <p className="text-sm text-[#5C6671] dark:text-muted-foreground leading-relaxed">{rec.descripcion}</p>
                           </div>
                         </div>
                       </div>
@@ -658,8 +658,8 @@ export function ComparadorResultados() {
 
                   {aiRecomendaciones.length === 0 && (
                     <div className="text-center py-8">
-                      <Brain className="w-12 h-12 text-[#81878E] mx-auto mb-3" />
-                      <p className="text-[#5C6671]">
+                      <Brain className="w-12 h-12 text-[#81878E] dark:text-muted-foreground mx-auto mb-3" />
+                      <p className="text-[#5C6671] dark:text-muted-foreground">
                         No se generaron recomendaciones para esta comparación
                       </p>
                     </div>

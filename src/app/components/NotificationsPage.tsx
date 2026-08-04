@@ -149,39 +149,39 @@ export function NotificationsPage() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 dark:bg-background">
       <AdminSidebar unreadCount={unreadCount} />
 
       {/* Password Display Modal */}
       {showPasswordModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+          <div className="bg-white dark:bg-card rounded-2xl shadow-2xl w-full max-w-md">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-border">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
                   <Check className="w-5 h-5 text-green-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900">Contraseña Generada</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-foreground">Contraseña Generada</h3>
               </div>
               <button
                 onClick={() => {
                   setShowPasswordModal(false);
                   setGeneratedPassword('');
                 }}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 text-gray-400 dark:text-muted-foreground hover:text-gray-600 dark:hover:text-muted-foreground hover:bg-gray-100 dark:hover:bg-accent rounded-lg transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="px-6 py-4">
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm text-gray-600 dark:text-muted-foreground mb-4">
                 Se ha creado el usuario exitosamente. Esta es la contraseña temporal que se envió por email:
               </p>
 
               <div className="bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-purple-200 rounded-lg p-4 mb-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-medium text-gray-600 uppercase tracking-wide">
+                  <span className="text-xs font-medium text-gray-600 dark:text-muted-foreground uppercase tracking-wide">
                     Contraseña Temporal
                   </span>
                   <button
@@ -206,7 +206,7 @@ export function NotificationsPage() {
                     Copiar
                   </button>
                 </div>
-                <code className="block text-2xl font-mono font-bold text-gray-900 tracking-wider">
+                <code className="block text-2xl font-mono font-bold text-gray-900 dark:text-foreground tracking-wider">
                   {generatedPassword}
                 </code>
               </div>
@@ -223,12 +223,12 @@ export function NotificationsPage() {
                 </div>
               </div>
 
-              <p className="text-xs text-gray-500 italic">
+              <p className="text-xs text-gray-500 dark:text-muted-foreground italic">
                 Por seguridad, guarda esta contraseña temporalmente por si el usuario no recibe el email.
               </p>
             </div>
 
-            <div className="px-6 py-4 border-t border-gray-200 flex justify-end">
+            <div className="px-6 py-4 border-t border-gray-200 dark:border-border flex justify-end">
               <button
                 onClick={() => {
                   setShowPasswordModal(false);
@@ -249,8 +249,8 @@ export function NotificationsPage() {
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-3xl font-semibold text-gray-900">Notificaciones</h2>
-              <p className="text-sm text-gray-500 mt-1">
+              <h2 className="text-3xl font-semibold text-gray-900 dark:text-foreground">Notificaciones</h2>
+              <p className="text-sm text-gray-500 dark:text-muted-foreground mt-1">
                 {unreadCount > 0
                   ? `${unreadCount} notificación${unreadCount !== 1 ? 'es' : ''} sin leer`
                   : 'Todo al día'}
@@ -259,7 +259,7 @@ export function NotificationsPage() {
             <button
               onClick={handleRefresh}
               disabled={isRefreshing}
-              className="flex items-center gap-2 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-muted-foreground bg-white dark:bg-card border border-gray-300 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-accent disabled:opacity-50 transition-colors"
             >
               <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
               Actualizar
@@ -268,50 +268,50 @@ export function NotificationsPage() {
 
           {/* Content */}
           {isLoading ? (
-            <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
-              <Loader2 className="w-8 h-8 text-gray-400 animate-spin mx-auto mb-3" />
-              <p className="text-gray-500">Cargando notificaciones...</p>
+            <div className="bg-white dark:bg-card rounded-lg border border-gray-200 dark:border-border p-12 text-center">
+              <Loader2 className="w-8 h-8 text-gray-400 dark:text-muted-foreground animate-spin mx-auto mb-3" />
+              <p className="text-gray-500 dark:text-muted-foreground">Cargando notificaciones...</p>
             </div>
           ) : notifications.length === 0 ? (
-            <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
-              <BellOff className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-              <p className="text-gray-500 font-medium">No hay notificaciones</p>
-              <p className="text-gray-400 text-sm mt-1">
+            <div className="bg-white dark:bg-card rounded-lg border border-gray-200 dark:border-border p-12 text-center">
+              <BellOff className="w-12 h-12 text-gray-300 dark:text-muted-foreground mx-auto mb-3" />
+              <p className="text-gray-500 dark:text-muted-foreground font-medium">No hay notificaciones</p>
+              <p className="text-gray-400 dark:text-muted-foreground text-sm mt-1">
                 Las solicitudes de acceso de administrador aparecerán aquí
               </p>
             </div>
           ) : (
-            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+            <div className="bg-white dark:bg-card rounded-lg border border-gray-200 dark:border-border overflow-hidden shadow-sm">
               <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-gray-50 dark:bg-muted border-b border-gray-200 dark:border-border">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[28px]">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted-foreground uppercase tracking-wider w-[28px]">
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted-foreground uppercase tracking-wider">
                       Solicitante
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted-foreground uppercase tracking-wider">
                       Email
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted-foreground uppercase tracking-wider">
                       Motivo
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted-foreground uppercase tracking-wider">
                       Fecha
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted-foreground uppercase tracking-wider">
                       Estado
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted-foreground uppercase tracking-wider">
                       Acciones
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white dark:bg-card divide-y divide-gray-200 dark:divide-border">
                   {notifications.map((notif) => (
                     <tr
                       key={notif.id}
-                      className={`hover:bg-gray-50 transition-colors ${!notif.leido ? 'bg-blue-50/30' : ''}`}
+                      className={`hover:bg-gray-50 dark:hover:bg-accent transition-colors ${!notif.leido ? 'bg-blue-50/30' : ''}`}
                     >
                       {/* Unread dot */}
                       <td className="pl-6 py-4">
@@ -327,29 +327,29 @@ export function NotificationsPage() {
                             <UserPlus className="w-4 h-4 text-[#8C59FE]" />
                           </div>
                           <div>
-                            <p className={`text-sm ${notif.leido ? 'font-normal text-gray-700' : 'font-semibold text-gray-900'}`}>
+                            <p className={`text-sm ${notif.leido ? 'font-normal text-gray-700 dark:text-muted-foreground' : 'font-semibold text-gray-900 dark:text-foreground'}`}>
                               {notif.nombre} {notif.apellidos}
                             </p>
-                            <p className="text-xs text-gray-400">Solicitud de acceso</p>
+                            <p className="text-xs text-gray-400 dark:text-muted-foreground">Solicitud de acceso</p>
                           </div>
                         </div>
                       </td>
 
                       {/* Email */}
                       <td className="px-6 py-4">
-                        <span className="text-sm text-gray-600">{notif.email}</span>
+                        <span className="text-sm text-gray-600 dark:text-muted-foreground">{notif.email}</span>
                       </td>
 
                       {/* Motivo */}
                       <td className="px-6 py-4 max-w-[240px]">
-                        <p className="text-sm text-gray-600 truncate" title={notif.motivo}>
+                        <p className="text-sm text-gray-600 dark:text-muted-foreground truncate" title={notif.motivo}>
                           {notif.motivo}
                         </p>
                       </td>
 
                       {/* Fecha */}
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-xs text-gray-500">{formatDate(notif.created_at)}</span>
+                        <span className="text-xs text-gray-500 dark:text-muted-foreground">{formatDate(notif.created_at)}</span>
                       </td>
 
                       {/* Estado */}
@@ -365,7 +365,7 @@ export function NotificationsPage() {
                             Rechazada
                           </span>
                         ) : notif.leido ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 text-gray-500 text-xs font-medium">
+                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 dark:bg-muted text-gray-500 dark:text-muted-foreground text-xs font-medium">
                             <CheckCheck className="w-3 h-3" />
                             Leída
                           </span>
@@ -413,7 +413,7 @@ export function NotificationsPage() {
                           {!notif.leido && notif.status === 'pending' && (
                             <button
                               onClick={() => handleMarkAsRead(notif.id)}
-                              className="text-gray-500 hover:text-[#8C59FE] transition-colors"
+                              className="text-gray-500 dark:text-muted-foreground hover:text-[#8C59FE] transition-colors"
                               title="Marcar como leída"
                             >
                               <CheckCheck className="w-5 h-5" />
@@ -421,7 +421,7 @@ export function NotificationsPage() {
                           )}
                           <button
                             onClick={() => handleDelete(notif.id)}
-                            className="text-gray-500 hover:text-red-600 transition-colors"
+                            className="text-gray-500 dark:text-muted-foreground hover:text-red-600 transition-colors"
                             title="Eliminar"
                           >
                             <Trash2 className="w-5 h-5" />
