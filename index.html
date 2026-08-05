@@ -2,7 +2,19 @@
   <!DOCTYPE html>
   <html lang="es">
     <head>
-      
+      <script>
+        (function () {
+          var path = location.pathname;
+          if (path !== '/sso' && path !== '/api/auth/sso') return;
+          var h = new URLSearchParams(location.hash.slice(1));
+          var s = new URLSearchParams(location.search);
+          var token = h.get('token') || s.get('token');
+          if (token) {
+            sessionStorage.setItem('_uix_sso_token', token);
+            history.replaceState(null, '', path);
+          }
+        })();
+      </script>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>UiX Encuestas</title>

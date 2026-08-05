@@ -20,6 +20,7 @@ import { PublicLayout } from './components/PublicLayout';
 import { SurveyLoader } from './components/SurveyLoader';
 import { SurveyWelcome } from './components/SurveyWelcome';
 import { SurveyThankYou } from './components/SurveyThankYou';
+import { SsoPage } from './components/SsoPage';
 
 export const router = createBrowserRouter([
   // Public routes (no authentication required)
@@ -33,6 +34,14 @@ export const router = createBrowserRouter([
       {
         path: '/login',
         element: <Login />,
+      },
+      {
+        path: '/sso',
+        element: <SsoPage />,
+      },
+      {
+        path: '/api/auth/sso',
+        element: <SsoPage />,
       },
       {
         path: '/admin-request',
