@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams, useLocation } from 'react-router';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import {
@@ -21,6 +21,7 @@ import {
   GitBranch,
   Layers,
   ArrowRight,
+  ArrowLeft,
   Minus,
   Check,
   Grid3x3,
@@ -28,7 +29,16 @@ import {
   Gauge,
 } from 'lucide-react';
 import * as api from '../lib/api';
-import { getPreviewUrl } from '../lib/urls';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from './ui/accordion';
+import {
+  getBuilderReturnProyecto,
+  navigateToAdminProyecto,
+} from '../lib/builderNavigation';
 
 // ── Interfaces ────────────────────────────────────────────────────────────────
 
@@ -109,6 +119,7 @@ interface EncuestaRow {
   configuracion: {
     color_primario: string;
     modo_visualizacion: 'scroll' | 'paginated';
+    bloquear_regreso?: boolean;
   };
   preguntas: PreguntaSchema[];
   sections?: SectionMetadata[]; // Metadata for sections
@@ -1237,6 +1248,14 @@ function DraggableQuestionCard({
 
 export function SurveyBuilder() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const returnProyectoId =
+    (location.state as { returnProyectoId?: string } | null)?.returnProyectoId ??
+    getBuilderReturnProyecto();
+
+  const handleBackToFolder = () => {
+    navigateToAdminProyecto(navigate, returnProyectoId);
+  };
   const { id } = useParams();
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishSuccess, setPublishSuccess] = useState(false);
@@ -1253,6 +1272,7 @@ export function SurveyBuilder() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const fileInputOGRef = useRef<HTMLInputElement>(null);
   const fileInputThumbnailRef = useRef<HTMLInputElement>(null);
+  const skipAutoSaveRef = useRef(true);
 
   const [encuestaData, setEncuestaData] = useState<EncuestaRow>({
     id: id || crypto.randomUUID(),
@@ -1266,7 +1286,8 @@ export function SurveyBuilder() {
     },
     configuracion: {
       color_primario: '#2563eb',
-      modo_visualizacion: 'scroll',
+      modo_visualizacion: 'paginated',
+      bloquear_regreso: false,
     },
     preguntas: [],
     sections: [],
@@ -1276,8 +1297,12 @@ export function SurveyBuilder() {
   });
 
   useEffect(() => {
-    if (id) loadEncuesta();
-    else setIsLoading(false);
+    if (id) {
+      skipAutoSaveRef.current = true;
+      loadEncuesta();
+    } else {
+      setIsLoading(false);
+    }
   }, [id]);
 
   const loadEncuesta = async () => {
@@ -1288,12 +1313,23 @@ export function SurveyBuilder() {
     else if (data) {
       // Clean invalid conditional logic rules before loading
       const { cleanedData, cleanedCount } = cleanInvalidConditionalLogic(data);
-      setEncuestaData(cleanedData);
+      setEncuestaData({
+        ...cleanedData,
+        configuracion: {
+          color_primario: '#2563eb',
+          modo_visualizacion: 'paginated',
+          bloquear_regreso: false,
+          ...cleanedData.configuracion,
+        },
+      });
 
       // If rules were cleaned, save immediately
       if (cleanedCount > 0) {
         console.log(`💾 Auto-saving after cleaning ${cleanedCount} invalid rules...`);
-        const { error: saveError } = await api.saveEncuesta(cleanedData);
+        const { error: saveError } = await api.saveEncuesta({
+          ...cleanedData,
+          ...editorMetaStamp(),
+        });
         if (saveError) {
           console.error('Error auto-saving cleaned rules:', saveError);
         } else {
@@ -1447,9 +1483,13 @@ export function SurveyBuilder() {
     };
   };
 
-  // Auto-save with debounce
+  // Auto-save with debounce (skip first run after load to avoid overwriting metadata)
   useEffect(() => {
     if (!isLoading && id) {
+      if (skipAutoSaveRef.current) {
+        skipAutoSaveRef.current = false;
+        return;
+      }
       const t = setTimeout(saveEncuesta, 1000);
       return () => clearTimeout(t);
     }
@@ -1457,8 +1497,18 @@ export function SurveyBuilder() {
 
   const saveEncuesta = async () => {
     setIsSaving(true);
-    const { error } = await api.saveEncuesta(encuestaData);
-    if (error) console.error('Error saving encuesta:', error);
+    const payload = { ...encuestaData, ...editorMetaStamp() };
+    const { data, error } = await api.saveEncuesta(payload);
+    if (error) {
+      console.error('Error saving encuesta:', error);
+    } else if (data) {
+      skipAutoSaveRef.current = true;
+      setEncuestaData((prev) => ({
+        ...prev,
+        ...data,
+        updated_by: data.updated_by ?? payload.updated_by,
+      }));
+    }
     setIsSaving(false);
   };
 
@@ -1798,6 +1848,15 @@ export function SurveyBuilder() {
         <header className="bg-white dark:bg-card border-b border-gray-200 dark:border-border px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
+              <button
+                type="button"
+                onClick={handleBackToFolder}
+                className="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-300 dark:border-border text-gray-600 dark:text-muted-foreground hover:bg-gray-50 dark:hover:bg-accent transition-colors shrink-0"
+                title={returnProyectoId ? 'Volver a carpeta' : 'Volver al dashboard'}
+                aria-label={returnProyectoId ? 'Volver a carpeta' : 'Volver al dashboard'}
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </button>
               <div>
                 <div className="flex items-center gap-2">
                   <input
@@ -1825,7 +1884,7 @@ export function SurveyBuilder() {
               <span className={`px-3 py-1 rounded-full text-xs font-medium ${encuestaData.estado ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' : 'bg-gray-100 dark:bg-muted text-gray-600 dark:text-muted-foreground'}`}>
                 {encuestaData.estado ? 'Live' : 'Draft'}
               </span>
-              <button onClick={() => navigate(getPreviewUrl(id || encuestaData.id))} className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-muted-foreground bg-white dark:bg-card border border-gray-300 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-accent">
+              <button onClick={() => navigate(`/preview/${id || encuestaData.id}`)} className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-muted-foreground bg-white dark:bg-card border border-gray-300 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-accent">
                 <Eye className="w-4 h-4" /> Preview
               </button>
               <button
@@ -1884,23 +1943,93 @@ export function SurveyBuilder() {
         <div className="flex flex-1 overflow-hidden">
           {/* ── Left Sidebar ── */}
           <aside className="w-72 bg-white dark:bg-card border-r border-gray-200 dark:border-border overflow-auto">
-            <div className="p-6">
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-foreground mb-4">Question Types</h3>
-              <div className="space-y-2">
-                {questionTypes.map((qt) => (
-                  <button key={qt.type} onClick={() => addQuestion(qt.type)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg ${qt.color} hover:opacity-80 transition-opacity`}>
-                    <qt.icon className="w-5 h-5" />
-                    <span className="text-sm font-medium">{qt.label}</span>
-                  </button>
-                ))}
-              </div>
+            <div className="p-6 space-y-4">
+              <Accordion type="multiple" defaultValue={[]}>
+                <AccordionItem value="configuracion" className="border-none">
+                  <AccordionTrigger className="py-2 text-sm font-semibold text-gray-900 dark:text-foreground hover:no-underline">
+                    Configuración
+                  </AccordionTrigger>
+                  <AccordionContent className="pb-2 space-y-6">
+                    <div>
+                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-muted-foreground mb-3">
+                        <Palette className="w-4 h-4" /> Color principal
+                      </label>
+                      <div className="flex items-center gap-3">
+                        <input type="color" value={encuestaData.configuracion.color_primario} onChange={(e) => setEncuestaData({ ...encuestaData, configuracion: { ...encuestaData.configuracion, color_primario: e.target.value } })} className="w-12 h-12 rounded-lg border border-gray-300 dark:border-border cursor-pointer" />
+                        <input type="text" value={encuestaData.configuracion.color_primario} onChange={(e) => setEncuestaData({ ...encuestaData, configuracion: { ...encuestaData.configuracion, color_primario: e.target.value } })} className="flex-1 px-3 py-2 border border-gray-300 dark:border-border rounded-lg text-sm font-mono" />
+                      </div>
+                    </div>
 
-              <div className="mt-6">
+                    <div className="p-4 bg-gray-50 dark:bg-background rounded-lg">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex min-w-0 flex-1 items-start gap-2">
+                          <LayoutList className="mt-0.5 h-4 w-4 shrink-0 text-gray-500 dark:text-muted-foreground" />
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium text-gray-900 dark:text-foreground">Vista</p>
+                            <p className="text-xs text-gray-500 dark:text-muted-foreground">{encuestaData.configuracion.modo_visualizacion === 'paginated' ? 'En pasos' : 'Una página'}</p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setEncuestaData({ ...encuestaData, configuracion: { ...encuestaData.configuracion, modo_visualizacion: encuestaData.configuracion.modo_visualizacion === 'scroll' ? 'paginated' : 'scroll' }, ...editorMetaStamp() })}
+                          className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${encuestaData.configuracion.modo_visualizacion === 'paginated' ? 'bg-blue-600' : 'bg-gray-300 dark:bg-muted'}`}
+                          aria-pressed={encuestaData.configuracion.modo_visualizacion === 'paginated'}
+                        >
+                          <span className={`pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow transition-transform ${encuestaData.configuracion.modo_visualizacion === 'paginated' ? 'translate-x-5' : 'translate-x-0.5'}`} />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-gray-50 dark:bg-background rounded-lg">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex min-w-0 flex-1 items-start gap-2">
+                          <ArrowLeft className="mt-0.5 h-4 w-4 shrink-0 text-gray-500 dark:text-muted-foreground" />
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium text-gray-900 dark:text-foreground">Bloquear regreso</p>
+                            <p className="text-xs text-gray-500 dark:text-muted-foreground">Botón de &quot;Anterior&quot; oculto</p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setEncuestaData({ ...encuestaData, configuracion: { ...encuestaData.configuracion, bloquear_regreso: !encuestaData.configuracion.bloquear_regreso }, ...editorMetaStamp() })}
+                          className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${encuestaData.configuracion.bloquear_regreso ? 'bg-blue-600' : 'bg-gray-300 dark:bg-muted'}`}
+                          aria-pressed={!!encuestaData.configuracion.bloquear_regreso}
+                        >
+                          <span className={`pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow transition-transform ${encuestaData.configuracion.bloquear_regreso ? 'translate-x-5' : 'translate-x-0.5'}`} />
+                        </button>
+                      </div>
+                    </div>
+
+                    <p className="text-xs text-gray-500 dark:text-muted-foreground">
+                      Última actualización: {formatUpdatedLabel(encuestaData.updated_at, encuestaData.updated_by)}
+                    </p>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+
+              <Accordion type="multiple" defaultValue={['question-types']}>
+                <AccordionItem value="question-types" className="border-none">
+                  <AccordionTrigger className="py-2 text-sm font-semibold text-gray-900 dark:text-foreground hover:no-underline">
+                    Question Types
+                  </AccordionTrigger>
+                  <AccordionContent className="pb-2">
+                    <div className="space-y-2">
+                      {questionTypes.map((qt) => (
+                        <button key={qt.type} onClick={() => addQuestion(qt.type)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg ${qt.color} hover:opacity-80 transition-opacity`}>
+                          <qt.icon className="w-5 h-5" />
+                          <span className="text-sm font-medium">{qt.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+
+              <div>
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-foreground mb-4">Agrupación</h3>
                 <button
                   onClick={() => {
                     const sectionId = `section_${Date.now()}`;
-                    // Create empty section with metadata
                     const newSection: SectionMetadata = {
                       id: sectionId,
                       title: 'Nueva Sección',
@@ -1921,7 +2050,7 @@ export function SurveyBuilder() {
                 </p>
               </div>
 
-              <div className="mt-6 p-4 bg-gray-50 dark:bg-background rounded-lg text-xs text-gray-600 dark:text-muted-foreground" style={{ display: 'none' }}>
+              <div className="p-4 bg-gray-50 dark:bg-background rounded-lg text-xs text-gray-600 dark:text-muted-foreground" style={{ display: 'none' }}>
                 <p className="font-semibold mb-2">Estructura de Datos:</p>
                 <code className="block font-mono text-[10px] leading-relaxed">
                   /encuestas/{'{id}'}<br/>
@@ -2487,50 +2616,6 @@ export function SurveyBuilder() {
 
             </div>
           </main>
-
-          {/* ── Right Sidebar ── */}
-          <aside className="w-80 bg-white dark:bg-card border-l border-gray-200 dark:border-border overflow-auto">
-            <div className="p-6 space-y-6">
-              <div>
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-foreground mb-4">Configuración</h3>
-
-                {/* Color Picker */}
-                <div className="mb-6">
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-muted-foreground mb-3">
-                    <Palette className="w-4 h-4" /> Color principal
-                  </label>
-                  <div className="flex items-center gap-3">
-                    <input type="color" value={encuestaData.configuracion.color_primario} onChange={(e) => setEncuestaData({ ...encuestaData, configuracion: { ...encuestaData.configuracion, color_primario: e.target.value } })} className="w-12 h-12 rounded-lg border border-gray-300 dark:border-border cursor-pointer" />
-                    <input type="text" value={encuestaData.configuracion.color_primario} onChange={(e) => setEncuestaData({ ...encuestaData, configuracion: { ...encuestaData.configuracion, color_primario: e.target.value } })} className="flex-1 px-3 py-2 border border-gray-300 dark:border-border rounded-lg text-sm font-mono" />
-                  </div>
-                </div>
-
-                {/* Display mode toggle */}
-                <div className="p-4 bg-gray-50 dark:bg-background rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <LayoutList className="w-4 h-4 text-gray-500 dark:text-muted-foreground" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-900 dark:text-foreground">Vista</p>
-                        <p className="text-xs text-gray-500 dark:text-muted-foreground">{encuestaData.configuracion.modo_visualizacion === 'paginated' ? 'En pasos' : 'Una página'}</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => setEncuestaData({ ...encuestaData, configuracion: { ...encuestaData.configuracion, modo_visualizacion: encuestaData.configuracion.modo_visualizacion === 'scroll' ? 'paginated' : 'scroll' } })}
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${encuestaData.configuracion.modo_visualizacion === 'paginated' ? 'bg-blue-600' : 'bg-gray-300'}`}
-                    >
-                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white dark:bg-card transition-transform ${encuestaData.configuracion.modo_visualizacion === 'paginated' ? 'translate-x-6' : 'translate-x-1'}`} />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Last updated */}
-                <p className="mt-6 text-xs text-gray-500 dark:text-muted-foreground">
-                  Última actualización: {formatUpdatedLabel(encuestaData.updated_at, encuestaData.updated_by)}
-                </p>
-              </div>
-            </div>
-          </aside>
         </div>
       </div>
     </DndProvider>

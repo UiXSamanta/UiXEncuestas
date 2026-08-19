@@ -405,7 +405,8 @@ app.post("/make-server-824603ba/encuestas", async (c) => {
       id,
       ...encuestaData,
       created_at: existingEncuesta?.created_at || timestamp,
-      updated_at: timestamp,
+      updated_at: encuestaData.updated_at || timestamp,
+      updated_by: encuestaData.updated_by ?? existingEncuesta?.updated_by ?? null,
     };
 
     await kv.set(`encuesta:${id}`, encuesta);
@@ -433,7 +434,8 @@ app.put("/make-server-824603ba/encuestas/:id", async (c) => {
       ...existingEncuesta,
       ...body,
       id,
-      updated_at: new Date().toISOString(),
+      updated_at: body.updated_at || new Date().toISOString(),
+      updated_by: body.updated_by ?? existingEncuesta.updated_by ?? null,
     };
 
     await kv.set(`encuesta:${id}`, updatedEncuesta);
@@ -1359,6 +1361,7 @@ app.post("/make-server-824603ba/auth/verify", async (c) => {
         must_change_password: adminInfo?.must_change_password || false,
         can_access_notifications: adminInfo?.can_access_notifications || false,
         can_access_settings: adminInfo?.can_access_settings || false,
+        source: adminInfo?.source ?? null,
       },
       error: null
     });

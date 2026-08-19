@@ -4,6 +4,7 @@ import { Loader, AlertCircle } from 'lucide-react';
 import Logo from '../../imports/Logo';
 import svgPaths from '../../imports/svg-krr2tnmyh7';
 import * as api from '../lib/api';
+import { clearUixSpaceSsoSession } from '../lib/uixSso';
 import { ChangePasswordModal } from './ChangePasswordModal';
 
 export function Login() {
@@ -29,6 +30,7 @@ export function Login() {
       }
 
       localStorage.setItem('access_token', session.access_token);
+      clearUixSpaceSsoSession();
 
       // Verify if user must change password
       const { data: verifyData, error: verifyError } = await api.verifyUser();
@@ -42,6 +44,7 @@ export function Login() {
         must_change_password: mustChangePassword,
         can_access_notifications: verifyData?.can_access_notifications || false,
         can_access_settings: verifyData?.can_access_settings || false,
+        source: verifyData?.source ?? null,
       };
       localStorage.setItem('user', JSON.stringify(user));
 
