@@ -161,7 +161,7 @@ app.get("/make-server-824603ba/og/:id", async (c) => {
 
     const titulo = encuesta.pantalla_bienvenida?.titulo || encuesta.nombre_encuesta || "Encuesta";
     const descripcion = encuesta.pantalla_bienvenida?.descripcion || "Comparte tu opinión y ayúdanos a mejorar.";
-    const ogImage = (encuesta.pantalla_bienvenida?.opengraph_enabled !== false && encuesta.pantalla_bienvenida?.opengraph_url)
+    const ogImage = (encuesta.pantalla_bienvenida?.opengraph_enabled === true && encuesta.pantalla_bienvenida?.opengraph_url)
       ? encuesta.pantalla_bienvenida.opengraph_url
       : null;
     const surveyUrl = `${SITE_URL}/survey/${id}`;
@@ -683,7 +683,7 @@ app.post("/make-server-824603ba/proyectos", async (c) => {
     if (createToken) {
       const { data: ud } = await supabaseAdmin.auth.getUser(createToken);
       if (ud?.user) {
-        createdBy = payload.sub as string;
+        createdBy = ud.user.id;
       }
     }
 

@@ -28,6 +28,7 @@ import {
   Gauge,
 } from 'lucide-react';
 import * as api from '../lib/api';
+import { getPreviewUrl } from '../lib/urls';
 
 // ── Interfaces ────────────────────────────────────────────────────────────────
 
@@ -114,6 +115,29 @@ interface EncuestaRow {
   estado: boolean;
   created_at: string;
   updated_at: string;
+  updated_by?: string;
+}
+
+function editorMetaStamp(): { updated_at: string; updated_by: string } {
+  try {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    return {
+      updated_at: new Date().toISOString(),
+      updated_by: user.name || 'Usuario',
+    };
+  } catch {
+    return { updated_at: new Date().toISOString(), updated_by: 'Usuario' };
+  }
+}
+
+function formatUpdatedLabel(iso: string, by?: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '—';
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const yyyy = d.getFullYear();
+  const date = `${dd}-${mm}-${yyyy}`;
+  return by ? `${date}, ${by}` : date;
 }
 
 // ── Drag & Drop types ─────────────────────────────────────────────────────────
@@ -1236,6 +1260,9 @@ export function SurveyBuilder() {
     pantalla_bienvenida: {
       titulo: 'Bienvenido a Nuestra Encuesta',
       descripcion: 'Tu opinión nos ayuda a mejorar nuestros productos y servicios.',
+      imagen_fondo_enabled: false,
+      opengraph_enabled: false,
+      thumbnail_enabled: false,
     },
     configuracion: {
       color_primario: '#2563eb',
@@ -1245,7 +1272,7 @@ export function SurveyBuilder() {
     sections: [],
     estado: false,
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
+    ...editorMetaStamp(),
   });
 
   useEffect(() => {
@@ -1535,13 +1562,13 @@ export function SurveyBuilder() {
       newQ.subtitulo_pregunta = '0 = Nada probable, 10 = Muy probable';
     }
 
-    setEncuestaData({ ...encuestaData, preguntas: [...encuestaData.preguntas, newQ], updated_at: new Date().toISOString() });
+    setEncuestaData({ ...encuestaData, preguntas: [...encuestaData.preguntas, newQ], ...editorMetaStamp() });
   };
 
   const updateQuestion = (index: number, field: keyof PreguntaSchema, value: any) => {
     const updated = [...encuestaData.preguntas];
     updated[index] = { ...updated[index], [field]: value };
-    setEncuestaData({ ...encuestaData, preguntas: updated, updated_at: new Date().toISOString() });
+    setEncuestaData({ ...encuestaData, preguntas: updated, ...editorMetaStamp() });
   };
 
   const updateOption = (questionIndex: number, optionIndex: number, value: string) => {
@@ -1597,7 +1624,7 @@ export function SurveyBuilder() {
     setEncuestaData({
       ...encuestaData,
       preguntas: updated,
-      updated_at: new Date().toISOString()
+      ...editorMetaStamp()
     });
   };
 
@@ -1608,7 +1635,7 @@ export function SurveyBuilder() {
       ...updated[questionIndex],
       conditional_logic: logic.length > 0 ? logic : undefined
     };
-    setEncuestaData({ ...encuestaData, preguntas: updated, updated_at: new Date().toISOString() });
+    setEncuestaData({ ...encuestaData, preguntas: updated, ...editorMetaStamp() });
   };
 
   const updateNPSGroupLogic = (questionIndex: number, logic: NPSGroupLogic[]) => {
@@ -1617,7 +1644,7 @@ export function SurveyBuilder() {
       ...updated[questionIndex],
       nps_group_logic: logic.length > 0 ? logic : undefined
     };
-    setEncuestaData({ ...encuestaData, preguntas: updated, updated_at: new Date().toISOString() });
+    setEncuestaData({ ...encuestaData, preguntas: updated, ...editorMetaStamp() });
   };
 
   const updateTextLogic = (questionIndex: number, logic: TextConditionalLogic[]) => {
@@ -1626,7 +1653,7 @@ export function SurveyBuilder() {
       ...updated[questionIndex],
       text_logic: logic.length > 0 ? logic : undefined
     };
-    setEncuestaData({ ...encuestaData, preguntas: updated, updated_at: new Date().toISOString() });
+    setEncuestaData({ ...encuestaData, preguntas: updated, ...editorMetaStamp() });
   };
 
   // ── Update Section Title ──
@@ -1637,7 +1664,7 @@ export function SurveyBuilder() {
     setEncuestaData({
       ...encuestaData,
       sections: updatedSections,
-      updated_at: new Date().toISOString()
+      ...editorMetaStamp()
     });
   };
 
@@ -1649,7 +1676,7 @@ export function SurveyBuilder() {
     setEncuestaData({
       ...encuestaData,
       sections: updatedSections,
-      updated_at: new Date().toISOString()
+      ...editorMetaStamp()
     });
   };
 
@@ -1674,7 +1701,7 @@ export function SurveyBuilder() {
     setEncuestaData({
       ...encuestaData,
       preguntas: [...encuestaData.preguntas, newQ],
-      updated_at: new Date().toISOString()
+      ...editorMetaStamp()
     });
   };
 
@@ -1688,7 +1715,7 @@ export function SurveyBuilder() {
     setEncuestaData({
       ...encuestaData,
       preguntas: updated,
-      updated_at: new Date().toISOString()
+      ...editorMetaStamp()
     });
   };
 
@@ -1719,7 +1746,7 @@ export function SurveyBuilder() {
       ...encuestaData,
       sections: [...(encuestaData.sections || []), newSection],
       preguntas: [...encuestaData.preguntas, ...duplicatedQuestions],
-      updated_at: new Date().toISOString()
+      ...editorMetaStamp()
     });
   };
 
@@ -1739,7 +1766,7 @@ export function SurveyBuilder() {
       ...encuestaData,
       sections: updatedSections,
       preguntas: updatedQuestions,
-      updated_at: new Date().toISOString()
+      ...editorMetaStamp()
     });
   };
 
@@ -1749,13 +1776,13 @@ export function SurveyBuilder() {
       const updated = [...prev.preguntas];
       const [dragged] = updated.splice(dragIndex, 1);
       updated.splice(hoverIndex, 0, dragged);
-      return { ...prev, preguntas: updated.map((q, i) => ({ ...q, orden: i })), updated_at: new Date().toISOString() };
+      return { ...prev, preguntas: updated.map((q, i) => ({ ...q, orden: i })), ...editorMetaStamp() };
     });
   }, []);
 
   const handlePublishToLive = async () => {
     setIsPublishing(true);
-    const updatedEncuesta = { ...encuestaData, estado: true, updated_at: new Date().toISOString() };
+    const updatedEncuesta = { ...encuestaData, estado: true, ...editorMetaStamp() };
     const { error } = await api.saveEncuesta(updatedEncuesta);
     if (error) { console.error('Error publishing:', error); alert('Error al publicar: ' + error); setIsPublishing(false); return; }
     setIsPublishing(false);
@@ -1776,7 +1803,7 @@ export function SurveyBuilder() {
                   <input
                     type="text"
                     value={encuestaData.nombre_encuesta}
-                    onChange={(e) => setEncuestaData({ ...encuestaData, nombre_encuesta: e.target.value, updated_at: new Date().toISOString() })}
+                    onChange={(e) => setEncuestaData({ ...encuestaData, nombre_encuesta: e.target.value, ...editorMetaStamp() })}
                     className="text-xl font-semibold text-gray-900 dark:text-foreground border-0 border-b-2 border-transparent hover:border-gray-300 dark:hover:border-border focus:border-blue-500 focus:ring-0 px-2 py-1"
                     placeholder="Nombre de la encuesta"
                   />
@@ -1795,7 +1822,10 @@ export function SurveyBuilder() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <button onClick={() => navigate(`/survey/${id}`)} className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-muted-foreground bg-white dark:bg-card border border-gray-300 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-accent">
+              <span className={`px-3 py-1 rounded-full text-xs font-medium ${encuestaData.estado ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' : 'bg-gray-100 dark:bg-muted text-gray-600 dark:text-muted-foreground'}`}>
+                {encuestaData.estado ? 'Live' : 'Draft'}
+              </span>
+              <button onClick={() => navigate(getPreviewUrl(id || encuestaData.id))} className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-muted-foreground bg-white dark:bg-card border border-gray-300 dark:border-border rounded-lg hover:bg-gray-50 dark:hover:bg-accent">
                 <Eye className="w-4 h-4" /> Preview
               </button>
               <button
@@ -1878,7 +1908,7 @@ export function SurveyBuilder() {
                     setEncuestaData({
                       ...encuestaData,
                       sections: [...(encuestaData.sections || []), newSection],
-                      updated_at: new Date().toISOString(),
+                      ...editorMetaStamp(),
                     });
                   }}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-gradient-to-r from-[#597AFF]/10 to-[#8C59FE]/10 border-2 border-dashed border-[#8C59FE]/30 hover:border-[#8C59FE]/60 transition-all"
@@ -1953,13 +1983,13 @@ export function SurveyBuilder() {
                         <label className="block font-medium text-[14px] leading-[20px] text-[#364153] dark:text-foreground tracking-[-0.1504px]">Imagen de fondo</label>
                         <button
                           type="button"
-                          onClick={() => setEncuestaData((prev) => ({ ...prev, pantalla_bienvenida: { ...prev.pantalla_bienvenida, imagen_fondo_enabled: !(prev.pantalla_bienvenida.imagen_fondo_enabled ?? true) } }))}
-                          className={`relative inline-flex h-[22px] w-[40px] items-center rounded-full transition-colors shrink-0 ${(encuestaData.pantalla_bienvenida.imagen_fondo_enabled ?? true) ? 'bg-[#8C59FE]' : 'bg-[#D1D5DC]'}`}
+                          onClick={() => setEncuestaData((prev) => ({ ...prev, pantalla_bienvenida: { ...prev.pantalla_bienvenida, imagen_fondo_enabled: !(prev.pantalla_bienvenida.imagen_fondo_enabled ?? false) } }))}
+                          className={`relative inline-flex h-[22px] w-[40px] items-center rounded-full transition-colors shrink-0 ${(encuestaData.pantalla_bienvenida.imagen_fondo_enabled ?? false) ? 'bg-[#8C59FE]' : 'bg-[#D1D5DC]'}`}
                         >
-                          <span className={`inline-block size-[16px] transform rounded-full bg-white dark:bg-card shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.1)] transition-transform ${(encuestaData.pantalla_bienvenida.imagen_fondo_enabled ?? true) ? 'translate-x-[20px]' : 'translate-x-[2px]'}`} />
+                          <span className={`inline-block size-[16px] transform rounded-full bg-white dark:bg-card shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.1)] transition-transform ${(encuestaData.pantalla_bienvenida.imagen_fondo_enabled ?? false) ? 'translate-x-[20px]' : 'translate-x-[2px]'}`} />
                         </button>
                       </div>
-                      {(encuestaData.pantalla_bienvenida.imagen_fondo_enabled ?? true) && (
+                      {(encuestaData.pantalla_bienvenida.imagen_fondo_enabled ?? false) && (
                         <>
                           <input type="file" ref={fileInputRef} onChange={handleImageUpload} className="hidden" accept="image/jpeg,image/png" />
                           <div
@@ -1999,13 +2029,13 @@ export function SurveyBuilder() {
                           </div>
                           <button
                             type="button"
-                            onClick={() => setEncuestaData((prev) => ({ ...prev, pantalla_bienvenida: { ...prev.pantalla_bienvenida, opengraph_enabled: !(prev.pantalla_bienvenida.opengraph_enabled ?? true) } }))}
-                            className={`relative inline-flex h-[22px] w-[40px] items-center rounded-full transition-colors shrink-0 ${(encuestaData.pantalla_bienvenida.opengraph_enabled ?? true) ? 'bg-[#8C59FE]' : 'bg-[#D1D5DC]'}`}
+                            onClick={() => setEncuestaData((prev) => ({ ...prev, pantalla_bienvenida: { ...prev.pantalla_bienvenida, opengraph_enabled: !(prev.pantalla_bienvenida.opengraph_enabled ?? false) } }))}
+                            className={`relative inline-flex h-[22px] w-[40px] items-center rounded-full transition-colors shrink-0 ${(encuestaData.pantalla_bienvenida.opengraph_enabled ?? false) ? 'bg-[#8C59FE]' : 'bg-[#D1D5DC]'}`}
                           >
-                            <span className={`inline-block size-[16px] transform rounded-full bg-white dark:bg-card shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.1)] transition-transform ${(encuestaData.pantalla_bienvenida.opengraph_enabled ?? true) ? 'translate-x-[20px]' : 'translate-x-[2px]'}`} />
+                            <span className={`inline-block size-[16px] transform rounded-full bg-white dark:bg-card shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.1)] transition-transform ${(encuestaData.pantalla_bienvenida.opengraph_enabled ?? false) ? 'translate-x-[20px]' : 'translate-x-[2px]'}`} />
                           </button>
                         </div>
-                        {(encuestaData.pantalla_bienvenida.opengraph_enabled ?? true) && (
+                        {(encuestaData.pantalla_bienvenida.opengraph_enabled ?? false) && (
                           <>
                             <input type="file" ref={fileInputOGRef} onChange={handleOGImageUpload} className="hidden" accept="image/jpeg,image/png" />
                             <div
@@ -2481,8 +2511,8 @@ export function SurveyBuilder() {
                     <div className="flex items-center gap-2">
                       <LayoutList className="w-4 h-4 text-gray-500 dark:text-muted-foreground" />
                       <div>
-                        <p className="text-sm font-medium text-gray-900 dark:text-foreground">Display Mode</p>
-                        <p className="text-xs text-gray-500 dark:text-muted-foreground">{encuestaData.configuracion.modo_visualizacion === 'paginated' ? 'Paginated Steps' : 'Scroll View'}</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-foreground">Vista</p>
+                        <p className="text-xs text-gray-500 dark:text-muted-foreground">{encuestaData.configuracion.modo_visualizacion === 'paginated' ? 'En pasos' : 'Una página'}</p>
                       </div>
                     </div>
                     <button
@@ -2494,16 +2524,10 @@ export function SurveyBuilder() {
                   </div>
                 </div>
 
-                {/* Status */}
-                <div className="mt-6 p-4 border border-gray-200 dark:border-border rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700 dark:text-muted-foreground">Estado</span>
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${encuestaData.estado ? 'bg-green-100 text-green-800' : 'bg-gray-100 dark:bg-muted text-gray-600 dark:text-muted-foreground'}`}>
-                      {encuestaData.estado ? 'Live' : 'Draft'}
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-500 dark:text-muted-foreground mt-2">Last updated: {encuestaData.updated_at}</p>
-                </div>
+                {/* Last updated */}
+                <p className="mt-6 text-xs text-gray-500 dark:text-muted-foreground">
+                  Última actualización: {formatUpdatedLabel(encuestaData.updated_at, encuestaData.updated_by)}
+                </p>
               </div>
             </div>
           </aside>

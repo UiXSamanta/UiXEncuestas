@@ -426,6 +426,9 @@ export function AdminDashboard() {
       pantalla_bienvenida: {
         titulo: 'Bienvenido a Nuestra Encuesta',
         descripcion: 'Tu opinión nos ayuda a mejorar nuestros productos y servicios.',
+        imagen_fondo_enabled: false,
+        opengraph_enabled: false,
+        thumbnail_enabled: false,
       },
       configuracion: {
         color_primario: '#2563eb',
@@ -436,6 +439,7 @@ export function AdminDashboard() {
       conteo_respuestas: 0,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
+      updated_by: JSON.parse(localStorage.getItem('user') || '{}').name || 'Usuario',
     };
 
     const { error } = await api.saveEncuesta(newEncuesta);
