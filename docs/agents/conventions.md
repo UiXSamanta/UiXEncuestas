@@ -20,8 +20,9 @@
 
 - Siempre `{ data, error }`
 - Comprobar **ambos** en componentes
-- Token usuario en body `_token`, no solo en header
-- Header: `Authorization: Bearer {publicAnonKey}`
+- JWT de usuario en `Authorization: Bearer {access_token}` + header `apikey` con la anon key
+- Endpoints públicos (respondent, solicitud de acceso) usan la anon key en `Authorization`
+- No enviar el JWT en el body (`_token` está deprecado)
 
 ## Estilos
 

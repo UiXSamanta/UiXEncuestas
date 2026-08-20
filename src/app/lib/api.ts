@@ -43,17 +43,33 @@ function parseApiResponseBody(text: string, status: number, endpoint: string): A
 }
 
 // Helper function for API calls
+type AuthMode = 'required' | 'optional' | 'public';
+
 async function fetchApi<T>(
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  authMode: AuthMode = 'required'
 ): Promise<ApiResponse<T>> {
   try {
-    // Build headers — filter out null/undefined values to avoid Chrome TypeError
     const extraHeaders = options.headers as Record<string, string | null | undefined> | undefined;
     const mergedHeaders: Record<string, string> = {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${publicAnonKey}`,
+      'apikey': publicAnonKey,
     };
+
+    if (!(options.body instanceof FormData)) {
+      mergedHeaders['Content-Type'] = 'application/json';
+    }
+
+    if (authMode === 'public') {
+      mergedHeaders['Authorization'] = `Bearer ${publicAnonKey}`;
+    } else {
+      const token = await getAccessToken();
+      if (authMode === 'required' && !token) {
+        return { data: null, error: 'No hay sesión activa. Por favor, inicia sesión nuevamente.' };
+      }
+      mergedHeaders['Authorization'] = `Bearer ${token || publicAnonKey}`;
+    }
+
     if (extraHeaders) {
       for (const [key, val] of Object.entries(extraHeaders)) {
         if (val != null) mergedHeaders[key] = val;
@@ -104,7 +120,7 @@ export async function getAllEncuestas() {
 export async function getEncuestaById(id: string) {
   return fetchApi<any>(`/encuestas/${id}`, {
     method: 'GET',
-  });
+  }, 'optional');
 }
 
 export async function saveEncuesta(encuesta: any) {
@@ -133,7 +149,7 @@ export async function saveRespuesta(encuesta_id: string, respuestas: any) {
   return fetchApi<any>('/respuestas', {
     method: 'POST',
     body: JSON.stringify({ encuesta_id, respuestas }),
-  });
+  }, 'public');
 }
 
 export async function getRespuestasByEncuesta(encuesta_id: string) {
@@ -191,17 +207,16 @@ export async function getSession() {
 }
 
 export async function verifyUser() {
-  const accessToken = await getAccessToken();
   return fetchApi<any>('/auth/verify', {
     method: 'POST',
-    body: JSON.stringify({ _token: accessToken }),
+    body: JSON.stringify({}),
   });
 }
 
-export async function getAllAdmins(accessToken: string) {
+export async function getAllAdmins(_accessToken?: string) {
   return fetchApi<any[]>('/auth/admins', {
     method: 'POST',
-    body: JSON.stringify({ _token: accessToken }),
+    body: JSON.stringify({}),
   });
 }
 
@@ -223,30 +238,30 @@ export async function updateAdmin(adminId: string, updates: {
   role?: string;
   can_access_notifications?: boolean;
   can_access_settings?: boolean;
-}, accessToken: string) {
+}, _accessToken?: string) {
   return fetchApi<any>(`/auth/admins/${adminId}`, {
     method: 'PUT',
-    body: JSON.stringify({ ...updates, _token: accessToken }),
+    body: JSON.stringify(updates),
   });
 }
 
-export async function resetAdminPassword(adminId: string, accessToken: string) {
+export async function resetAdminPassword(adminId: string, _accessToken?: string) {
   return fetchApi<{ temp_password: string }>(`/auth/admins/${adminId}/reset-password`, {
     method: 'POST',
-    body: JSON.stringify({ _token: accessToken }),
+    body: JSON.stringify({}),
   });
 }
 
-export async function deleteAdmin(adminId: string, accessToken: string) {
+export async function deleteAdmin(adminId: string, _accessToken?: string) {
   return fetchApi<any>(`/auth/admins/${adminId}`, {
     method: 'DELETE',
-    body: JSON.stringify({ _token: accessToken }),
+    body: JSON.stringify({}),
   });
 }
 
 export async function importAdminsCsv(
   rows: Array<Record<string, unknown>>,
-  accessToken: string,
+  _accessToken?: string,
 ) {
   return fetchApi<{
     created: Array<{ id: string; email: string; name: string; temp_password?: string }>;
@@ -255,14 +270,12 @@ export async function importAdminsCsv(
     errors: string[];
   }>('/auth/admins/import', {
     method: 'POST',
-    body: JSON.stringify({ rows, _token: accessToken }),
+    body: JSON.stringify({ rows }),
   });
 }
 
 export async function setupInitialAdmin() {
-  return fetchApi<any>('/setup-admin', {
-    method: 'POST',
-  });
+  return { data: null, error: 'El endpoint de setup-admin fue eliminado. Crea el primer admin en el dashboard de Supabase.' };
 }
 
 // ==================== IMAGE UPLOAD ====================
@@ -272,11 +285,12 @@ export async function uploadSurveyImage(file: File): Promise<{ data: { url: stri
     const formData = new FormData();
     formData.append('file', file);
 
+    const token = await getAccessToken();
     const response = await fetch(`${API_BASE_URL}/upload-image`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${publicAnonKey}`,
-        // Note: Do NOT set Content-Type here — browser sets it automatically with the boundary for multipart
+        'Authorization': `Bearer ${token || publicAnonKey}`,
+        'apikey': publicAnonKey,
       },
       body: formData,
     });
@@ -307,7 +321,7 @@ export async function createNotification(notif: {
   return fetchApi<any>('/notifications', {
     method: 'POST',
     body: JSON.stringify(notif),
-  });
+  }, 'public');
 }
 
 export async function getNotifications() {
@@ -329,40 +343,23 @@ export async function deleteNotification(id: string) {
 }
 
 export async function approveAccessRequest(notificationId: string) {
-  const accessToken = await getAccessToken();
-  console.log('🔑 Access token being sent:', accessToken ? `${accessToken.substring(0, 20)}...` : 'NULL');
-
-  if (!accessToken) {
-    console.error('❌ No access token found in localStorage');
-    return { data: null, error: 'No hay sesión activa. Por favor, inicia sesión nuevamente.' };
-  }
-
   return fetchApi<any>(`/notifications/${notificationId}/approve`, {
     method: 'POST',
-    body: JSON.stringify({ _token: accessToken }),
+    body: JSON.stringify({}),
   });
 }
 
 export async function rejectAccessRequest(notificationId: string) {
-  const accessToken = await getAccessToken();
-  console.log('🔑 Access token being sent (reject):', accessToken ? `${accessToken.substring(0, 20)}...` : 'NULL');
-
-  if (!accessToken) {
-    console.error('❌ No access token found in localStorage');
-    return { data: null, error: 'No hay sesión activa. Por favor, inicia sesión nuevamente.' };
-  }
-
   return fetchApi<any>(`/notifications/${notificationId}/reject`, {
     method: 'POST',
-    body: JSON.stringify({ _token: accessToken }),
+    body: JSON.stringify({}),
   });
 }
 
 export async function changePassword(newPassword: string) {
-  const accessToken = await getAccessToken();
   return fetchApi<any>('/auth/change-password', {
     method: 'POST',
-    body: JSON.stringify({ newPassword, _token: accessToken }),
+    body: JSON.stringify({ newPassword }),
   });
 }
 
@@ -390,10 +387,9 @@ export async function getProyectoById(id: string) {
 }
 
 export async function createProyecto(proyecto: any) {
-  const accessToken = await getAccessToken();
   return fetchApi<any>('/proyectos', {
     method: 'POST',
-    body: JSON.stringify({ ...proyecto, _token: accessToken }),
+    body: JSON.stringify(proyecto),
   });
 }
 
@@ -418,18 +414,16 @@ export async function duplicateProyecto(id: string, newName: string) {
 }
 
 export async function checkProyectoAccess(id: string) {
-  const accessToken = await getAccessToken();
   return fetchApi<any>(`/proyectos/${id}/check-access`, {
     method: 'POST',
-    body: JSON.stringify({ _token: accessToken }),
+    body: JSON.stringify({}),
   });
 }
 
 export async function validateProyectoPassword(id: string, password: string) {
-  const accessToken = await getAccessToken();
   return fetchApi<any>(`/proyectos/${id}/validate-password`, {
     method: 'POST',
-    body: JSON.stringify({ password, _token: accessToken }),
+    body: JSON.stringify({ password }),
   });
 }
 
