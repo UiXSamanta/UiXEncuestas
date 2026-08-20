@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useLocation } from 'react-router';
 import {
   Plus,
   FileText,
@@ -26,6 +26,7 @@ import {
   FolderInput,
 } from 'lucide-react';
 import * as api from '../lib/api';
+import { setBuilderReturnProyecto } from '../lib/builderNavigation';
 import { projectId, publicAnonKey } from '../../../utils/supabase/info';
 import { AdminSidebar } from './AdminSidebar';
 
@@ -54,6 +55,7 @@ const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
 
 export function AdminDashboard() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [encuestas, setEncuestas] = useState<Encuesta[]>([]);
@@ -114,6 +116,24 @@ export function AdminDashboard() {
 
     initializeData();
   }, []);
+
+  useEffect(() => {
+    const openProyectoId = (location.state as { openProyectoId?: string } | null)?.openProyectoId;
+    if (!openProyectoId || proyectos.length === 0) return;
+
+    const proyecto = proyectos.find((p) => p.id === openProyectoId);
+    if (proyecto) {
+      setSelectedProyecto(proyecto);
+      setViewMode('project-detail');
+    }
+  }, [proyectos, location.state]);
+
+  const openBuilderFromFolder = (encuestaId: string, proyectoId?: string) => {
+    if (proyectoId) {
+      setBuilderReturnProyecto(proyectoId);
+    }
+    navigate(`/builder/${encuestaId}`, { state: { returnProyectoId: proyectoId } });
+  };
 
   // Initialize data - load projects and surveys, create default project if needed
   const initializeData = async () => {
@@ -426,16 +446,20 @@ export function AdminDashboard() {
       pantalla_bienvenida: {
         titulo: 'Bienvenido a Nuestra Encuesta',
         descripcion: 'Tu opinión nos ayuda a mejorar nuestros productos y servicios.',
+        imagen_fondo_enabled: false,
+        opengraph_enabled: false,
+        thumbnail_enabled: false,
       },
       configuracion: {
         color_primario: '#2563eb',
-        modo_visualizacion: 'scroll',
+        modo_visualizacion: 'paginated',
       },
       preguntas: [],
       estado: false,
       conteo_respuestas: 0,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
+      updated_by: JSON.parse(localStorage.getItem('user') || '{}').name || 'Usuario',
     };
 
     const { error } = await api.saveEncuesta(newEncuesta);
@@ -446,7 +470,8 @@ export function AdminDashboard() {
       return;
     }
 
-    navigate(`/builder/${newId}`);
+    navigate(`/builder/${newId}`, { state: { returnProyectoId: selectedProyecto.id } });
+    setBuilderReturnProyecto(selectedProyecto.id);
   };
 
   // Duplicate survey
@@ -1017,14 +1042,17 @@ export function AdminDashboard() {
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-3">
                                 <button
-                                  onClick={() => navigate(`/builder/${encuesta.id}`)}
+                                  onClick={() => openBuilderFromFolder(encuesta.id, selectedProyecto?.id)}
                                   className="text-[#81878E] dark:text-muted-foreground hover:text-[#597AFF] transition-colors"
                                   title="Editar Encuesta"
                                 >
                                   <Edit className="w-5 h-5" />
                                 </button>
                                 <button
-                                  onClick={() => navigate(`/analytics/${encuesta.id}`)}
+                                  onClick={() => {
+                                    if (selectedProyecto?.id) setBuilderReturnProyecto(selectedProyecto.id);
+                                    navigate(`/analytics/${encuesta.id}`, { state: { returnProyectoId: selectedProyecto?.id } });
+                                  }}
                                   className="text-[#81878E] dark:text-muted-foreground hover:text-[#8C59FE] transition-colors"
                                   title="Ver Analytics"
                                 >

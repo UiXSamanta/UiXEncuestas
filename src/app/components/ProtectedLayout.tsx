@@ -3,6 +3,8 @@ import { Outlet, useNavigate, useLocation } from 'react-router';
 import { AppNav } from './AppNav';
 import { ChangePasswordModal } from './ChangePasswordModal';
 import { supabase } from '../lib/supabase';
+import * as api from '../lib/api';
+import { markUixSpaceSsoSession } from '../lib/uixSso';
 
 /**
  * ProtectedLayout - Layout for admin routes that require authentication.
@@ -41,10 +43,31 @@ export function ProtectedLayout() {
         console.log('✅ Sesión autenticada:', session.user.email);
         setIsAuthenticated(true);
 
-        // Check if user must change password (from localStorage, set during login)
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
-        if (user.must_change_password === true) {
-          setMustChangePassword(true);
+        const { data: verifyData } = await api.verifyUser();
+        if (verifyData) {
+          const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+          const user = {
+            ...storedUser,
+            id: verifyData.id ?? storedUser.id,
+            email: verifyData.email ?? storedUser.email,
+            name: verifyData.name ?? storedUser.name,
+            must_change_password: verifyData.must_change_password ?? storedUser.must_change_password,
+            can_access_notifications: verifyData.can_access_notifications ?? storedUser.can_access_notifications,
+            can_access_settings: verifyData.can_access_settings ?? storedUser.can_access_settings,
+            source: verifyData.source ?? storedUser.source ?? null,
+          };
+          localStorage.setItem('user', JSON.stringify(user));
+          if (verifyData.source === 'uix-space-sso') {
+            markUixSpaceSsoSession();
+          }
+          if (user.must_change_password === true) {
+            setMustChangePassword(true);
+          }
+        } else {
+          const user = JSON.parse(localStorage.getItem('user') || '{}');
+          if (user.must_change_password === true) {
+            setMustChangePassword(true);
+          }
         }
       }
     } catch (err) {

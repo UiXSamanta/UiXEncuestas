@@ -4,6 +4,13 @@ import { ArrowLeft, ArrowRight, Check, Loader2, Star, GripVertical, Mic, MicOff 
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import * as api from '../lib/api';
+import {
+  hasSurveyLogic,
+  normalizeEncuestaConfig,
+  popNavStack,
+  pruneAnswersToStack,
+  pushNavStack,
+} from '../lib/surveyNavigation';
 import { SurveyLoader } from './SurveyLoader';
 import { SurveyThankYou } from './SurveyThankYou';
 import { SurveyFooter } from './SurveyFooter';
@@ -143,6 +150,7 @@ export function RespondentSurvey() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [navStack, setNavStack] = useState<number[]>([0]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [encuesta, setEncuesta] = useState<any>(null);
@@ -392,87 +400,97 @@ export function RespondentSurvey() {
 
   if (!questions.length || !encuesta) return null;
 
+  const configuracion = normalizeEncuestaConfig(encuesta?.configuracion);
+  const isScrollMode = configuracion.modo_visualizacion === 'scroll';
+  const surveyHasLogic = hasSurveyLogic(questions, sections);
+  const blockBack = configuracion.bloquear_regreso === true;
+  const useScrollLayout = isScrollMode && !surveyHasLogic;
+
+  const navigateToQuestion = (targetIndex: number) => {
+    setNavStack((prev) => {
+      const nextStack = pushNavStack(prev, targetIndex);
+      setResponseData((prevData) => ({
+        ...prevData,
+        answers: pruneAnswersToStack(prevData.answers, questions, nextStack),
+      }));
+      return nextStack;
+    });
+    setCurrentQuestion(targetIndex);
+  };
+
   const currentStep = currentQuestion + 1;
   const totalSteps = questions.length;
-  const progress = (currentStep / totalSteps) * 100;
-  const isLastQuestion = currentQuestion === questions.length - 1;
-  const currentQ = questions[currentQuestion];
-  const currentAnswer = responseData.answers.find(a => a.questionID === currentQ.id);
-  const hasAnswer = currentAnswer !== undefined;
+  const progress = surveyHasLogic
+    ? Math.min(100, (navStack.length / Math.max(totalSteps, 1)) * 100)
+    : (currentStep / totalSteps) * 100;
+  const progressLabel = surveyHasLogic ? `${currentStep}` : `${currentStep} / ${totalSteps}`;
+  const stepLabel = surveyHasLogic
+    ? `Pregunta ${currentStep}`
+    : `Pregunta ${currentStep} de ${totalSteps}`;
 
-  // Email validation helper
+  const currentQ = questions[currentQuestion];
+  const currentAnswer = responseData.answers.find((a) => a.questionID === currentQ.id);
+  const hasAnswer = currentAnswer !== undefined;
+  const isLastQuestion = currentQuestion === questions.length - 1;
+  const displayQuestions = useScrollLayout ? questions : [currentQ];
+
+  const getAnswerFor = (questionId: string) =>
+    responseData.answers.find((a) => a.questionID === questionId);
+
   const isValidEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  // Check if current answer is valid (for validation purposes)
-  const isCurrentAnswerValid = (): boolean => {
-    // Separators don't require answers - always valid
-    if (currentQ.type === 'separator') {
-      return true;
-    }
-
-    // If question is optional and type is text, allow to proceed without answer
-    if (currentQ.type === 'text' && currentQ.opcional) {
-      // If there's no answer, it's valid (can skip)
-      if (!hasAnswer) return true;
-
-      // If there's an answer and it's email-only, validate email format
-      if (currentQ.solo_email) {
-        const value = currentAnswer?.value;
+  const isAnswerValid = (q: Question, answer?: { value: number | string }): boolean => {
+    const answered = answer !== undefined;
+    if (q.type === 'separator') return true;
+    if (q.type === 'text' && q.opcional) {
+      if (!answered) return true;
+      if (q.solo_email) {
+        const value = answer?.value;
         if (typeof value === 'string' && value.trim().length > 0) {
           return isValidEmail(value.trim());
         }
-        // Empty answer is valid for optional questions
         return true;
       }
-
-      // Any answer is valid for optional non-email questions
       return true;
     }
-
-    // Score matrix validation: check that all rows have been answered
-    if (currentQ.type === 'score-matrix') {
-      if (!hasAnswer) return false;
+    if (q.type === 'score-matrix') {
+      if (!answered) return false;
       try {
-        const matrixAnswers = typeof currentAnswer?.value === 'string'
-          ? JSON.parse(currentAnswer.value)
-          : currentAnswer.value;
-        const rows = currentQ.matrix_rows || [];
+        const matrixAnswers =
+          typeof answer?.value === 'string' ? JSON.parse(answer.value) : answer?.value;
+        const rows = q.matrix_rows || [];
         return Object.keys(matrixAnswers).length === rows.length;
-      } catch (e) {
+      } catch {
         return false;
       }
     }
-
-    // Ranking validation: has answer (already initialized with default order)
-    if (currentQ.type === 'ranking') {
-      return hasAnswer;
-    }
-
-    // For required questions, answer must exist
-    if (!hasAnswer) return false;
-
-    // Special validation for email-only text questions (required)
-    if (currentQ.type === 'text' && currentQ.solo_email) {
-      const value = currentAnswer?.value;
+    if (q.type === 'ranking') return answered;
+    if (!answered) return false;
+    if (q.type === 'text' && q.solo_email) {
+      const value = answer?.value;
       if (typeof value === 'string') {
         return value.trim().length > 0 && isValidEmail(value.trim());
       }
       return false;
     }
-
     return true;
   };
 
-  const handleAnswer = (value: number | string) => {
-    const existingIdx = responseData.answers.findIndex(a => a.questionID === currentQ.id);
+  const isCurrentAnswerValid = () => isAnswerValid(currentQ, currentAnswer);
+  const isAllAnswersValid = () =>
+    questions.every((q) => isAnswerValid(q, getAnswerFor(q.id)));
+
+  const handleAnswer = (value: number | string, questionId?: string) => {
+    const qId = questionId ?? currentQ.id;
+    const existingIdx = responseData.answers.findIndex((a) => a.questionID === qId);
     const newAnswers = [...responseData.answers];
     if (existingIdx >= 0) {
       newAnswers[existingIdx].value = value;
     } else {
-      newAnswers.push({ questionID: currentQ.id, value });
+      newAnswers.push({ questionID: qId, value });
     }
     setResponseData({ ...responseData, answers: newAnswers });
     try {
@@ -484,6 +502,7 @@ export function RespondentSurvey() {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
+    let success = false;
     try {
       console.log('📤 Enviando respuesta a Supabase...', responseData);
       const { data, error } = await api.saveRespuesta(id || '', responseData);
@@ -497,6 +516,7 @@ export function RespondentSurvey() {
         console.log('✅ Respuesta guardada exitosamente:', data);
         localStorage.removeItem(`survey_response_${id}`);
         localStorage.removeItem('current_respondent_id');
+        success = true;
       }
     } catch (err) {
       console.error('❌ Error inesperado:', err);
@@ -507,7 +527,7 @@ export function RespondentSurvey() {
       } catch (e) { /* ignore */ }
     } finally {
       setIsSubmitting(false);
-      setSubmitSuccess(true);
+      if (success) setSubmitSuccess(true);
     }
   };
 
@@ -535,7 +555,7 @@ export function RespondentSurvey() {
         }
         const targetIndex = questions.findIndex(q => q.id === rule.jump_to_question_id);
         if (targetIndex > currentQuestion) {
-          setCurrentQuestion(targetIndex);
+          navigateToQuestion(targetIndex);
           return;
         }
       }
@@ -558,7 +578,7 @@ export function RespondentSurvey() {
           }
           const targetIndex = questions.findIndex(q => q.id === rule.jump_to_question_id);
           if (targetIndex > currentQuestion) {
-            setCurrentQuestion(targetIndex);
+            navigateToQuestion(targetIndex);
             return;
           }
         }
@@ -622,7 +642,7 @@ export function RespondentSurvey() {
             } else {
               // Valid jump forward
               console.log(`⏭️ Jumping from question ${currentQuestion + 1} to question ${targetIndex + 1}`);
-              setCurrentQuestion(targetIndex);
+              navigateToQuestion(targetIndex);
               return;
             }
           } else {
@@ -669,7 +689,7 @@ export function RespondentSurvey() {
 
           if (firstQuestionInTargetSection >= 0) {
             console.log(`⏭️ Section logic: Jumping from section "${currentSection.title}" to section "${targetSection.title}" (question ${firstQuestionInTargetSection + 1})`);
-            setCurrentQuestion(firstQuestionInTargetSection);
+            navigateToQuestion(firstQuestionInTargetSection);
             return;
           } else {
             console.warn(`⚠️ Target section "${targetSection.title}" has no questions, continuing normally`);
@@ -682,16 +702,28 @@ export function RespondentSurvey() {
 
     // Default: go to next question
     console.log(`➡️ Moving to next question: ${currentQuestion + 1} -> ${currentQuestion + 2}`);
-    setCurrentQuestion(currentQuestion + 1);
+    navigateToQuestion(currentQuestion + 1);
   };
 
   const handlePrevious = () => {
-    if (currentQuestion > 0) setCurrentQuestion(currentQuestion - 1);
+    if (blockBack || navStack.length <= 1) return;
+    const { stack, index } = popNavStack(navStack);
+    setNavStack(stack);
+    setCurrentQuestion(index);
+  };
+
+  const handleForward = () => {
+    if (useScrollLayout) {
+      handleSubmit();
+      return;
+    }
+    handleNext();
   };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-background flex flex-col">
       {/* Progress Bar */}
+      {!useScrollLayout && (
       <div className="relative w-full bg-gray-200 dark:bg-muted h-6">
         <div
           className="bg-blue-600 h-6 transition-all duration-300"
@@ -699,34 +731,53 @@ export function RespondentSurvey() {
         />
         <div className="absolute top-0 left-4 h-6 flex items-center">
           <span className="text-xs font-medium text-[#ffffff]">
-            {currentStep} / {totalSteps}
+            {progressLabel}
           </span>
         </div>
       </div>
+      )}
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center p-4 md:p-8">
-        <div className="w-full max-w-2xl">
-          <div className="bg-white dark:bg-card rounded-2xl shadow-lg p-4 md:p-10">
-            {/* Question Counter */}
-            <div className="mb-6">
-              <span className="text-xs font-medium text-gray-500 dark:text-muted-foreground">
-                Pregunta {currentStep} of {totalSteps}
-              </span>
-            </div>
+      <div className={`flex-1 p-4 md:p-8 ${useScrollLayout ? 'overflow-y-auto' : 'flex items-center justify-center'}`}>
+        <div className="mx-auto w-full max-w-2xl">
+          <div className={`bg-white dark:bg-card rounded-2xl shadow-lg p-4 md:p-10 ${useScrollLayout ? 'pb-8' : ''}`}>
+            {!useScrollLayout && (
+              <div className="mb-6">
+                <span className="text-xs font-medium text-gray-500 dark:text-muted-foreground">
+                  {stepLabel}
+                </span>
+              </div>
+            )}
+
+            {displayQuestions.map((activeQ, mapIdx) => {
+              const activeAnswer = getAnswerFor(activeQ.id);
+              const activeHasAnswer = activeAnswer !== undefined;
+
+              return (
+                <div
+                  key={activeQ.id}
+                  className={useScrollLayout && mapIdx > 0 ? 'mt-10 pt-10 border-t border-gray-200 dark:border-border' : ''}
+                >
+                  {useScrollLayout && (
+                    <div className="mb-4">
+                      <span className="text-xs font-medium text-gray-500 dark:text-muted-foreground">
+                        Pregunta {mapIdx + 1} de {totalSteps}
+                      </span>
+                    </div>
+                  )}
 
             {/* Question Title */}
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-foreground mb-8">
-              {currentQ.title}
+              {activeQ.title}
             </h2>
 
             {/* Separator - Informational only */}
-            {currentQ.type === 'separator' && (
+            {activeQ.type === 'separator' && (
               <div className="mb-8">
-                {currentQ.subtitle && (
+                {activeQ.subtitle && (
                   <div className="p-6 rounded-xl bg-slate-50 dark:bg-muted border-2 border-slate-200 dark:border-border">
                     <p className="text-gray-700 dark:text-foreground whitespace-pre-wrap leading-relaxed">
-                      {currentQ.subtitle}
+                      {activeQ.subtitle}
                     </p>
                   </div>
                 )}
@@ -740,10 +791,10 @@ export function RespondentSurvey() {
             )}
 
             {/* Likert Scale */}
-            {currentQ.type === 'likert' && (
+            {activeQ.type === 'likert' && (
               <div className="space-y-3 mb-8">
-                {(currentQ.opciones && currentQ.opciones.length > 0
-                  ? currentQ.opciones.map((label, i) => ({ value: i + 1, label }))
+                {(activeQ.opciones && activeQ.opciones.length > 0
+                  ? activeQ.opciones.map((label, i) => ({ value: i + 1, label }))
                   : [
                       { value: 1, label: 'Strongly Disagree' },
                       { value: 2, label: 'Disagree' },
@@ -754,16 +805,16 @@ export function RespondentSurvey() {
                 ).reverse().map((option) => (
                   <button
                     key={option.value}
-                    onClick={() => handleAnswer(option.value)}
+                    onClick={() => handleAnswer(option.value, activeQ.id)}
                     className={`w-full p-4 rounded-xl border-2 text-left font-medium transition-all ${
-                      currentAnswer?.value === option.value
+                      activeAnswer?.value === option.value
                         ? 'border-blue-600 bg-blue-50 text-blue-900'
                         : 'border-gray-300 dark:border-border hover:border-gray-400 text-gray-700 dark:text-foreground'
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <span>{option.label}</span>
-                      {currentAnswer?.value === option.value && (
+                      {activeAnswer?.value === option.value && (
                         <Check className="w-5 h-5 text-blue-600" />
                       )}
                     </div>
@@ -773,8 +824,8 @@ export function RespondentSurvey() {
             )}
 
             {/* SUS Scale (1–5 numeric) */}
-            {currentQ.type === 'sus' && (() => {
-              const scale = currentQ.escala_sus || 5;
+            {activeQ.type === 'sus' && (() => {
+              const scale = activeQ.escala_sus || 5;
               const scaleValues = Array.from({ length: scale }, (_, i) => i + 1);
               
               return (
@@ -783,9 +834,9 @@ export function RespondentSurvey() {
                     {scaleValues.map((val) => (
                       <button
                         key={val}
-                        onClick={() => handleAnswer(val)}
+                        onClick={() => handleAnswer(val, activeQ.id)}
                         className={`flex-1 flex flex-col items-center gap-2 py-4 rounded-xl border-2 font-bold text-lg transition-all ${
-                          currentAnswer?.value === val
+                          activeAnswer?.value === val
                             ? 'border-purple-600 bg-purple-50 text-purple-900'
                             : 'border-gray-300 dark:border-border hover:border-purple-400 text-gray-600 dark:text-muted-foreground'
                         }`}
@@ -795,34 +846,34 @@ export function RespondentSurvey() {
                     ))}
                   </div>
                   <div className="flex justify-between mt-2 px-1">
-                    <span className="text-xs text-gray-500 dark:text-muted-foreground">{currentQ.label_izquierda || 'Totalmente en desacuerdo'}</span>
-                    <span className="text-xs text-gray-500 dark:text-muted-foreground">{currentQ.label_derecha || 'Totalmente de acuerdo'}</span>
+                    <span className="text-xs text-gray-500 dark:text-muted-foreground">{activeQ.label_izquierda || 'Totalmente en desacuerdo'}</span>
+                    <span className="text-xs text-gray-500 dark:text-muted-foreground">{activeQ.label_derecha || 'Totalmente de acuerdo'}</span>
                   </div>
                 </div>
               );
             })()}
 
             {/* CSAT Scale */}
-            {currentQ.type === 'csat' && (() => {
+            {activeQ.type === 'csat' && (() => {
               // Detect if this is a star rating CSAT (check if subtitle or options mention "estrella" or "star")
               const isStarRating = 
-                currentQ.subtitle?.toLowerCase().includes('estrella') ||
-                currentQ.subtitle?.toLowerCase().includes('star') ||
-                currentQ.opciones?.some(opt => opt.includes('⭐') || opt.includes('★'));
+                activeQ.subtitle?.toLowerCase().includes('estrella') ||
+                activeQ.subtitle?.toLowerCase().includes('star') ||
+                activeQ.opciones?.some(opt => opt.includes('⭐') || opt.includes('★'));
 
               if (isStarRating) {
                 // Star rating CSAT (cumulative/progressive highlighting)
-                const selectedValue = typeof currentAnswer?.value === 'number' ? currentAnswer.value : 0;
+                const selectedValue = typeof activeAnswer?.value === 'number' ? activeAnswer.value : 0;
                 return (
                   <div className="mb-8">
-                    {currentQ.subtitle && (
-                      <p className="text-sm text-gray-600 dark:text-muted-foreground mb-4">{currentQ.subtitle}</p>
+                    {activeQ.subtitle && (
+                      <p className="text-sm text-gray-600 dark:text-muted-foreground mb-4">{activeQ.subtitle}</p>
                     )}
                     <div className="flex justify-center gap-2">
                       {[1, 2, 3, 4, 5].map((starValue) => (
                         <button
                           key={starValue}
-                          onClick={() => handleAnswer(starValue)}
+                          onClick={() => handleAnswer(starValue, activeQ.id)}
                           className="p-2 rounded-lg transition-all hover:scale-110"
                         >
                           <Star
@@ -845,8 +896,8 @@ export function RespondentSurvey() {
                 // Traditional emoji CSAT (faces)
                 return (
                   <div className="mb-8">
-                    {currentQ.subtitle && (
-                      <p className="text-sm text-gray-600 dark:text-muted-foreground mb-4">{currentQ.subtitle}</p>
+                    {activeQ.subtitle && (
+                      <p className="text-sm text-gray-600 dark:text-muted-foreground mb-4">{activeQ.subtitle}</p>
                     )}
                     <div className="flex justify-center gap-2 sm:gap-2 md:gap-4">
                       {[
@@ -858,9 +909,9 @@ export function RespondentSurvey() {
                       ].map((option) => (
                         <button
                           key={option.value}
-                          onClick={() => handleAnswer(option.value)}
+                          onClick={() => handleAnswer(option.value, activeQ.id)}
                           className={`flex flex-col items-center gap-2 p-2 sm:p-4 rounded-xl transition-all ${
-                            currentAnswer?.value === option.value
+                            activeAnswer?.value === option.value
                               ? 'bg-blue-50 scale-110'
                               : 'hover:bg-gray-50 dark:hover:bg-accent hover:scale-105'
                           }`}
@@ -878,9 +929,9 @@ export function RespondentSurvey() {
             })()}
 
             {/* NPS (Net Promoter Score) - 0 to 10 */}
-            {currentQ.type === 'nps' && (() => {
-              const usar_slider = currentQ.usar_slider !== false; // Default to true if not specified
-              const sliderValue = currentAnswer?.value ?? 5;
+            {activeQ.type === 'nps' && (() => {
+              const usar_slider = activeQ.usar_slider !== false; // Default to true if not specified
+              const sliderValue = activeAnswer?.value ?? 5;
 
               const getSliderColor = (value: number) => {
                 if (value <= 6) return '#fbbf24'; // Yellow for detractors (0-6)
@@ -930,7 +981,7 @@ export function RespondentSurvey() {
                           value={sliderValue}
                           onChange={(e) => {
                             const value = parseInt(e.target.value);
-                            handleAnswer(value);
+                            handleAnswer(value, activeQ.id);
                           }}
                           className="nps-slider w-full h-3 rounded-lg appearance-none cursor-pointer"
                           style={{
@@ -956,7 +1007,7 @@ export function RespondentSurvey() {
                   <div className="mb-8">
                     <div className="flex flex-nowrap justify-start sm:justify-center gap-0.5 sm:gap-2 overflow-x-auto sm:px-0 pb-1">
                       {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((value) => {
-                        const isSelected = currentAnswer?.value === value;
+                        const isSelected = activeAnswer?.value === value;
                         let bgColor = '#fbbf24'; // Yellow for 0-6
                         if (value >= 7 && value <= 8) bgColor = '#60a5fa'; // Blue for 7-8
                         if (value >= 9) bgColor = '#34d399'; // Green for 9-10
@@ -964,7 +1015,7 @@ export function RespondentSurvey() {
                         return (
                           <button
                             key={value}
-                            onClick={() => handleAnswer(value)}
+                            onClick={() => handleAnswer(value, activeQ.id)}
                             className={`w-[24px] h-11 md:w-10 sm:w-8 sm:h-12 flex-shrink-0 rounded-md font-bold text-base sm:text-lg transition-all ${
                               isSelected
                                 ? 'scale-110'
@@ -991,8 +1042,8 @@ export function RespondentSurvey() {
             })()}
 
             {/* Multiple Choice */}
-            {currentQ.type === 'multiple-choice' && (() => {
-              const isYesNo = isYesNoQuestion(currentQ.opciones);
+            {activeQ.type === 'multiple-choice' && (() => {
+              const isYesNo = isYesNoQuestion(activeQ.opciones);
               const brandColor = encuesta?.configuracion?.color_primario || '#f97316'; // orange-500 as fallback
               const lightBrandColor = getLightColor(brandColor);
 
@@ -1010,18 +1061,18 @@ export function RespondentSurvey() {
 
               if (isYesNo) {
                 // Yes/No special design with large emojis
-                const options = currentQ.opciones && currentQ.opciones.length > 0
-                  ? currentQ.opciones
+                const options = activeQ.opciones && activeQ.opciones.length > 0
+                  ? activeQ.opciones
                   : ['Yes', 'No'];
 
                 return (
                   <div className="flex justify-center gap-4 mb-8">
                     {options.map((option, i) => {
-                      const isSelected = currentAnswer?.value === option;
+                      const isSelected = activeAnswer?.value === option;
                       return (
                         <button
                           key={i}
-                          onClick={() => handleAnswer(option)}
+                          onClick={() => handleAnswer(option, activeQ.id)}
                           className="flex-1 max-w-[180px] flex flex-col items-center gap-4 p-6 rounded-2xl border-2 font-medium transition-all hover:scale-105"
                           style={{
                             borderColor: isSelected ? brandColor : '#d1d5dc',
@@ -1038,19 +1089,19 @@ export function RespondentSurvey() {
                 );
               } else {
                 // Standard multiple choice list
-                const options = currentQ.opciones && currentQ.opciones.length > 0
-                  ? currentQ.opciones
+                const options = activeQ.opciones && activeQ.opciones.length > 0
+                  ? activeQ.opciones
                   : ['Opción 1', 'Opción 2', 'Opción 3'];
 
                 // Show dropdown if usar_dropdown is enabled
-                if (currentQ.usar_dropdown) {
-                  const selectedValue = currentAnswer?.value as string || '';
+                if (activeQ.usar_dropdown) {
+                  const selectedValue = activeAnswer?.value as string || '';
 
                   return (
                     <div className="mb-8">
                       <select
                         value={selectedValue}
-                        onChange={(e) => handleAnswer(e.target.value)}
+                        onChange={(e) => handleAnswer(e.target.value, activeQ.id)}
                         className="w-full px-4 py-3 rounded-xl border-2 text-base font-medium transition-all focus:outline-none focus:ring-2 focus:ring-opacity-50"
                         style={{
                           borderColor: selectedValue ? brandColor : '#d1d5dc',
@@ -1074,11 +1125,11 @@ export function RespondentSurvey() {
                 return (
                   <div className="space-y-3 mb-8">
                     {options.map((option, i) => {
-                      const isSelected = currentAnswer?.value === option;
+                      const isSelected = activeAnswer?.value === option;
                       return (
                         <button
                           key={i}
-                          onClick={() => handleAnswer(option)}
+                          onClick={() => handleAnswer(option, activeQ.id)}
                           className="w-full p-4 rounded-xl border-2 text-left font-medium transition-all"
                           style={{
                             borderColor: isSelected ? brandColor : '#d1d5dc',
@@ -1101,18 +1152,18 @@ export function RespondentSurvey() {
             })()}
 
             {/* Text Input */}
-            {currentQ.type === 'text' && (() => {
-              const textValue = typeof currentAnswer?.value === 'string' ? currentAnswer.value : '';
-              const isEmailMode = currentQ.solo_email;
+            {activeQ.type === 'text' && (() => {
+              const textValue = typeof activeAnswer?.value === 'string' ? activeAnswer.value : '';
+              const isEmailMode = activeQ.solo_email;
               const hasText = textValue.trim().length > 0;
               const emailError = isEmailMode && hasText && !isValidEmail(textValue.trim());
-              const isOptional = currentQ.opcional;
+              const isOptional = activeQ.opcional;
 
               return (
                 <div className="mb-8">
                   <div className="items-center justify-between mb-2">
-                    {currentQ.subtitle && (
-                      <p className="text-sm text-gray-600 dark:text-muted-foreground">{currentQ.subtitle}</p>
+                    {activeQ.subtitle && (
+                      <p className="text-sm text-gray-600 dark:text-muted-foreground">{activeQ.subtitle}</p>
                     )}
                     {isOptional && (
                       <span className="text-xs text-gray-500 dark:text-muted-foreground bg-gray-100 dark:bg-muted px-2 py-1 rounded-md">
@@ -1123,7 +1174,7 @@ export function RespondentSurvey() {
                   <div className="relative">
                     <textarea
                       value={textValue}
-                      onChange={(e) => handleAnswer(e.target.value)}
+                      onChange={(e) => handleAnswer(e.target.value, activeQ.id)}
                       rows={6}
                       className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:outline-none resize-none text-gray-900 dark:text-foreground transition-colors ${
                         emailError
@@ -1178,18 +1229,18 @@ export function RespondentSurvey() {
             })()}
 
             {/* Score Matrix */}
-            {currentQ.type === 'score-matrix' && (() => {
-              const rows = currentQ.matrix_rows || ['Statement 1', 'Statement 2'];
-              const columns = currentQ.matrix_columns || ['1', '2', '3', '4', '5'];
-              const useStars = currentQ.use_stars ?? true;
+            {activeQ.type === 'score-matrix' && (() => {
+              const rows = activeQ.matrix_rows || ['Statement 1', 'Statement 2'];
+              const columns = activeQ.matrix_columns || ['1', '2', '3', '4', '5'];
+              const useStars = activeQ.use_stars ?? true;
 
               // Parse current answer as object (rowIndex -> columnIndex)
               let matrixAnswers: Record<number, number> = {};
               try {
-                if (currentAnswer?.value) {
-                  matrixAnswers = typeof currentAnswer.value === 'string'
-                    ? JSON.parse(currentAnswer.value)
-                    : currentAnswer.value;
+                if (activeAnswer?.value) {
+                  matrixAnswers = typeof activeAnswer.value === 'string'
+                    ? JSON.parse(activeAnswer.value)
+                    : activeAnswer.value;
                 }
               } catch (e) {
                 matrixAnswers = {};
@@ -1197,13 +1248,13 @@ export function RespondentSurvey() {
 
               const handleMatrixAnswer = (rowIndex: number, columnIndex: number) => {
                 const updated = { ...matrixAnswers, [rowIndex]: columnIndex };
-                handleAnswer(JSON.stringify(updated));
+                handleAnswer(JSON.stringify(updated), activeQ.id);
               };
 
               return (
                 <div className="mb-8">
-                  {currentQ.subtitle && (
-                    <p className="text-sm text-gray-600 dark:text-muted-foreground mb-4">{currentQ.subtitle}</p>
+                  {activeQ.subtitle && (
+                    <p className="text-sm text-gray-600 dark:text-muted-foreground mb-4">{activeQ.subtitle}</p>
                   )}
 
                   <div className="flex flex-col gap-3">
@@ -1280,7 +1331,7 @@ export function RespondentSurvey() {
             })()}
 
             {/* Ranking */}
-            {currentQ.type === 'ranking' && (() => {
+            {activeQ.type === 'ranking' && (() => {
               const RankingItem = ({ item, index, moveItem }: { item: string; index: number; moveItem: (dragIndex: number, hoverIndex: number) => void }) => {
                 const [{ isDragging }, drag] = useDrag({
                   type: 'ranking-item',
@@ -1318,31 +1369,31 @@ export function RespondentSurvey() {
               // Parse current answer as ordered array
               let rankedItems: string[] = [];
               try {
-                if (currentAnswer?.value) {
-                  rankedItems = typeof currentAnswer.value === 'string'
-                    ? JSON.parse(currentAnswer.value)
-                    : currentAnswer.value;
+                if (activeAnswer?.value) {
+                  rankedItems = typeof activeAnswer.value === 'string'
+                    ? JSON.parse(activeAnswer.value)
+                    : activeAnswer.value;
                 } else {
-                  rankedItems = [...(currentQ.opciones || ['Option 1', 'Option 2', 'Option 3'])];
+                  rankedItems = [...(activeQ.opciones || ['Option 1', 'Option 2', 'Option 3'])];
                 }
               } catch (e) {
-                rankedItems = [...(currentQ.opciones || ['Option 1', 'Option 2', 'Option 3'])];
+                rankedItems = [...(activeQ.opciones || ['Option 1', 'Option 2', 'Option 3'])];
               }
 
               const moveItem = (dragIndex: number, hoverIndex: number) => {
                 const updated = [...rankedItems];
                 const [removed] = updated.splice(dragIndex, 1);
                 updated.splice(hoverIndex, 0, removed);
-                handleAnswer(JSON.stringify(updated));
+                handleAnswer(JSON.stringify(updated), activeQ.id);
               };
 
               return (
                 <div className="mb-8">
-                  {currentQ.ranking_instruction && (
-                    <p className="text-sm text-gray-600 dark:text-muted-foreground mb-4">{currentQ.ranking_instruction}</p>
+                  {activeQ.ranking_instruction && (
+                    <p className="text-sm text-gray-600 dark:text-muted-foreground mb-4">{activeQ.ranking_instruction}</p>
                   )}
-                  {!currentQ.ranking_instruction && currentQ.subtitle && (
-                    <p className="text-sm text-gray-600 dark:text-muted-foreground mb-4">{currentQ.subtitle}</p>
+                  {!activeQ.ranking_instruction && activeQ.subtitle && (
+                    <p className="text-sm text-gray-600 dark:text-muted-foreground mb-4">{activeQ.subtitle}</p>
                   )}
 
                   <DndProvider backend={HTML5Backend}>
@@ -1365,27 +1416,33 @@ export function RespondentSurvey() {
               );
             })()}
 
+                </div>
+              );
+            })}
+
             {/* Navigation Buttons */}
             <div className="flex gap-3 pt-6 border-t border-gray-200 dark:border-border">
+              {!useScrollLayout && !blockBack && (
+                <button
+                  onClick={handlePrevious}
+                  disabled={navStack.length <= 1 || isSubmitting}
+                  className="flex-1 flex items-center gap-2 px-6 py-3 bg-white dark:bg-card border-2 border-gray-300 dark:border-border text-gray-700 dark:text-foreground rounded-lg hover:bg-gray-50 dark:hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                  Previous
+                </button>
+              )}
               <button
-                onClick={handlePrevious}
-                disabled={currentQuestion === 0 || isSubmitting}
-                className="flex-1 flex items-center gap-2 px-6 py-3 bg-white dark:bg-card border-2 border-gray-300 dark:border-border text-gray-700 dark:text-foreground rounded-lg hover:bg-gray-50 dark:hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5" />
-                Previous
-              </button>
-              <button
-                onClick={handleNext}
-                disabled={!isCurrentAnswerValid() || isSubmitting}
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
+                onClick={handleForward}
+                disabled={(useScrollLayout ? !isAllAnswersValid() : !isCurrentAnswerValid()) || isSubmitting}
+                className={`flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors ${useScrollLayout || blockBack ? 'flex-1 w-full' : 'flex-1'}`}
               >
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
                     Saving...
                   </>
-                ) : isLastQuestion ? (
+                ) : useScrollLayout || isLastQuestion ? (
                   <>
                     Submit
                     <Check className="w-5 h-5" />
@@ -1403,7 +1460,9 @@ export function RespondentSurvey() {
           {/* Auto-save Info */}
           <div className="mt-4 text-center">
             <p className="text-xs text-gray-500 dark:text-muted-foreground">
-              {hasAnswer ? '✓ Guardado automáticamente' : 'Selecciona una opción para continuar'}
+              {useScrollLayout
+                ? (isAllAnswersValid() ? '✓ Listo para enviar' : 'Completa todas las preguntas requeridas')
+                : (hasAnswer ? '✓ Guardado automáticamente' : 'Selecciona una opción para continuar')}
             </p>
           </div>
         </div>

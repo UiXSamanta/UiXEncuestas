@@ -28,7 +28,7 @@ export function RespondentWelcome() {
   // Derive values unconditionally so hooks below are always called
   const titulo = encuesta?.pantalla_bienvenida?.titulo || encuesta?.nombre_encuesta || 'Welcome to Our Survey';
   const descripcion = encuesta?.pantalla_bienvenida?.descripcion || 'Your feedback helps us improve our products and services.';
-  const ogImage = (encuesta?.pantalla_bienvenida?.opengraph_enabled !== false)
+  const ogImage = encuesta?.pantalla_bienvenida?.opengraph_enabled === true
     ? encuesta?.pantalla_bienvenida?.opengraph_url
     : undefined;
 
@@ -57,7 +57,7 @@ export function RespondentWelcome() {
 
   const colorPrimario = encuesta.configuracion?.color_primario;
   const imagenFondo = encuesta.pantalla_bienvenida?.imagen_url;
-  const imagenFondoEnabled = encuesta.pantalla_bienvenida?.imagen_fondo_enabled ?? true;
+  const imagenFondoEnabled = encuesta.pantalla_bienvenida?.imagen_fondo_enabled === true;
   const thumbnailUrl = encuesta.pantalla_bienvenida?.thumbnail_url;
   const thumbnailEnabled = encuesta.pantalla_bienvenida?.thumbnail_enabled ?? false;
 

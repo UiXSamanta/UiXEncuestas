@@ -64,7 +64,7 @@ export async function fetchSurveyOgData(id: string): Promise<SurveyOgData | null
       encuesta.pantalla_bienvenida?.descripcion ||
       'Comparte tu opinión y ayúdanos a mejorar.';
     const ogImage =
-      encuesta.pantalla_bienvenida?.opengraph_enabled !== false &&
+      encuesta.pantalla_bienvenida?.opengraph_enabled === true &&
       encuesta.pantalla_bienvenida?.opengraph_url
         ? encuesta.pantalla_bienvenida.opengraph_url
         : null;
@@ -88,13 +88,7 @@ export function buildOgHtml(pageUrl: string, data: SurveyOgData): string {
   <meta property="og:url" content="${escHtml(pageUrl)}" />
   <meta property="og:title" content="${escHtml(titulo)}" />
   <meta property="og:description" content="${escHtml(descripcion)}" />
-  ${
-    ogImage
-      ? `<meta property="og:image" content="${escHtml(ogImage)}" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />`
-      : ''
-  }
+  ${ogImage ? `<meta property="og:image" content="${escHtml(ogImage)}" />` : ''}
   <meta name="twitter:card" content="${ogImage ? 'summary_large_image' : 'summary'}" />
   <meta name="twitter:title" content="${escHtml(titulo)}" />
   <meta name="twitter:description" content="${escHtml(descripcion)}" />
@@ -102,4 +96,19 @@ export function buildOgHtml(pageUrl: string, data: SurveyOgData): string {
 </head>
 <body></body>
 </html>`;
+}
+
+/** OG shell for browsers: includes meta tags then redirects to the SPA entry. */
+export function buildOgHtmlWithRedirect(
+  pageUrl: string,
+  redirectUrl: string,
+  data: SurveyOgData,
+): string {
+  const safeRedirect = escHtml(redirectUrl);
+  return buildOgHtml(pageUrl, data).replace(
+    '</head>',
+    `  <meta http-equiv="refresh" content="0;url=${safeRedirect}" />
+  <script>location.replace(${JSON.stringify(redirectUrl)});</script>
+</head>`,
+  );
 }

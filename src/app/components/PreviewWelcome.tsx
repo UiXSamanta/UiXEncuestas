@@ -31,7 +31,7 @@ export function PreviewWelcome() {
   const descripcion = encuesta.pantalla_bienvenida?.descripcion || 'Your feedback helps us improve our products and services.';
   const colorPrimario = encuesta.configuracion?.color_primario;
   const imagenFondo = encuesta.pantalla_bienvenida?.imagen_url;
-  const imagenFondoEnabled = encuesta.pantalla_bienvenida?.imagen_fondo_enabled ?? true;
+  const imagenFondoEnabled = encuesta.pantalla_bienvenida?.imagen_fondo_enabled === true;
   const thumbnailUrl = encuesta.pantalla_bienvenida?.thumbnail_url;
   const thumbnailEnabled = encuesta.pantalla_bienvenida?.thumbnail_enabled ?? false;
 
