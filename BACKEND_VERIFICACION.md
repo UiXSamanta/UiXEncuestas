@@ -1,5 +1,7 @@
 # Verificación de Contraseña en Backend - Documentación
 
+> **Para agentes:** resumen en [`docs/agents/auth-and-permissions.md`](docs/agents/auth-and-permissions.md) y [`docs/agents/domain-admin.md`](docs/agents/domain-admin.md).
+
 ## Cambios Realizados
 
 ### 1. Backend (`/supabase/functions/server/index.tsx`)

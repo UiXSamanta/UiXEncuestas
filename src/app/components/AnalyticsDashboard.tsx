@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import * as api from '../lib/api';
 import { getPreviewUrl, getSurveyUrl } from '../lib/urls';
+import { csatStarLabel, isCsatStarMode, isYesNoQuestion } from '../lib/surveyQuestionUtils';
 
 // ── Type helpers ─────────────────────────────────────────────────────────────
 
@@ -176,12 +177,12 @@ function extractFrequencyTags(textValues: string[]): FrequencyTag[] {
 // ── Sub-components ────────────────────────────────────────────────────────────
 
 /** Horizontal bar row */
-function BarRow({ label, count, total, color, emoji }: { label: string; count: number; total: number; color: string; emoji?: string }) {
+function BarRow({ label, count, total, color, emoji, labelClassName }: { label: string; count: number; total: number; color: string; emoji?: string; labelClassName?: string }) {
   const pct = total > 0 ? Math.round((count / total) * 100) : 0;
   return (
     <div className="flex items-center gap-3">
       {emoji && <span className="text-xl w-7 text-center shrink-0">{emoji}</span>}
-      <span className="text-[13px] text-gray-600 dark:text-muted-foreground w-36 shrink-0 truncate">{label}</span>
+      <span className={`text-[13px] text-gray-600 dark:text-muted-foreground shrink-0 truncate ${labelClassName ?? 'w-36'}`}>{label}</span>
       <div className="flex-1 h-[10px] bg-gray-100 dark:bg-muted rounded-full overflow-hidden">
         <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, backgroundColor: color }} />
       </div>
@@ -345,7 +346,7 @@ function QuestionCard({ question, index, respuestasData }: { question: any; inde
               {/* ── SUS ── */}
               {tipo === 'sus' && <SusChart question={question} values={values} meta={meta} />}
               {/* ── CSAT ── */}
-              {tipo === 'csat' && <CsatChart values={values} meta={meta} />}
+              {tipo === 'csat' && <CsatChart question={question} values={values} meta={meta} />}
               {/* ── Multiple Choice ─ */}
               {tipo === 'multiple-choice' && <MultipleChoiceChart question={question} values={values} meta={meta} />}
               {/* ── Score Matrix ── */}
@@ -655,18 +656,27 @@ function NpsChart({ values }: { values: any[] }) {
   );
 }
 
-function CsatChart({ values, meta }: { values: any[]; meta: any }) {
+function CsatChart({ question, values, meta }: { question: any; values: any[]; meta: any }) {
   const total = values.length;
   const counts = [1, 2, 3, 4, 5].map(v => values.filter(r => Number(r) === v).length);
   const avg = numericAvg(values);
   const satisfiedCount = values.filter(v => Number(v) >= 4).length;
   const satisfiedPct = total > 0 ? Math.round((satisfiedCount / total) * 100) : 0;
+  const useStars = isCsatStarMode(question);
+  const barColor = useStars ? '#FDC700' : meta.bar;
 
   return (
     <div className="flex gap-8">
       <div className="flex-1 space-y-3">
-        {CSAT_EMOJIS.map((emoji, i) => (
-          <BarRow key={i} label={CSAT_LABELS[i]} count={counts[i]} total={total} color={meta.bar} emoji={emoji} />
+        {[1, 2, 3, 4, 5].map((starValue, i) => (
+          <BarRow
+            key={starValue}
+            label={useStars ? `${starValue} estrella${starValue > 1 ? 's' : ''}` : CSAT_LABELS[i]}
+            count={counts[i]}
+            total={total}
+            color={barColor}
+            emoji={useStars ? '⭐' : CSAT_EMOJIS[i]}
+          />
         ))}
       </div>
       <div className="flex flex-col items-center justify-center gap-4 shrink-0">
@@ -684,6 +694,60 @@ function CsatChart({ values, meta }: { values: any[]; meta: any }) {
   );
 }
 
+function SplitDonutChart({
+  segments,
+  centerValue,
+  centerLabel,
+  centerColor,
+}: {
+  segments: { label: string; color: string; count: number; pct: number }[];
+  centerValue: string | number;
+  centerLabel?: string;
+  centerColor?: string;
+}) {
+  const r = 36;
+  const sw = 7;
+  const circ = 2 * Math.PI * r;
+  const gap = 1;
+  let offsetAcc = 0;
+
+  return (
+    <div className="relative w-24 h-24">
+      <svg className="w-full h-full -rotate-90" viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r={r} fill="none" stroke="#e5e7eb" strokeWidth={sw} />
+        {segments.map(({ color, pct }, i) => {
+          const dash = (pct / 100) * circ - gap;
+          const offset = -offsetAcc;
+          offsetAcc += (pct / 100) * circ;
+          if (dash <= 0) return null;
+          return (
+            <circle
+              key={i}
+              cx="40"
+              cy="40"
+              r={r}
+              fill="none"
+              stroke={color}
+              strokeWidth={sw}
+              strokeLinecap="butt"
+              strokeDasharray={`${dash} ${circ}`}
+              strokeDashoffset={offset}
+            />
+          );
+        })}
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-lg font-bold leading-none" style={{ color: centerColor ?? '#374151' }}>
+          {centerValue}
+        </span>
+        {centerLabel && (
+          <span className="text-[10px] text-gray-500 dark:text-muted-foreground mt-0.5">{centerLabel}</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function MultipleChoiceChart({ question, values, meta }: { question: any; values: any[]; meta: any }) {
   const opciones: string[] = question.opciones?.length > 0 ? question.opciones : [];
   const total = values.length;
@@ -692,6 +756,51 @@ function MultipleChoiceChart({ question, values, meta }: { question: any; values
   const counts = opciones.map((label, i) =>
     values.filter(v => Number(v) === i || v === label).length
   );
+
+  if (isYesNoQuestion(opciones)) {
+    const yesIdx = opciones.findIndex(opt => ['yes', 'sí', 'si'].includes(opt.toLowerCase().trim()));
+    const noIdx = opciones.findIndex(opt => opt.toLowerCase().trim() === 'no');
+    const yesCount = yesIdx >= 0 ? counts[yesIdx] : 0;
+    const noCount = noIdx >= 0 ? counts[noIdx] : 0;
+    const yesPct = total > 0 ? (yesCount / total) * 100 : 0;
+    const noPct = total > 0 ? (noCount / total) * 100 : 0;
+    const yesLabel = yesIdx >= 0 ? opciones[yesIdx] : 'Sí';
+    const noLabel = noIdx >= 0 ? opciones[noIdx] : 'No';
+    const yesRate = total > 0 ? Math.round(yesPct) : 0;
+
+    const segments = [
+      { label: yesLabel, color: '#20C997', count: yesCount, pct: yesPct },
+      { label: noLabel, color: '#F87171', count: noCount, pct: noPct },
+    ];
+
+    return (
+      <div className="flex gap-8">
+        <div className="flex-1 space-y-3">
+          {segments.map(({ label, color, count }) => (
+            <BarRow key={label} label={label} count={count} total={total} color={color} labelClassName="w-10" />
+          ))}
+        </div>
+        <div className="flex flex-col items-center justify-center gap-4 shrink-0">
+          <SplitDonutChart
+            segments={segments}
+            centerValue={`${yesRate}%`}
+            centerLabel="Sí"
+            centerColor="#20C997"
+          />
+          <div className="space-y-2">
+            {segments.map(({ label, color, count, pct }) => (
+              <div key={label} className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
+                <span className="text-[12px] text-gray-600 dark:text-muted-foreground w-10 shrink-0 truncate">{label}</span>
+                <span className="text-[11px] text-gray-400 dark:text-muted-foreground">{Math.round(pct)}%</span>
+                <span className="text-[12px] font-semibold text-gray-800 dark:text-foreground w-6 text-right">{count}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3">
@@ -1511,7 +1620,11 @@ export function AnalyticsDashboard() {
                                   let displayVal = String(ans.value);
                                   if (q.tipo === 'csat') {
                                     const idx2 = Number(ans.value) - 1;
-                                    displayVal = `${CSAT_EMOJIS[idx2] ?? ''} ${ans.value}`;
+                                    if (isCsatStarMode(q)) {
+                                      displayVal = `${csatStarLabel(Number(ans.value))} ${ans.value}`;
+                                    } else {
+                                      displayVal = `${CSAT_EMOJIS[idx2] ?? ''} ${ans.value}`;
+                                    }
                                   } else if ((q.tipo === 'likert' || q.tipo === 'multiple-choice') && q.opciones?.length > 0) {
                                     const oIdx = q.tipo === 'likert' ? Number(ans.value) - 1 : Number(ans.value);
                                     displayVal = q.opciones[oIdx] ?? String(ans.value);
