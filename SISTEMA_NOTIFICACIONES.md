@@ -1,5 +1,7 @@
 # Sistema de Notificaciones y Gestión de Solicitudes de Acceso
 
+> **Para agentes:** resumen operativo en [`docs/agents/auth-and-permissions.md`](docs/agents/auth-and-permissions.md). Este archivo conserva el detalle histórico y casos de prueba.
+
 ## 📋 Resumen
 
 Sistema completo para gestionar solicitudes de acceso de nuevos administradores, incluyendo aprobación/rechazo de solicitudes, generación automática de contraseñas y cambio obligatorio de contraseña en el primer inicio de sesión.

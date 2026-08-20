@@ -39,6 +39,7 @@ import {
   getBuilderReturnProyecto,
   navigateToAdminProyecto,
 } from '../lib/builderNavigation';
+import { isCsatStarMode } from '../lib/surveyQuestionUtils';
 
 // ── Interfaces ────────────────────────────────────────────────────────────────
 
@@ -91,7 +92,7 @@ interface PreguntaSchema {
   // Score Matrix specific fields
   matrix_rows?: string[]; // Items to rate (e.g., "Hablar", "Escribir", "Leer")
   matrix_columns?: string[]; // Scale labels (e.g., "Malo", "Bajo", "Promedio", "Alto", "Buenísimo")
-  use_stars?: boolean; // For score-matrix: true = stars, false = radio buttons
+  use_stars?: boolean; // score-matrix: stars vs radio; CSAT: stars vs caritas
   // Ranking specific fields
   ranking_instruction?: string; // Instructions for ranking (e.g., "Arrastra y ordena de más a menos.")
   // Conditional logic for question flow
@@ -774,6 +775,33 @@ function DraggableQuestionCard({
                   </>
                 )}
 
+                {/* Stars/Faces toggle for CSAT type */}
+                {question.tipo === 'csat' && (
+                  <div className="flex items-center justify-between h-[36px] px-[12px] rounded-[8px] border border-[#d1d5dc] dark:border-border bg-[#f9fafb] dark:bg-muted mb-2">
+                    <div className="flex items-center gap-[8px]">
+                      <span className="text-[13px]">⭐️</span>
+                      <span className="font-medium text-[13px] leading-[18px] text-[#364153] dark:text-foreground tracking-[-0.1px]">
+                        Estrellas
+                      </span>
+                      <span className="text-[11px] text-[#99a1af] dark:text-muted-foreground">
+                        — al apagar se muestran caritas
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => updateQuestion(index, 'use_stars', !isCsatStarMode(question))}
+                      className={`relative inline-flex h-[20px] w-[36px] items-center rounded-full transition-colors shrink-0 ${
+                        isCsatStarMode(question) ? 'bg-gradient-to-r from-[#00C4B3] to-[#ACE738]' : 'bg-[#d1d5dc]'
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-[14px] w-[14px] transform rounded-full bg-white dark:bg-card shadow-sm transition-transform ${
+                          isCsatStarMode(question) ? 'translate-x-[19px]' : 'translate-x-[3px]'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                )}
+
                 {/* Slider/Numbers toggle for NPS type */}
                 {question.tipo === 'nps' && (
                   <div className="flex items-center justify-between h-[36px] px-[12px] rounded-[8px] border border-[#d1d5dc] dark:border-border bg-[#f9fafb] dark:bg-muted mb-2">
@@ -801,12 +829,17 @@ function DraggableQuestionCard({
                   </div>
                 )}
 
-                {question.tipo !== 'nps' && (
+                {question.tipo !== 'nps' && !(question.tipo === 'csat' && isCsatStarMode(question)) && (
                   <label className="font-medium text-[12px] leading-[16px] text-[#6a7282] dark:text-muted-foreground">
                     Opciones{question.tipo === 'multiple-choice' && <span className="font-normal text-[#99a1af] dark:text-muted-foreground"> (mínimo 2)</span>}:
                   </label>
                 )}
-                {question.tipo !== 'nps' && question.opciones.map((option, optIndex) => (
+                {question.tipo === 'csat' && isCsatStarMode(question) && (
+                  <p className="text-[11px] text-[#99a1af] dark:text-muted-foreground mb-1">
+                    Modo estrellas: escala fija de 1 a 5
+                  </p>
+                )}
+                {question.tipo !== 'nps' && !(question.tipo === 'csat' && isCsatStarMode(question)) && question.opciones.map((option, optIndex) => (
                   <div key={optIndex} className="flex gap-2 items-center">
                     <input
                       type="text"
@@ -1594,6 +1627,10 @@ export function SurveyBuilder() {
       newQ.escala_sus = 5; // Default to 5-point scale
     }
 
+    if (type === 'csat') {
+      newQ.use_stars = false; // Default to caritas
+    }
+
     // Add default configuration for Score Matrix questions
     if (type === 'score-matrix') {
       newQ.matrix_rows = ['Fila 1', 'Fila 2', 'Fila 3'];
@@ -1746,6 +1783,25 @@ export function SurveyBuilder() {
       newQ.label_izquierda = 'Totalmente en desacuerdo';
       newQ.label_derecha = 'Totalmente de acuerdo';
       newQ.escala_sus = 5;
+    }
+
+    if (type === 'csat') {
+      newQ.use_stars = false;
+    }
+
+    if (type === 'score-matrix') {
+      newQ.matrix_rows = ['Fila 1', 'Fila 2', 'Fila 3'];
+      newQ.matrix_columns = ['Malo', 'Bajo', 'Promedio', 'Alto', 'Buenísimo'];
+      newQ.use_stars = true;
+    }
+
+    if (type === 'ranking') {
+      newQ.ranking_instruction = 'Arrastra y deja hasta arriba el favorito';
+    }
+
+    if (type === 'nps') {
+      newQ.usar_slider = true;
+      newQ.subtitulo_pregunta = '0 = Nada probable, 10 = Muy probable';
     }
 
     setEncuestaData({
