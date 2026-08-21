@@ -1,9 +1,9 @@
+/* LEGACY — do not deploy. Security hardening lives in make-server-824603ba. */
 import { Hono } from "npm:hono";
 import { cors } from "npm:hono/cors";
 import { logger } from "npm:hono/logger";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import * as kv from "./kv_store.tsx";
-import { createInitialAdmin } from "./setup_admin.tsx";
 
 const app = new Hono();
 
@@ -206,156 +206,9 @@ app.get("/make-server-824603ba/og/:id", async (c) => {
   }
 });
 
-// ==================== ADMIN SETUP ROUTE ====================
-
-// Force recreate initial admin (useful for fixing login issues)
-app.post("/make-server-824603ba/setup-admin", async (c) => {
-  try {
-    const email = "samanta.camacho@upax.com.mx";
-    const password = "1qaz2wsx3edc";
-    const name = "Samanta Camacho";
-
-    console.log("\n=== STARTING ADMIN SETUP ===");
-    console.log("Target email:", email);
-    console.log("Target password:", password);
-
-    // Step 1: Check environment variables
-    const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-    
-    if (!supabaseUrl || !serviceRoleKey) {
-      console.error("❌ Missing environment variables");
-      return c.json({ 
-        data: null, 
-        error: "Server configuration error: Missing SUPABASE credentials" 
-      }, 500);
-    }
-    
-    console.log("✓ Environment variables present");
-    console.log("✓ Supabase URL:", supabaseUrl);
-
-    // Step 2: List all existing users
-    console.log("\n🔍 Checking for existing users...");
-    const { data: listData, error: listError } = await supabaseAdmin.auth.admin.listUsers();
-    
-    if (listError) {
-      console.error("❌ Error listing users:", listError);
-      return c.json({ 
-        data: null, 
-        error: `Error listing users: ${listError.message}` 
-      }, 500);
-    }
-
-    console.log(`✓ Found ${listData.users.length} total users in database`);
-    
-    // Step 3: Find and delete existing user with this email
-    const existingUser = listData.users.find(u => u.email === email);
-    
-    if (existingUser) {
-      console.log(`\n🗑️  Found existing user with ID: ${existingUser.id}`);
-      console.log("Deleting existing user...");
-      
-      const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(existingUser.id);
-      
-      if (deleteError) {
-        console.error("❌ Error deleting existing user:", deleteError);
-        return c.json({ 
-          data: null, 
-          error: `Error deleting existing user: ${deleteError.message}` 
-        }, 500);
-      }
-      
-      console.log("✓ Existing user deleted successfully");
-      
-      // Delete from KV store
-      await kv.del(`admin:${existingUser.id}`);
-      console.log("✓ Removed from KV store");
-    } else {
-      console.log("✓ No existing user found with this email");
-    }
-
-    // Step 4: Create new user
-    console.log("\n👤 Creating new admin user...");
-    console.log("Email:", email);
-    console.log("Password length:", password.length, "characters");
-    
-    const { data: createData, error: createError } = await supabaseAdmin.auth.admin.createUser({
-      email: email,
-      password: password,
-      email_confirm: true,
-      user_metadata: { 
-        name: name,
-        role: 'admin'
-      }
-    });
-
-    if (createError) {
-      console.error("❌ Error creating user:", createError);
-      console.error("Error details:", JSON.stringify(createError, null, 2));
-      return c.json({ 
-        data: null, 
-        error: `Error creating user: ${createError.message}` 
-      }, 500);
-    }
-
-    if (!createData.user) {
-      console.error("❌ User creation returned no data");
-      return c.json({ 
-        data: null, 
-        error: "User creation failed: No user data returned" 
-      }, 500);
-    }
-
-    console.log("✓ User created successfully in Supabase Auth");
-    console.log("User ID:", createData.user.id);
-    console.log("User email:", createData.user.email);
-    console.log("Email confirmed:", createData.user.email_confirmed_at ? "YES" : "NO");
-
-    // Step 5: Store in KV
-    console.log("\n💾 Storing admin info in KV store...");
-    const adminData = {
-      id: createData.user.id,
-      email: createData.user.email,
-      name: name,
-      created_at: new Date().toISOString(),
-    };
-    
-    await kv.set(`admin:${createData.user.id}`, adminData);
-    console.log("✓ Admin info stored in KV store");
-
-    // Step 6: Verify user can be retrieved
-    console.log("\n🔐 Verifying user can be authenticated...");
-    const { data: userData, error: getUserError } = await supabaseAdmin.auth.admin.getUserById(createData.user.id);
-    
-    if (getUserError || !userData.user) {
-      console.error("❌ Cannot retrieve created user:", getUserError);
-    } else {
-      console.log("✓ User can be retrieved successfully");
-    }
-
-    console.log("\n=== ADMIN SETUP COMPLETE ===");
-    console.log("✅ You can now login with:");
-    console.log("   Email:", email);
-    console.log("   Password:", password);
-    console.log("============================\n");
-
-    return c.json({ 
-      data: { 
-        email: email,
-        userId: createData.user.id,
-        message: "Usuario administrador creado exitosamente. Ahora puedes iniciar sesión con las credenciales proporcionadas." 
-      }, 
-      error: null 
-    });
-
-  } catch (error) {
-    console.error("\n❌ UNEXPECTED ERROR in setup-admin:", error);
-    console.error("Error stack:", error.stack);
-    return c.json({ 
-      data: null, 
-      error: `Error inesperado: ${error.message}` 
-    }, 500);
-  }
+// setup-admin removed (legacy). Do not deploy this function.
+app.post("/make-server-824603ba/setup-admin", (c) => {
+  return c.json({ data: null, error: "Gone" }, 410);
 });
 
 // ==================== ENCUESTAS (Surveys) ROUTES ====================

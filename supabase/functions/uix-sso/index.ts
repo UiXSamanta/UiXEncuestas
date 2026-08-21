@@ -70,6 +70,20 @@ async function verifyJwt(token: string): Promise<string | null> {
   return String(claims.email).trim().toLowerCase();
 }
 
+const DEFAULT_SSO_DOMAINS = ["upax.com.mx"];
+
+function allowedSsoDomains(): string[] {
+  const raw = Deno.env.get("UIX_SSO_ALLOWED_DOMAINS") ?? "";
+  const fromEnv = raw.split(",").map((d) => d.trim().toLowerCase()).filter(Boolean);
+  return fromEnv.length > 0 ? fromEnv : DEFAULT_SSO_DOMAINS;
+}
+
+function isSsoEmailAllowed(email: string): boolean {
+  const domain = email.split("@")[1]?.toLowerCase();
+  if (!domain) return false;
+  return allowedSsoDomains().includes(domain);
+}
+
 async function ensureAdminRecord(userId: string, email: string, name?: string | null) {
   const existing = (await kv.get(`admin:${userId}`)) as Record<string, unknown> | null;
   if (existing) return;
@@ -104,6 +118,10 @@ Deno.serve(async (req) => {
 
   const email = await verifyJwt(String(token));
   if (!email) return json({ error: "token invalido" }, 401, origin);
+
+  if (!isSsoEmailAllowed(email)) {
+    return json({ error: "dominio no autorizado" }, 403, origin);
+  }
 
   await admin.auth.admin.createUser({
     email,

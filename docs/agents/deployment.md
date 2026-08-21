@@ -27,8 +27,31 @@ Desplegar tras cambios en:
 
 ```
 supabase/functions/make-server-824603ba/index.ts
+supabase/functions/make-server-824603ba/auth.ts
+supabase/functions/make-server-824603ba/passwords.ts
+supabase/functions/make-server-824603ba/response_keys.ts
+supabase/functions/make-server-824603ba/rate_limit.ts
 supabase/functions/make-server-824603ba/kv_store.tsx
 ```
+
+**RLS (obligatorio, una vez):** ejecutar `supabase/migrations/20260820143000_lock_down_kv_store.sql` en el SQL Editor del proyecto. Sin esto, PostgREST podría seguir exponiendo `kv_store_824603ba` con la anon key.
+
+**Variables opcionales (Edge Functions → Secrets):**
+
+| Variable | Función | Uso |
+|----------|---------|-----|
+| `UIX_SSO_ALLOWED_DOMAINS` | `uix-sso` | Dominios de email permitidos (coma-separados). Default: `upax.com.mx` |
+| `SITE_URL` | `make-server-824603ba` | CORS y OG |
+
+CORS de la función: `https://uixencuestas.vercel.app`, previews `https://uixencuestas-*.vercel.app`, localhost, y opcional `CORS_EXTRA_ORIGINS`.
+
+## Checklist post-hardening (orden)
+
+1. ~~SQL Editor → RLS en `kv_store_824603ba`~~ (hecho)
+2. Deploy `make-server-824603ba` + `uix-sso` (si cambió SSO)
+3. Deploy frontend Vercel: preview rama → luego prod `uixencuestas.vercel.app`
+4. Probar login admin, abrir encuesta live, guardar respuesta de prueba
+5. Confirmar que `GET /encuestas` sin JWT devuelve 401 (curl con solo anon key)
 
 ## Storage
 
