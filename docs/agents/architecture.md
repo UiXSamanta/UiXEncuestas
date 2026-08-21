@@ -19,9 +19,8 @@
 │  Browser (React SPA)                                     │
 │  src/app/components/*  src/app/lib/api.ts               │
 └──────────────────────────┬──────────────────────────────┘
-                           │ HTTPS
-                           │ Authorization: Bearer {user JWT | anon key}
-                           │ apikey: {anon key}
+                           │ HTTPS + Bearer anon key
+                           │ Body: { _token } en rutas protegidas
 ┌──────────────────────────▼──────────────────────────────┐
 │  Supabase Edge Function: make-server-824603ba           │
 │  supabase/functions/make-server-824603ba/index.ts       │

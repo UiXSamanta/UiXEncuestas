@@ -3,38 +3,27 @@
 ## Login estándar
 
 1. `Login.tsx` → `api.signIn(email, password)` → Supabase `signInWithPassword`
-2. Token en `localStorage.access_token` (espejo de la sesión PKCE)
-3. `api.verifyUser()` envía el JWT en `Authorization`; el backend valida con `auth.getUser` (firma real) y lee KV `admin:{userId}`
-4. Perfil en `localStorage.user` (nombre, permisos, flags) — **no es control de acceso**; el servidor revalida
+2. Token en `localStorage.access_token`
+3. `api.verifyUser()` → backend lee KV `admin:{userId}`
+4. Perfil en `localStorage.user` (nombre, permisos, flags)
 
 Cliente Supabase: `src/app/lib/supabase.ts` — storage key `survey-app-auth-token`, PKCE, auto-refresh.
 
-Helpers de servidor: `supabase/functions/make-server-824603ba/auth.ts`.
-
-## Qué es público vs admin
-
-| Público (anon) | Admin autenticado |
-|----------------|-------------------|
-| `GET /health`, `GET /og/:id` | Listado de encuestas, proyectos, trash, analytics |
-| `GET /encuestas/:id` si `estado === true` (live) | Drafts (`estado !== true` → 404 para anónimos) |
-| `POST /respuestas` si la encuesta está live | Mutaciones de encuestas/proyectos/respuestas |
-| `POST /notifications` (solicitud de acceso) | GET/approve/reject notificaciones (permiso) |
-
-`POST /setup-admin` y el alta pública de admins fueron eliminados.
-
 ## Roles y permisos
 
-Metadatos de admin en KV (`admin:{userId}`), **enforced en el servidor**.
+Metadatos de admin en KV (`admin:{userId}`), no en JWT claims custom extensos.
 
-- `can_access_notifications` — listar/aprobar/rechazar solicitudes
-- `can_access_settings` — CRUD admins, import CSV, reset password
-- Super-admin: email `PRIMARY_ADMIN_EMAIL` (bypass de flags)
+Flags típicos usados en UI:
 
-Cualquier JWT válido **sin** registro `admin:{id}` recibe 401 (excepto el super-admin).
+- Permisos de gestión de encuestas/proyectos
+- `must_change_password` — fuerza modal en `ProtectedLayout`
+- `source: 'uix-space-sso'` — usuario proveniente de UiX Space
+
+Super-admin: email hardcodeado en `AdminDashboard` para acciones restringidas (verificar en código antes de asumir otro criterio).
 
 ## Cambio de contraseña obligatorio
 
-Tras aprobar solicitud de acceso, el backend marca `must_change_password: true`. `ChangePasswordModal` bloquea la app hasta cambiar. Las passwords temporales se devuelven **una sola vez** en la respuesta; no se persisten en KV.
+Tras aprobar solicitud de acceso, el backend marca `must_change_password: true`. `ChangePasswordModal` bloquea la app hasta cambiar.
 
 ## Solicitudes de acceso (notificaciones)
 
@@ -44,23 +33,25 @@ Flujo completo documentado en `SISTEMA_NOTIFICACIONES.md` (resumen aquí).
 |------|--------|
 | 1 | Usuario envía formulario en `/admin-request` |
 | 2 | Se crea KV `notification:{id}` estado `pending` |
-| 3 | Admin con permiso en `/notifications` aprueba o rechaza |
-| 4a Aprobar | Crea usuario Auth, contraseña aleatoria (16 chars), `must_change_password` |
-| 4b Rechazar | Estado `rejected` |
+| 3 | Super-admin en `/notifications` aprueba o rechaza |
+| 4a Aprobar | Crea usuario Auth, contraseña auto, email placeholder (console), `must_change_password` |
+| 4b Rechazar | Estado `rejected`, email placeholder de rechazo |
+
+**Contraseña auto al aprobar:** 3 letras del nombre + 3 dígitos + 3 símbolos (`!@#$%&*`). Ejemplo: `sam456#@!`.
 
 Endpoints:
 
-- `POST /notifications/:id/approve` — requiere permiso notifications
+- `POST /notifications/:id/approve`
 - `POST /notifications/:id/reject`
-- `GET /notifications` — ya no es público
+- CRUD `/notifications`
 
 ## Contraseña de proyecto
 
-Proyectos pueden tener `password` opcional. Se guarda con PBKDF2; las APIs GET nunca devuelven el secreto, solo `hasPassword`.
+Proyectos pueden tener `password` opcional. Reglas (`BACKEND_VERIFICACION.md`):
 
-- Campo `created_by` — el creador **no** necesita contraseña
-- `POST /proyectos/:id/check-access` → `{ isCreator, hasPassword, requiresPassword }`
-- `POST /proyectos/:id/validate-password` — bypass si es creador; si el valor era plaintext legacy, se rehashéa al validar
+- Campo `created_by` en proyecto — el creador **no** necesita contraseña
+- `GET /proyectos/:id/check-access` → `{ isCreator, hasPassword, requiresPassword }`
+- `POST /proyectos/:id/validate-password` — bypass si es creador
 
 Frontend: `api.checkProyectoAccess`, `api.validateProyectoPassword` — usados en `AdminDashboard`.
 
@@ -84,11 +75,11 @@ UiX Space: `https://uix-space.vercel.app`
 ## Patrón API autenticada
 
 ```typescript
+const token = await getAccessToken();
 await fetchApi('/encuestas', {
   method: 'POST',
-  body: JSON.stringify(payload),
+  body: JSON.stringify({ ...payload, _token: token }),
 });
-// fetchApi pone Authorization: Bearer {userJwt} y apikey: {anonKey}
 ```
 
-Rutas públicas (`saveRespuesta`, `createNotification`, GET encuesta live) usan `authMode: 'public' | 'optional'`.
+Siempre `Authorization: Bearer {publicAnonKey}` en header; el JWT de usuario va en `_token` del body en endpoints protegidos.

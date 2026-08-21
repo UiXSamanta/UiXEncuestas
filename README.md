@@ -2,8 +2,7 @@
 
 SPA React para crear, publicar y analizar encuestas UX (CSAT, NPS, SUS, Likert, etc.).
 
-- Producción: [uix-encuestas.figma.site](https://uix-encuestas.figma.site)
-- Vercel (staging/previews): [uixencuestas.vercel.app](https://uixencuestas.vercel.app)
+- **Producción:** [uixencuestas.vercel.app](https://uixencuestas.vercel.app)
 - **Diseño Figma:** [UiX Encuestas en Figma](https://www.figma.com/design/PfXw85H8dbeypmv2TKvIKC/UiX-Encuestas)
 - **Repo:** `UiXSamanta/UiXEncuestas`
 
@@ -105,12 +104,9 @@ Schema en español en builder (`tipo`, `titulo_pregunta`); respondent normaliza 
 
 ## Auth y permisos (mínimo)
 
-- Login → Supabase → JWT en `Authorization: Bearer {access_token}` (ya no va en `_token` del body).
-- `api.verifyUser()` lee `admin:{userId}` en KV. Sin registro admin (salvo super-admin), 401.
-- Rutas públicas: encuesta **live**, `POST /respuestas`, `POST /notifications` (solicitud), health/OG.
-- Drafts, listados, analytics, proyectos y papelera exigen admin.
-- Solicitudes de acceso: `/admin-request` → `/notifications` (aprobar/rechazar requiere `can_access_notifications`).
-- Proyectos con contraseña: hash PBKDF2 en servidor; el creador entra sin password.
+- Login → Supabase → token en `localStorage` → `api.verifyUser()` lee `admin:{userId}` en KV.
+- Solicitudes de acceso: `/admin-request` → `/notifications` (aprobar/rechazar). Detalle en `SISTEMA_NOTIFICACIONES.md`.
+- Proyectos con contraseña: el **creador** (`created_by`) entra sin password. Detalle en `BACKEND_VERIFICACION.md`.
 - SSO UiX Space: helpers en `src/app/lib/uixSso.ts` (integración parcial).
 
 ---

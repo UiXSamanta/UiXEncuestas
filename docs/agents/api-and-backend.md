@@ -23,8 +23,8 @@ Prefijos de clave:
 | Prefijo | Entidad |
 |---------|---------|
 | `encuesta:` | Definición de encuesta |
-| `respuesta:{encuestaId}:{responseId}` | Respuesta individual (legacy `respuesta:{id}` se migra al primer GET/DELETE) |
-| `proyecto:` | Carpeta/proyecto (`password` hasheado; GET solo expone `hasPassword`) |
+| `respuesta:` | Respuesta individual |
+| `proyecto:` | Carpeta/proyecto |
 | `admin:` | Metadatos de administrador |
 | `notification:` | Solicitud de acceso |
 | `trash:` | Elementos en papelera |
@@ -89,29 +89,32 @@ El helper `fetchApi` en `api.ts` parsea esto y propaga `error` string al caller.
 
 ### Auth y admins
 
-| Método | Ruta | Auth |
-|--------|------|------|
-| POST | `/auth/signup`, `/auth/admins`, `/auth/admins/import` | settings |
-| PUT/DELETE | `/auth/admins/:id` | settings |
-| POST | `/auth/admins/:id/reset-password` | settings |
-| POST | `/auth/verify`, `/auth/change-password` | cualquier admin |
-
-`POST /setup-admin` **eliminado**.
+| Método | Ruta |
+|--------|------|
+| POST | `/auth/signup`, `/auth/verify`, `/auth/change-password` |
+| POST | `/auth/reset-password` |
+| CRUD | `/admins`, `/admins/import` |
 
 ### Notificaciones
 
-| Método | Ruta | Auth |
-|--------|------|------|
-| POST | `/notifications` | público (solicitud) |
-| GET | `/notifications` | notifications |
-| POST | `/notifications/:id/approve` y `/reject` | notifications |
+| Método | Ruta |
+|--------|------|
+| GET/POST | `/notifications` |
+| POST | `/notifications/:id/approve` |
+| POST | `/notifications/:id/reject` |
 
 ### Media e IA
 
-| Método | Ruta | Auth |
-|--------|------|------|
-| POST | `/upload-image` → bucket `make-824603ba-images` | admin |
-| POST | `/ai/compare-surveys` | admin |
+| Método | Ruta |
+|--------|------|
+| POST | `/upload-image` → bucket `make-824603ba-images` |
+| POST | `/ai/compare-surveys` | Comparador (WIP) |
+
+### Setup
+
+| Método | Ruta |
+|--------|------|
+| POST | `/setup-admin` | Bootstrap super-admin |
 
 ## Storage
 
@@ -123,7 +126,7 @@ Imágenes de encuesta (welcome, OG, thumbnail) vía `api.uploadSurveyImage` → 
 |---------|----------------|
 | 404 en API | Function no desplegada o nombre incorrecto |
 | HTML en lugar de JSON | URL mal formada o rewrite de Vercel capturando la petición |
-| 401 / No autorizado | Sesión expirada o JWT faltante; refrescar con `getAccessToken()` |
+| `_token` inválido | Sesión expirada; refrescar con `getAccessToken()` |
 
 ## Deploy backend
 
