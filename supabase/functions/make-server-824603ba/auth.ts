@@ -106,8 +106,11 @@ export async function persistAdminWithoutTempPassword(admin: Record<string, unkn
   return rest;
 }
 
+export const PRODUCTION_SITE_URL = "https://uix-encuestas.figma.site";
+
 export const ALLOWED_CORS_ORIGINS = [
-  (Deno.env.get("SITE_URL") ?? "https://uixencuestas.vercel.app").replace(/\/$/, ""),
+  (Deno.env.get("SITE_URL") ?? PRODUCTION_SITE_URL).replace(/\/$/, ""),
+  PRODUCTION_SITE_URL,
   "https://uixencuestas.vercel.app",
   "http://localhost:5173",
   "http://127.0.0.1:5173",
@@ -121,10 +124,12 @@ export const ALLOWED_CORS_ORIGINS = [
 /** Vercel preview URLs: uixencuestas-*.vercel.app (same project) */
 const VERCEL_PREVIEW_ORIGIN = /^https:\/\/uixencuestas(-[a-z0-9-]+)*\.vercel\.app$/i;
 
+const FIGMA_SITE_ORIGIN = /^https:\/\/uix-encuestas\.figma\.site$/i;
+
 export function isAllowedCorsOrigin(origin: string | undefined): boolean {
   if (!origin) return false;
   if (ALLOWED_CORS_ORIGINS.includes(origin)) return true;
-  return VERCEL_PREVIEW_ORIGIN.test(origin);
+  return VERCEL_PREVIEW_ORIGIN.test(origin) || FIGMA_SITE_ORIGIN.test(origin);
 }
 
 export function resolveCorsOrigin(origin: string | undefined): string | null {

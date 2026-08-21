@@ -2,7 +2,8 @@
 
 SPA React para crear, publicar y analizar encuestas UX (CSAT, NPS, SUS, Likert, etc.).
 
-- **Producción:** [uixencuestas.vercel.app](https://uixencuestas.vercel.app)
+- Producción: [uix-encuestas.figma.site](https://uix-encuestas.figma.site)
+- Vercel (staging/previews): [uixencuestas.vercel.app](https://uixencuestas.vercel.app)
 - **Diseño Figma:** [UiX Encuestas en Figma](https://www.figma.com/design/PfXw85H8dbeypmv2TKvIKC/UiX-Encuestas)
 - **Repo:** `UiXSamanta/UiXEncuestas`
 

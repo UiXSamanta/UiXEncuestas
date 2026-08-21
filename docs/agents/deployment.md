@@ -4,7 +4,8 @@
 
 - Build: `pnpm build` → `dist/`
 - `vercel.json`: rewrite SPA — rutas no-estáticas → `/index.html`
-- Producción referenciada: `https://uixencuestas.vercel.app`
+- Producción referenciada: `https://uix-encuestas.figma.site`
+- Vercel (previews): `https://uixencuestas.vercel.app`
 - Variable opcional: `VITE_SITE_URL` para URLs absolutas en `urls.ts` / OG
 
 ## Edge Middleware
@@ -43,7 +44,7 @@ supabase/functions/make-server-824603ba/kv_store.tsx
 | `UIX_SSO_ALLOWED_DOMAINS` | `uix-sso` | Dominios de email permitidos (coma-separados). Default: `upax.com.mx` |
 | `SITE_URL` | `make-server-824603ba` | CORS y OG |
 
-CORS de la función: `https://uixencuestas.vercel.app`, previews `https://uixencuestas-*.vercel.app`, localhost, y opcional `CORS_EXTRA_ORIGINS` (coma-separados).
+CORS de la función: `https://uix-encuestas.figma.site` (prod), previews `https://uixencuestas-*.vercel.app`, localhost, y opcional `CORS_EXTRA_ORIGINS` (coma-separados).
 
 ## Checklist post-hardening (orden)
 

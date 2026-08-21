@@ -5,6 +5,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import * as kv from "./kv_store.tsx";
 import {
   PRIMARY_ADMIN_EMAIL,
+  PRODUCTION_SITE_URL,
   resolveCorsOrigin,
   persistAdminWithoutTempPassword,
   requireAdmin,
@@ -88,7 +89,7 @@ app.get("/make-server-824603ba/health", (c) => {
 
 app.get("/make-server-824603ba/og/:id", async (c) => {
   const id = c.req.param("id");
-  const SITE_URL = (Deno.env.get("SITE_URL") ?? "https://uixencuestas.vercel.app").replace(/\/$/, "");
+  const SITE_URL = (Deno.env.get("SITE_URL") ?? PRODUCTION_SITE_URL).replace(/\/$/, "");
 
   try {
     const encuesta = await kv.get(`encuesta:${id}`);
