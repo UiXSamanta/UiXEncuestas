@@ -96,8 +96,6 @@ El helper `fetchApi` en `api.ts` parsea esto y propaga `error` string al caller.
 | POST | `/auth/admins/:id/reset-password` | settings |
 | POST | `/auth/verify`, `/auth/change-password` | cualquier admin |
 
-`POST /setup-admin` **eliminado**.
-
 ### Notificaciones
 
 | Método | Ruta | Auth |
