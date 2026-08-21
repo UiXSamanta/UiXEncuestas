@@ -104,9 +104,12 @@ Schema en español en builder (`tipo`, `titulo_pregunta`); respondent normaliza 
 
 ## Auth y permisos (mínimo)
 
-- Login → Supabase → token en `localStorage` → `api.verifyUser()` lee `admin:{userId}` en KV.
-- Solicitudes de acceso: `/admin-request` → `/notifications` (aprobar/rechazar). Detalle en `SISTEMA_NOTIFICACIONES.md`.
-- Proyectos con contraseña: el **creador** (`created_by`) entra sin password. Detalle en `BACKEND_VERIFICACION.md`.
+- Login → Supabase → JWT en `Authorization: Bearer {access_token}` (ya no va en `_token` del body).
+- `api.verifyUser()` lee `admin:{userId}` en KV. Sin registro admin (salvo super-admin), 401.
+- Rutas públicas: encuesta **live**, `POST /respuestas`, `POST /notifications` (solicitud), health/OG.
+- Drafts, listados, analytics, proyectos y papelera exigen admin.
+- Solicitudes de acceso: `/admin-request` → `/notifications` (aprobar/rechazar requiere `can_access_notifications`).
+- Proyectos con contraseña: hash PBKDF2 en servidor; el creador entra sin password.
 - SSO UiX Space: helpers en `src/app/lib/uixSso.ts` (integración parcial).
 
 ---

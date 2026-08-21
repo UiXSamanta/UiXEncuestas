@@ -46,8 +46,13 @@ interface Proyecto {
   nombre: string;
   descripcion?: string;
   password?: string;
+  hasPassword?: boolean;
   created_at: string;
   updated_at: string;
+}
+
+function projectHasPassword(proyecto: Proyecto): boolean {
+  return proyecto.hasPassword === true || !!proyecto.password;
 }
 
 // Get current user from localStorage
@@ -245,12 +250,13 @@ export function AdminDashboard() {
 
     const updateData: any = { nombre: newProjectName };
 
-    // Update password if changed
     if (usePassword) {
-      updateData.password = newProjectPassword;
+      if (newProjectPassword.trim()) {
+        updateData.password = newProjectPassword;
+      }
       updateData.locked = true;
     } else {
-      updateData.password = '';
+      updateData.password = null;
       updateData.locked = false;
     }
 
@@ -264,7 +270,8 @@ export function AdminDashboard() {
     setProyectos(proyectos.map(p => p.id === pendingProjectId ? {
       ...p,
       nombre: newProjectName,
-      password: updateData.password,
+      hasPassword: usePassword,
+      password: undefined,
       locked: updateData.locked
     } : p));
     setShowRenameProjectModal(false);
@@ -381,7 +388,7 @@ export function AdminDashboard() {
 
   // Open project (check password if needed)
   const handleOpenProject = (proyecto: Proyecto) => {
-    if (proyecto.password && !isAdminPrincipal && !unlockedProjects.has(proyecto.id)) {
+    if (projectHasPassword(proyecto) && !isAdminPrincipal && !unlockedProjects.has(proyecto.id)) {
       setPendingProjectId(proyecto.id);
       setPendingAction('open');
       setShowPasswordModal(true);
@@ -765,7 +772,7 @@ export function AdminDashboard() {
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {filteredProyectos.map((proyecto) => {
                     const surveyCount = encuestas.filter(e => e.proyecto_id === proyecto.id).length;
-                    const hasPassword = !!proyecto.password;
+                    const hasPassword = projectHasPassword(proyecto);
                     const showMenu = openMenuId === proyecto.id;
 
                     return (
@@ -813,8 +820,8 @@ export function AdminDashboard() {
                                   setOpenMenuId(null);
                                   setPendingProjectId(proyecto.id);
                                   setNewProjectName(proyecto.nombre);
-                                  setNewProjectPassword(proyecto.password || '');
-                                  setUsePassword(!!proyecto.password);
+                                  setNewProjectPassword('');
+                                  setUsePassword(projectHasPassword(proyecto));
                                   setShowRenameProjectModal(true);
                                 }}
                                 className="w-full px-4 py-2 text-left text-sm text-[#303C48] dark:text-foreground hover:bg-[#EBEEF4] dark:hover:bg-accent flex items-center gap-2"
