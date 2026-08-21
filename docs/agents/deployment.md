@@ -43,7 +43,7 @@ supabase/functions/make-server-824603ba/kv_store.tsx
 | `UIX_SSO_ALLOWED_DOMAINS` | `uix-sso` | Dominios de email permitidos (coma-separados). Default: `upax.com.mx` |
 | `SITE_URL` | `make-server-824603ba` | CORS y OG |
 
-CORS de la función: `https://uixencuestas.vercel.app` y localhost. Preview de Vercel no está en la lista.
+CORS de la función: `https://uixencuestas.vercel.app`, previews `https://uixencuestas-*.vercel.app`, localhost, y opcional `CORS_EXTRA_ORIGINS` (coma-separados).
 
 ## Checklist post-hardening (orden)
 

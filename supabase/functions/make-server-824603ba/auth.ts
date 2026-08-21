@@ -112,4 +112,22 @@ export const ALLOWED_CORS_ORIGINS = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
   "http://localhost:3000",
+  ...(Deno.env.get("CORS_EXTRA_ORIGINS") ?? "")
+    .split(",")
+    .map((o) => o.trim())
+    .filter(Boolean),
 ];
+
+/** Vercel preview URLs: uixencuestas-*.vercel.app (same project) */
+const VERCEL_PREVIEW_ORIGIN = /^https:\/\/uixencuestas(-[a-z0-9-]+)*\.vercel\.app$/i;
+
+export function isAllowedCorsOrigin(origin: string | undefined): boolean {
+  if (!origin) return false;
+  if (ALLOWED_CORS_ORIGINS.includes(origin)) return true;
+  return VERCEL_PREVIEW_ORIGIN.test(origin);
+}
+
+export function resolveCorsOrigin(origin: string | undefined): string | null {
+  if (origin && isAllowedCorsOrigin(origin)) return origin;
+  return null;
+}

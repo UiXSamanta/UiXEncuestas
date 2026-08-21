@@ -4,8 +4,8 @@ import { logger } from "npm:hono/logger";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import * as kv from "./kv_store.tsx";
 import {
-  ALLOWED_CORS_ORIGINS,
   PRIMARY_ADMIN_EMAIL,
+  resolveCorsOrigin,
   persistAdminWithoutTempPassword,
   requireAdmin,
   requirePermission,
@@ -67,7 +67,7 @@ app.use('*', logger(console.log));
 app.use(
   "/*",
   cors({
-    origin: ALLOWED_CORS_ORIGINS,
+    origin: (origin) => resolveCorsOrigin(origin),
     allowHeaders: ["Content-Type", "Authorization", "apikey", "x-client-info"],
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     exposeHeaders: ["Content-Length"],
