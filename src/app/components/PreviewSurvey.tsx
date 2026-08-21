@@ -325,9 +325,10 @@ export function PreviewSurvey() {
 
   const isCurrentAnswerValid = (): boolean => isAnswerValid(currentQ, currentAnswer);
 
-  /** Preview: separators never block forward/submit (no DB write). */
+  /** Preview: fake submit — last step always reaches thank-you; separators never block. */
   const canProceedInPreview = (): boolean => {
     if (useScrollLayout) return isAllAnswersValid();
+    if (isLastQuestion) return true;
     if (currentQ.type === 'separator') return true;
     return isCurrentAnswerValid();
   };
@@ -1224,11 +1225,13 @@ export function PreviewSurvey() {
             <p className="text-xs text-yellow-700 bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-2">
               🔍 Preview Mode: {useScrollLayout
                 ? (isAllAnswersValid() ? 'Listo para enviar preview (no se guardará)' : 'Completa todas las preguntas requeridas')
-                : currentQ.type === 'separator'
-                  ? 'Puedes continuar — no se guardará en la base de datos'
-                  : (canProceedInPreview()
-                    ? 'Listo para continuar (no se guardará en la base de datos)'
-                    : 'Selecciona una opción para continuar')}
+                : isLastQuestion
+                  ? 'Submit Preview te llevará a la pantalla de gracias (no se guardará en la base de datos)'
+                  : currentQ.type === 'separator'
+                    ? 'Puedes continuar — no se guardará en la base de datos'
+                    : (canProceedInPreview()
+                      ? 'Listo para continuar (no se guardará en la base de datos)'
+                      : 'Selecciona una opción para continuar')}
             </p>
           </div>
         </div>
