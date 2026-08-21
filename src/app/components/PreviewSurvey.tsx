@@ -77,9 +77,10 @@ interface SectionMetadata {
 
 // Normalize question from builder schema → viewer schema
 function normalizeQuestion(q: any): Question {
+  const rawType = String(q.type ?? q.tipo ?? 'text').toLowerCase();
   return {
     id: q.id ?? q.pregunta_id ?? `q_${Math.random()}`,
-    type: q.type ?? q.tipo ?? 'text',
+    type: (rawType === 'separator' ? 'separator' : rawType) as Question['type'],
     title: q.title ?? q.titulo_pregunta ?? 'Pregunta sin título',
     subtitle: q.subtitle ?? q.subtitulo_pregunta,
     opciones: q.opciones ?? [],
@@ -323,6 +324,13 @@ export function PreviewSurvey() {
     questions.every((q) => isAnswerValid(q, getAnswerFor(q.id)));
 
   const isCurrentAnswerValid = (): boolean => isAnswerValid(currentQ, currentAnswer);
+
+  /** Preview: separators never block forward/submit (no DB write). */
+  const canProceedInPreview = (): boolean => {
+    if (useScrollLayout) return isAllAnswersValid();
+    if (currentQ.type === 'separator') return true;
+    return isCurrentAnswerValid();
+  };
 
   const handleAnswer = (value: number | string, questionId?: string) => {
     const qId = questionId ?? currentQ.id;
@@ -1193,7 +1201,7 @@ export function PreviewSurvey() {
               )}
               <button
                 onClick={handleForward}
-                disabled={useScrollLayout ? !isAllAnswersValid() : !isCurrentAnswerValid()}
+                disabled={!canProceedInPreview()}
                 className={`flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors ${useScrollLayout || blockBack ? 'flex-1 w-full' : 'flex-1'}`}
               >
                 {useScrollLayout || isLastQuestion ? (
@@ -1216,7 +1224,11 @@ export function PreviewSurvey() {
             <p className="text-xs text-yellow-700 bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-2">
               🔍 Preview Mode: {useScrollLayout
                 ? (isAllAnswersValid() ? 'Listo para enviar preview (no se guardará)' : 'Completa todas las preguntas requeridas')
-                : (isCurrentAnswerValid() ? 'Listo para continuar (no se guardará en la base de datos)' : 'Selecciona una opción para continuar')}
+                : currentQ.type === 'separator'
+                  ? 'Puedes continuar — no se guardará en la base de datos'
+                  : (canProceedInPreview()
+                    ? 'Listo para continuar (no se guardará en la base de datos)'
+                    : 'Selecciona una opción para continuar')}
             </p>
           </div>
         </div>
