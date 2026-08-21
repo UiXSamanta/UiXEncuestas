@@ -104,13 +104,7 @@ Schema en español en builder (`tipo`, `titulo_pregunta`); respondent normaliza 
 
 ## Auth y permisos (mínimo)
 
-- Login → Supabase → JWT en `Authorization: Bearer {access_token}` (ya no va en `_token` del body).
-- `api.verifyUser()` lee `admin:{userId}` en KV. Sin registro admin (salvo super-admin), 401.
-- Rutas públicas: encuesta **live**, `POST /respuestas`, `POST /notifications` (solicitud), health/OG.
-- Drafts, listados, analytics, proyectos y papelera exigen admin.
-- Solicitudes de acceso: `/admin-request` → `/notifications` (aprobar/rechazar requiere `can_access_notifications`).
-- Proyectos con contraseña: hash PBKDF2 en servidor; el creador entra sin password.
-- SSO UiX Space: helpers en `src/app/lib/uixSso.ts` (integración parcial).
+Login con Supabase; rutas admin exigen JWT válido y registro en KV. Detalle de roles, notificaciones y proyectos con contraseña: [docs/agents/auth-and-permissions.md](docs/agents/auth-and-permissions.md).
 
 ---
 
@@ -131,6 +125,22 @@ Schema en español en builder (`tipo`, `titulo_pregunta`); respondent normaliza 
 - **Frontend:** Vercel — `vercel.json` rewrite SPA.
 - **Backend:** desplegar función Supabase `make-server-824603ba` tras cambios en `index.ts`.
 - **OG:** `middleware.ts` + fallback `GET /og/:id`.
+
+Detalle, smoke tests y cambio de host: [docs/agents/deployment.md](docs/agents/deployment.md).
+
+### ¿Cambiaste de host? (Cloudflare, AWS, otro dominio)
+
+Si la app ya no vive en `uixencuestas.vercel.app`, el **frontend puede moverse**, pero Supabase debe conocer el **dominio nuevo** o el admin dejará de cargar (error de red / CORS).
+
+1. **Supabase Dashboard** → Edge Functions → Secrets → `make-server-824603ba`:
+   - `SITE_URL` = `https://tu-dominio-nuevo.com` (sin `/` final)
+   - Opcional: `CORS_EXTRA_ORIGINS` = orígenes extra separados por coma (previews, staging)
+2. **Redeploy** la función: `supabase functions deploy make-server-824603ba --project-ref buqpkujiozvrsitwti`
+3. **Supabase Auth** → URL Configuration: redirect URLs de login y reset password con el dominio nuevo (`/login`, `/reset-password`)
+4. **Frontend:** variable `VITE_SITE_URL` en el host nuevo (build) si usas URLs absolutas / OG
+5. **Smoke test** en el dominio nuevo (login admin, encuesta live, respuesta de prueba)
+
+Pasos completos, curl y checklist: [docs/agents/deployment.md#cambio-de-host](docs/agents/deployment.md).
 
 ---
 

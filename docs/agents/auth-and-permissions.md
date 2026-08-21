@@ -20,7 +20,7 @@ Helpers de servidor: `supabase/functions/make-server-824603ba/auth.ts`.
 | `POST /respuestas` si la encuesta está live | Mutaciones de encuestas/proyectos/respuestas |
 | `POST /notifications` (solicitud de acceso) | GET/approve/reject notificaciones (permiso) |
 
-`POST /setup-admin` y el alta pública de admins fueron eliminados.
+Altas de admin solo vía `/auth/signup` con permiso `settings` (no hay registro público).
 
 ## Roles y permisos
 
@@ -30,7 +30,7 @@ Metadatos de admin en KV (`admin:{userId}`), **enforced en el servidor**.
 - `can_access_settings` — CRUD admins, import CSV, reset password
 - Super-admin: email `PRIMARY_ADMIN_EMAIL` (bypass de flags)
 
-Cualquier JWT válido **sin** registro `admin:{id}` recibe 401 (excepto el super-admin).
+Cualquier usuario sin registro `admin:{id}` en KV no accede a rutas admin (salvo super-admin configurado en servidor).
 
 ## Cambio de contraseña obligatorio
 
@@ -52,15 +52,15 @@ Endpoints:
 
 - `POST /notifications/:id/approve` — requiere permiso notifications
 - `POST /notifications/:id/reject`
-- `GET /notifications` — ya no es público
+- `GET /notifications` — requiere permiso notifications
 
 ## Contraseña de proyecto
 
-Proyectos pueden tener `password` opcional. Se guarda con PBKDF2; las APIs GET nunca devuelven el secreto, solo `hasPassword`.
+Proyectos pueden tener `password` opcional. Las APIs GET solo exponen `hasPassword`, no el secreto.
 
 - Campo `created_by` — el creador **no** necesita contraseña
 - `POST /proyectos/:id/check-access` → `{ isCreator, hasPassword, requiresPassword }`
-- `POST /proyectos/:id/validate-password` — bypass si es creador; si el valor era plaintext legacy, se rehashéa al validar
+- `POST /proyectos/:id/validate-password` — bypass si es creador; contraseñas legacy en texto plano se migran al validar
 
 Frontend: `api.checkProyectoAccess`, `api.validateProyectoPassword` — usados en `AdminDashboard`.
 
