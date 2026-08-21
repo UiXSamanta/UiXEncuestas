@@ -272,7 +272,6 @@ export function PreviewSurvey() {
   const isLastQuestion = currentQuestion === questions.length - 1;
   const currentQ = questions[currentQuestion];
   const currentAnswer = responseData.answers.find(a => a.questionID === currentQ.id);
-  const hasAnswer = currentAnswer !== undefined;
   const displayQuestions = useScrollLayout ? questions : [currentQ];
 
   const getAnswerFor = (questionId: string) =>
@@ -1194,7 +1193,7 @@ export function PreviewSurvey() {
               )}
               <button
                 onClick={handleForward}
-                disabled={(useScrollLayout ? !isAllAnswersValid() : (!hasAnswer || (currentQ.type === 'text' && currentQ.solo_email && !isCurrentAnswerValid())))}
+                disabled={useScrollLayout ? !isAllAnswersValid() : !isCurrentAnswerValid()}
                 className={`flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors ${useScrollLayout || blockBack ? 'flex-1 w-full' : 'flex-1'}`}
               >
                 {useScrollLayout || isLastQuestion ? (
@@ -1217,7 +1216,7 @@ export function PreviewSurvey() {
             <p className="text-xs text-yellow-700 bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-2">
               🔍 Preview Mode: {useScrollLayout
                 ? (isAllAnswersValid() ? 'Listo para enviar preview (no se guardará)' : 'Completa todas las preguntas requeridas')
-                : (hasAnswer ? 'Respuesta seleccionada (no se guardará)' : 'Selecciona una opción para continuar')}
+                : (isCurrentAnswerValid() ? 'Listo para continuar (no se guardará en la base de datos)' : 'Selecciona una opción para continuar')}
             </p>
           </div>
         </div>
