@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import * as api from '../lib/api';
 import { getPreviewUrl, getSurveyUrl } from '../lib/urls';
-import { csatStarLabel, isCsatStarMode, isYesNoQuestion } from '../lib/surveyQuestionUtils';
+import { csatStarLabel, formatMultipleChoiceAnswerDisplay, isCsatStarMode, isYesNoQuestion, parseMultipleChoiceAnswer } from '../lib/surveyQuestionUtils';
 
 // ── Type helpers ─────────────────────────────────────────────────────────────
 
@@ -752,9 +752,15 @@ function MultipleChoiceChart({ question, values, meta }: { question: any; values
   const opciones: string[] = question.opciones?.length > 0 ? question.opciones : [];
   const total = values.length;
 
-  // Values can be 0-based index (number) or the string label itself
+  // Values can be 0-based index (number), the string label itself, or a JSON array for multi-select
   const counts = opciones.map((label, i) =>
-    values.filter(v => Number(v) === i || v === label).length
+    values.filter((v) => {
+      const parsed = parseMultipleChoiceAnswer(v);
+      if (parsed.length > 1 || (typeof v === 'string' && v.trim().startsWith('['))) {
+        return parsed.includes(label);
+      }
+      return Number(v) === i || v === label;
+    }).length
   );
 
   if (isYesNoQuestion(opciones)) {
@@ -1625,9 +1631,15 @@ export function AnalyticsDashboard() {
                                     } else {
                                       displayVal = `${CSAT_EMOJIS[idx2] ?? ''} ${ans.value}`;
                                     }
-                                  } else if ((q.tipo === 'likert' || q.tipo === 'multiple-choice') && q.opciones?.length > 0) {
-                                    const oIdx = q.tipo === 'likert' ? Number(ans.value) - 1 : Number(ans.value);
+                                  } else if (q.tipo === 'likert' && q.opciones?.length > 0) {
+                                    const oIdx = Number(ans.value) - 1;
                                     displayVal = q.opciones[oIdx] ?? String(ans.value);
+                                  } else if (q.tipo === 'multiple-choice') {
+                                    displayVal = formatMultipleChoiceAnswerDisplay(
+                                      ans.value,
+                                      q.respuesta_unica === false,
+                                      q.opciones,
+                                    );
                                   } else if (q.tipo === 'score-matrix') {
                                     try {
                                       const matrix = typeof ans.value === 'string' ? JSON.parse(ans.value) : ans.value;

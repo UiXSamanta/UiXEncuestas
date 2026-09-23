@@ -14,6 +14,11 @@ import {
 import { SurveyLoader } from './SurveyLoader';
 import { SurveyThankYou } from './SurveyThankYou';
 import { SurveyFooter } from './SurveyFooter';
+import {
+  isMultipleChoiceOptionSelected,
+  parseMultipleChoiceAnswer,
+  toggleMultipleChoiceOption,
+} from '../lib/surveyQuestionUtils';
 
 interface ResponseDocument {
   responseID: string;
@@ -309,6 +314,10 @@ export function PreviewSurvey() {
       }
     }
     if (q.type === 'ranking') return answered;
+    if (q.type === 'multiple-choice' && q.respuesta_unica === false) {
+      if (!answered) return false;
+      return parseMultipleChoiceAnswer(answer?.value).length > 0;
+    }
     if (!answered) return false;
     if (q.type === 'text' && q.solo_email) {
       const value = answer?.value;
@@ -343,6 +352,20 @@ export function PreviewSurvey() {
       newAnswers.push({ questionID: qId, value });
     }
     setResponseData({ ...responseData, answers: newAnswers });
+  };
+
+  const handleMultipleChoiceSelect = (option: string, questionId: string) => {
+    const existing = responseData.answers.find((a) => a.questionID === questionId);
+    const nextValue = toggleMultipleChoiceOption(existing?.value, option);
+    const selections = parseMultipleChoiceAnswer(nextValue);
+    if (selections.length === 0) {
+      setResponseData({
+        ...responseData,
+        answers: responseData.answers.filter((a) => a.questionID !== questionId),
+      });
+      return;
+    }
+    handleAnswer(nextValue, questionId);
   };
 
   const handleSubmit = () => {
@@ -406,7 +429,7 @@ export function PreviewSurvey() {
 
     if (currentQ.conditional_logic && currentAnswer) {
       // For multiple-choice questions, check if the selected option has logic
-      if (currentQ.type === 'multiple-choice' && typeof currentAnswer.value === 'string') {
+      if (currentQ.type === 'multiple-choice' && currentQ.respuesta_unica !== false && typeof currentAnswer.value === 'string') {
         const selectedValue = String(currentAnswer.value).trim();
         const selectedOptionIndex = currentQ.opciones?.findIndex(
           opt => String(opt).trim() === selectedValue
@@ -811,6 +834,7 @@ export function PreviewSurvey() {
             {/* Multiple Choice */}
             {activeQ.type === 'multiple-choice' && (() => {
               const isYesNo = isYesNoQuestion(activeQ.opciones);
+              const allowMultiple = activeQ.respuesta_unica === false;
               const brandColor = encuesta?.configuracion?.color_primario || '#f97316'; // orange-500 as fallback
               const lightBrandColor = getLightColor(brandColor);
 
@@ -860,8 +884,8 @@ export function PreviewSurvey() {
                   ? activeQ.opciones
                   : ['Opción 1', 'Opción 2', 'Opción 3'];
 
-                // Show dropdown if usar_dropdown is enabled
-                if (activeQ.usar_dropdown) {
+                // Show dropdown if usar_dropdown is enabled (single-select only)
+                if (activeQ.usar_dropdown && !allowMultiple) {
                   const selectedValue = activeAnswer?.value as string || '';
 
                   return (
@@ -892,11 +916,17 @@ export function PreviewSurvey() {
                 return (
                   <div className="space-y-3 mb-8">
                     {options.map((option, i) => {
-                      const isSelected = activeAnswer?.value === option;
+                      const isSelected = isMultipleChoiceOptionSelected(activeAnswer?.value, option, allowMultiple);
                       return (
                         <button
                           key={i}
-                          onClick={() => handleAnswer(option, activeQ.id)}
+                          onClick={() => {
+                            if (allowMultiple) {
+                              handleMultipleChoiceSelect(option, activeQ.id);
+                            } else {
+                              handleAnswer(option, activeQ.id);
+                            }
+                          }}
                           className="w-full p-4 rounded-xl border-2 text-left font-medium transition-all"
                           style={{
                             borderColor: isSelected ? brandColor : '#d1d5dc',
