@@ -27,6 +27,8 @@ import {
   Grid3x3,
   ArrowUpDown,
   Gauge,
+  ChevronUp,
+  ChevronDown,
 } from 'lucide-react';
 import * as api from '../lib/api';
 import {
@@ -152,6 +154,95 @@ function formatUpdatedLabel(iso: string, by?: string): string {
   return by ? `${date}, ${by}` : date;
 }
 
+// ── Option reorder helpers ────────────────────────────────────────────────────
+
+function remapConditionalLogicAfterRemove(
+  logic: ConditionalLogic[] | undefined,
+  removedIndex: number,
+): ConditionalLogic[] | undefined {
+  if (!logic?.length) return logic;
+  const updated = logic
+    .filter((l) => l.option_index !== removedIndex)
+    .map((l) => ({
+      ...l,
+      option_index: l.option_index > removedIndex ? l.option_index - 1 : l.option_index,
+    }));
+  return updated.length > 0 ? updated : undefined;
+}
+
+function remapOptionIndexAfterMove(index: number, from: number, to: number): number {
+  if (index === from) return to;
+  if (from < to) {
+    if (index > from && index <= to) return index - 1;
+  } else if (from > to) {
+    if (index >= to && index < from) return index + 1;
+  }
+  return index;
+}
+
+function remapConditionalLogicAfterMove(
+  logic: ConditionalLogic[] | undefined,
+  fromIndex: number,
+  toIndex: number,
+): ConditionalLogic[] | undefined {
+  if (!logic?.length || fromIndex === toIndex) return logic;
+  return logic.map((l) => ({
+    ...l,
+    option_index: remapOptionIndexAfterMove(l.option_index, fromIndex, toIndex),
+  }));
+}
+
+function moveArrayItem<T>(arr: T[], fromIndex: number, direction: 'up' | 'down'): T[] | null {
+  const toIndex = direction === 'up' ? fromIndex - 1 : fromIndex + 1;
+  if (toIndex < 0 || toIndex >= arr.length) return null;
+  const updated = [...arr];
+  const [moved] = updated.splice(fromIndex, 1);
+  updated.splice(toIndex, 0, moved);
+  return updated;
+}
+
+function OptionMoveButtons({
+  index,
+  total,
+  onMove,
+}: {
+  index: number;
+  total: number;
+  onMove: (direction: 'up' | 'down') => void;
+}) {
+  const btnClass = (disabled: boolean) =>
+    `p-0.5 rounded-[4px] transition-colors ${
+      disabled
+        ? 'text-[#d1d5dc] dark:text-muted-foreground/40 cursor-not-allowed'
+        : 'text-[#99a1af] dark:text-muted-foreground hover:text-[#364153] dark:hover:text-foreground hover:bg-[#f3f4f6] dark:hover:bg-accent'
+    }`;
+
+  return (
+    <div className="flex flex-col shrink-0" role="group" aria-label="Reordenar">
+      <button
+        type="button"
+        disabled={index === 0}
+        onClick={() => onMove('up')}
+        className={btnClass(index === 0)}
+        title="Mover arriba"
+        aria-label="Mover arriba"
+      >
+        <ChevronUp className="w-4 h-4" />
+      </button>
+      <button
+        type="button"
+        disabled={index === total - 1}
+        onClick={() => onMove('down')}
+        className={btnClass(index === total - 1)}
+        title="Mover abajo"
+        aria-label="Mover abajo"
+      >
+        <ChevronDown className="w-4 h-4" />
+      </button>
+    </div>
+  );
+}
+
 // ── Drag & Drop types ─────────────────────────────────────────────────────────
 
 const QUESTION_DRAG_TYPE = 'SURVEY_QUESTION';
@@ -175,6 +266,9 @@ interface DraggableCardProps {
   updateOption: (questionIndex: number, optionIndex: number, value: string) => void;
   addOption: (questionIndex: number) => void;
   removeOption: (questionIndex: number, optionIndex: number) => void;
+  moveOption: (questionIndex: number, optionIndex: number, direction: 'up' | 'down') => void;
+  moveMatrixRow: (questionIndex: number, rowIndex: number, direction: 'up' | 'down') => void;
+  moveMatrixColumn: (questionIndex: number, colIndex: number, direction: 'up' | 'down') => void;
   deleteQuestion: (index: number) => void;
   duplicateQuestion: (index: number) => void;
   updateSusScale: (questionIndex: number, scale: 3 | 5 | 10) => void;
@@ -194,6 +288,9 @@ function DraggableQuestionCard({
   updateOption,
   addOption,
   removeOption,
+  moveOption,
+  moveMatrixRow,
+  moveMatrixColumn,
   deleteQuestion,
   duplicateQuestion,
   updateSusScale,
@@ -564,6 +661,11 @@ function DraggableQuestionCard({
                   </label>
                   {(question.matrix_rows || []).map((row, rowIndex) => (
                     <div key={rowIndex} className="flex gap-2 items-center">
+                      <OptionMoveButtons
+                        index={rowIndex}
+                        total={(question.matrix_rows || []).length}
+                        onMove={(direction) => moveMatrixRow(index, rowIndex, direction)}
+                      />
                       <input
                         type="text"
                         value={row}
@@ -631,6 +733,11 @@ function DraggableQuestionCard({
                   </label>
                   {(question.matrix_columns || []).map((col, colIndex) => (
                     <div key={colIndex} className="flex gap-2 items-center">
+                      <OptionMoveButtons
+                        index={colIndex}
+                        total={(question.matrix_columns || []).length}
+                        onMove={(direction) => moveMatrixColumn(index, colIndex, direction)}
+                      />
                       <input
                         type="text"
                         value={col}
@@ -695,6 +802,11 @@ function DraggableQuestionCard({
                   </label>
                   {question.opciones.map((option, optIndex) => (
                     <div key={optIndex} className="flex gap-2 items-center">
+                      <OptionMoveButtons
+                        index={optIndex}
+                        total={question.opciones.length}
+                        onMove={(direction) => moveOption(index, optIndex, direction)}
+                      />
                       <input
                         type="text"
                         value={option}
@@ -841,6 +953,13 @@ function DraggableQuestionCard({
                 )}
                 {question.tipo !== 'nps' && !(question.tipo === 'csat' && isCsatStarMode(question)) && question.opciones.map((option, optIndex) => (
                   <div key={optIndex} className="flex gap-2 items-center">
+                    {question.tipo === 'multiple-choice' && (
+                      <OptionMoveButtons
+                        index={optIndex}
+                        total={question.opciones.length}
+                        onMove={(direction) => moveOption(index, optIndex, direction)}
+                      />
+                    )}
                     <input
                       type="text"
                       value={option}
@@ -1679,8 +1798,52 @@ export function SurveyBuilder() {
       return; // Don't allow removal if only 2 options remain
     }
     
-    updated[questionIndex].opciones.splice(optionIndex, 1);
-    setEncuestaData({ ...encuestaData, preguntas: updated });
+    const opciones = [...question.opciones];
+    opciones.splice(optionIndex, 1);
+    const conditional_logic = remapConditionalLogicAfterRemove(
+      question.conditional_logic,
+      optionIndex,
+    );
+
+    updated[questionIndex] = {
+      ...question,
+      opciones,
+      conditional_logic,
+    };
+    setEncuestaData({ ...encuestaData, preguntas: updated, ...editorMetaStamp() });
+  };
+
+  const moveOption = (questionIndex: number, optionIndex: number, direction: 'up' | 'down') => {
+    const question = encuestaData.preguntas[questionIndex];
+    const targetIndex = direction === 'up' ? optionIndex - 1 : optionIndex + 1;
+    if (targetIndex < 0 || targetIndex >= question.opciones.length) return;
+
+    const opciones = moveArrayItem(question.opciones, optionIndex, direction);
+    if (!opciones) return;
+
+    const updated = [...encuestaData.preguntas];
+    updated[questionIndex] = {
+      ...question,
+      opciones,
+      conditional_logic: remapConditionalLogicAfterMove(
+        question.conditional_logic,
+        optionIndex,
+        targetIndex,
+      ),
+    };
+    setEncuestaData({ ...encuestaData, preguntas: updated, ...editorMetaStamp() });
+  };
+
+  const moveMatrixRow = (questionIndex: number, rowIndex: number, direction: 'up' | 'down') => {
+    const rows = moveArrayItem(encuestaData.preguntas[questionIndex].matrix_rows || [], rowIndex, direction);
+    if (!rows) return;
+    updateQuestion(questionIndex, 'matrix_rows', rows);
+  };
+
+  const moveMatrixColumn = (questionIndex: number, colIndex: number, direction: 'up' | 'down') => {
+    const cols = moveArrayItem(encuestaData.preguntas[questionIndex].matrix_columns || [], colIndex, direction);
+    if (!cols) return;
+    updateQuestion(questionIndex, 'matrix_columns', cols);
   };
 
   const deleteQuestion = (questionIndex: number) => {
@@ -2402,6 +2565,9 @@ export function SurveyBuilder() {
                                 updateOption={updateOption}
                                 addOption={addOption}
                                 removeOption={removeOption}
+                                moveOption={moveOption}
+                                moveMatrixRow={moveMatrixRow}
+                                moveMatrixColumn={moveMatrixColumn}
                                 deleteQuestion={deleteQuestion}
                                 duplicateQuestion={duplicateQuestion}
                                 updateSusScale={updateSusScale}
@@ -2615,6 +2781,9 @@ export function SurveyBuilder() {
                           updateOption={updateOption}
                           addOption={addOption}
                           removeOption={removeOption}
+                          moveOption={moveOption}
+                          moveMatrixRow={moveMatrixRow}
+                          moveMatrixColumn={moveMatrixColumn}
                           deleteQuestion={deleteQuestion}
                           duplicateQuestion={duplicateQuestion}
                           updateSusScale={updateSusScale}
