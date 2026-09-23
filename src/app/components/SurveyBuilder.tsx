@@ -1425,6 +1425,9 @@ export function SurveyBuilder() {
   const fileInputOGRef = useRef<HTMLInputElement>(null);
   const fileInputThumbnailRef = useRef<HTMLInputElement>(null);
   const skipAutoSaveRef = useRef(true);
+  const isDirtyRef = useRef(false);
+  const encuestaDataRef = useRef<EncuestaRow | null>(null);
+  const AUTO_SAVE_INTERVAL_MS = 60_000;
 
   const [encuestaData, setEncuestaData] = useState<EncuestaRow>({
     id: id || crypto.randomUUID(),
@@ -1448,9 +1451,12 @@ export function SurveyBuilder() {
     ...editorMetaStamp(),
   });
 
+  encuestaDataRef.current = encuestaData;
+
   useEffect(() => {
     if (id) {
       skipAutoSaveRef.current = true;
+      isDirtyRef.current = false;
       loadEncuesta();
     } else {
       setIsLoading(false);
@@ -1635,25 +1641,26 @@ export function SurveyBuilder() {
     };
   };
 
-  // Auto-save with debounce (skip first run after load to avoid overwriting metadata)
+  // Mark pending changes (skip first run after load to avoid overwriting metadata)
   useEffect(() => {
     if (!isLoading && id) {
       if (skipAutoSaveRef.current) {
         skipAutoSaveRef.current = false;
         return;
       }
-      const t = setTimeout(saveEncuesta, 1000);
-      return () => clearTimeout(t);
+      isDirtyRef.current = true;
     }
-  }, [encuestaData, isLoading]);
+  }, [encuestaData, isLoading, id]);
 
   const saveEncuesta = async () => {
+    if (!encuestaDataRef.current) return;
     setIsSaving(true);
-    const payload = { ...encuestaData, ...editorMetaStamp() };
+    const payload = { ...encuestaDataRef.current, ...editorMetaStamp() };
     const { data, error } = await api.saveEncuesta(payload);
     if (error) {
       console.error('Error saving encuesta:', error);
     } else if (data) {
+      isDirtyRef.current = false;
       skipAutoSaveRef.current = true;
       setEncuestaData((prev) => ({
         ...prev,
@@ -1663,6 +1670,19 @@ export function SurveyBuilder() {
     }
     setIsSaving(false);
   };
+
+  // Auto-save every 60s when there are unsaved changes
+  useEffect(() => {
+    if (isLoading || !id) return;
+
+    const interval = setInterval(() => {
+      if (isDirtyRef.current) {
+        void saveEncuesta();
+      }
+    }, AUTO_SAVE_INTERVAL_MS);
+
+    return () => clearInterval(interval);
+  }, [isLoading, id]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
