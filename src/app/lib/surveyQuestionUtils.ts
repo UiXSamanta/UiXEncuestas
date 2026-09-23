@@ -35,3 +35,56 @@ export function isYesNoQuestion(opciones?: string[]): boolean {
 export function csatStarLabel(starCount: number): string {
   return `⭐×${starCount}`;
 }
+
+export function parseMultipleChoiceAnswer(value: number | string | undefined): string[] {
+  if (value === undefined || value === null) return [];
+  if (typeof value === 'number') return [String(value)];
+  const trimmed = value.trim();
+  if (!trimmed) return [];
+  if (trimmed.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(trimmed);
+      return Array.isArray(parsed) ? parsed.map(String) : [trimmed];
+    } catch {
+      return [trimmed];
+    }
+  }
+  return [trimmed];
+}
+
+export function isMultipleChoiceOptionSelected(
+  value: number | string | undefined,
+  option: string,
+  multiSelect: boolean,
+): boolean {
+  if (!multiSelect) {
+    return value === option;
+  }
+  return parseMultipleChoiceAnswer(value).includes(option);
+}
+
+export function toggleMultipleChoiceOption(
+  value: number | string | undefined,
+  option: string,
+): string {
+  const selected = parseMultipleChoiceAnswer(value);
+  const next = selected.includes(option)
+    ? selected.filter((item) => item !== option)
+    : [...selected, option];
+  return JSON.stringify(next);
+}
+
+export function formatMultipleChoiceAnswerDisplay(
+  value: number | string | undefined,
+  multiSelect: boolean,
+  opciones?: string[],
+): string {
+  if (value === undefined || value === null) return '';
+  if (!multiSelect) {
+    if (typeof value === 'number' && opciones?.length) {
+      return opciones[value] ?? String(value);
+    }
+    return String(value);
+  }
+  return parseMultipleChoiceAnswer(value).join(', ');
+}
