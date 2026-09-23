@@ -1347,16 +1347,6 @@ export function AnalyticsDashboard() {
             </button>
 
             <button
-              onClick={handleToggleStatus}
-              disabled={isTogglingStatus}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
-                isLive ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-gray-100 dark:bg-muted text-gray-700 dark:text-muted-foreground hover:bg-gray-200 dark:hover:bg-accent'
-              } disabled:opacity-50`}
-            >
-              <Power className="w-4 h-4" />
-              {isTogglingStatus ? 'Actualizando...' : isLive ? 'Encuesta Activa' : 'Encuesta Pausada'}
-            </button>
-            <button
               onClick={() => navigate(`/builder/${id}`)}
               className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-card border border-gray-200 dark:border-border text-gray-700 dark:text-muted-foreground rounded-lg hover:bg-gray-50 dark:hover:bg-accent hover:border-gray-300 dark:hover:border-border transition-colors font-medium text-sm"
               title="Editar encuesta"
@@ -1371,6 +1361,16 @@ export function AnalyticsDashboard() {
             >
               <Trash2 className="w-4 h-4" />
               {isDeletingData ? 'Borrando...' : `Borrar Datos (${responses})`}
+            </button>
+            <button
+              onClick={handleToggleStatus}
+              disabled={isTogglingStatus}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
+                isLive ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-gray-100 dark:bg-muted text-gray-700 dark:text-muted-foreground hover:bg-gray-200 dark:hover:bg-accent'
+              } disabled:opacity-50`}
+            >
+              <Power className="w-4 h-4" />
+              {isTogglingStatus ? 'Actualizando...' : isLive ? 'Encuesta Activa' : 'Encuesta Pausada'}
             </button>
           </div>
         </div>
