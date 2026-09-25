@@ -14,7 +14,8 @@ export function AppNav() {
     location.pathname === '/admin' ||
     location.pathname === '/' ||
     location.pathname === '/settings' ||
-    location.pathname.startsWith('/survey/')
+    location.pathname.startsWith('/survey/') ||
+    location.pathname.includes('/presentacion')
   ) {
     return null;
   }

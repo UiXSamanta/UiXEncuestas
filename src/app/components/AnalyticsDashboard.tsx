@@ -4,7 +4,7 @@ import {
   Copy, Eye, Check, Mail, Trash2, Power,
   BarChart2, MessageSquare, Star, CheckSquare,
   ListOrdered, ChevronDown, ChevronUp, Users, Calendar, Edit, Cloud,
-  Grid3x3, ArrowUpDown, Gauge
+  Grid3x3, ArrowUpDown, Gauge, Presentation
 } from 'lucide-react';
 import * as api from '../lib/api';
 import { getPreviewUrl, getSurveyUrl } from '../lib/urls';
@@ -1334,6 +1334,16 @@ export function AnalyticsDashboard() {
             {encuesta && <p className="mt-0.5 text-[#101828] dark:text-foreground font-bold text-[30px]">{encuesta.nombre_encuesta}</p>}
           </div>
           <div className="flex items-center gap-3">
+            <button
+              disabled={responses === 0}
+              onClick={() => window.open(`/analytics/${id}/presentacion`, '_blank', 'noopener,noreferrer')}
+              className="flex items-center gap-2 px-4 py-2 bg-[#8C59FE] text-white rounded-lg hover:bg-[#7a4ae8] transition-colors font-medium text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              title={responses === 0 ? 'No hay respuestas para presentar' : 'Abrir presentación en nueva pestaña'}
+            >
+              <Presentation className="w-4 h-4" />
+              Presentación
+            </button>
+
             {/* ── Descargar CSV ── */}
             <button
               disabled={responses === 0}
