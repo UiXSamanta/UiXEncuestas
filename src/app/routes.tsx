@@ -8,6 +8,7 @@ import { ResetPasswordPage } from './components/ResetPasswordPage';
 import { NotificationsPage } from './components/NotificationsPage';
 import { SurveyBuilder } from './components/SurveyBuilder';
 import { AnalyticsDashboard } from './components/AnalyticsDashboard';
+import { AnalyticsPresentationPage } from './components/AnalyticsPresentationPage';
 import { ComparadorResultados } from './components/ComparadorResultados';
 import { RespondentWelcome } from './components/RespondentWelcome';
 import { RespondentSurvey } from './components/RespondentSurvey';
@@ -134,6 +135,10 @@ export const router = createBrowserRouter([
       {
         path: '/builder/:id',
         element: <SurveyBuilder />,
+      },
+      {
+        path: '/analytics/:id/presentacion',
+        element: <AnalyticsPresentationPage />,
       },
       {
         path: '/analytics/:id',
