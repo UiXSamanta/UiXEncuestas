@@ -429,8 +429,10 @@ export function PreviewSurvey() {
 
     if (currentQ.conditional_logic && currentAnswer) {
       // For multiple-choice questions, check if the selected option has logic
-      if (currentQ.type === 'multiple-choice' && currentQ.respuesta_unica !== false && typeof currentAnswer.value === 'string') {
-        const selectedValue = String(currentAnswer.value).trim();
+      if (currentQ.type === 'multiple-choice' && currentQ.respuesta_unica !== false) {
+        // Answers are stored as JSON array strings (e.g. '["Opción B"]'); parse before comparing
+        const selections = parseMultipleChoiceAnswer(currentAnswer.value);
+        const selectedValue = selections[0]?.trim() ?? '';
         const selectedOptionIndex = currentQ.opciones?.findIndex(
           opt => String(opt).trim() === selectedValue
         ) ?? -1;
