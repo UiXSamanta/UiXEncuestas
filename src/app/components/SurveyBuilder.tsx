@@ -41,7 +41,13 @@ import {
   getBuilderReturnProyecto,
   navigateToAdminProyecto,
 } from '../lib/builderNavigation';
-import { isCsatStarMode } from '../lib/surveyQuestionUtils';
+import {
+  CSAT_LABEL_MAX_LENGTH,
+  DEFAULT_CSAT_LABELS,
+  DEFAULT_NPS_LABELS,
+  NPS_LABEL_MAX_LENGTH,
+  isCsatStarMode,
+} from '../lib/surveyQuestionUtils';
 
 // ── Interfaces ────────────────────────────────────────────────────────────────
 
@@ -95,6 +101,7 @@ interface PreguntaSchema {
   matrix_rows?: string[]; // Items to rate (e.g., "Hablar", "Escribir", "Leer")
   matrix_columns?: string[]; // Scale labels (e.g., "Malo", "Bajo", "Promedio", "Alto", "Buenísimo")
   use_stars?: boolean; // score-matrix: stars vs radio; CSAT: stars vs caritas
+  csat_labels?: string[]; // CSAT caritas: 5 editable labels under each face
   // Ranking specific fields
   ranking_instruction?: string; // Instructions for ranking (e.g., "Arrastra y ordena de más a menos.")
   // Conditional logic for question flow
@@ -941,6 +948,52 @@ function DraggableQuestionCard({
                   </div>
                 )}
 
+                {/* NPS editable texts: subtitle + end labels (0 / 10) */}
+                {question.tipo === 'nps' && (
+                  <div className="flex flex-col gap-[12px] mb-2">
+                    <div className="flex flex-col gap-[6px]">
+                      <label className="font-medium text-[12px] leading-[16px] text-[#6a7282] dark:text-muted-foreground">
+                        Subtítulo <span className="font-normal text-[#99a1af] dark:text-muted-foreground">(debajo del título)</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={question.subtitulo_pregunta ?? ''}
+                        onChange={(e) => updateQuestion(index, 'subtitulo_pregunta', e.target.value)}
+                        className="w-full h-[36px] px-[12px] text-[14px] border border-[#d1d5dc] dark:border-border rounded-[8px] focus:border-blue-400 focus:ring-0 outline-none tracking-[-0.1504px] placeholder:text-[rgba(10,10,10,0.35)]"
+                        placeholder="0 = Nada probable, 10 = Muy probable"
+                      />
+                    </div>
+                    <div className="flex gap-[8px]">
+                      <div className="flex-1 flex flex-col gap-[6px]">
+                        <label className="font-medium text-[12px] leading-[16px] text-[#6a7282] dark:text-muted-foreground">
+                          Label izquierdo <span className="font-normal text-[#99a1af] dark:text-muted-foreground">(0)</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={question.label_izquierda ?? DEFAULT_NPS_LABELS.left}
+                          maxLength={NPS_LABEL_MAX_LENGTH}
+                          onChange={(e) => updateQuestion(index, 'label_izquierda', e.target.value)}
+                          className="w-full h-[36px] px-[12px] text-[14px] border border-[#d1d5dc] dark:border-border rounded-[8px] focus:border-blue-400 focus:ring-0 outline-none tracking-[-0.1504px] placeholder:text-[rgba(10,10,10,0.35)]"
+                          placeholder={DEFAULT_NPS_LABELS.left}
+                        />
+                      </div>
+                      <div className="flex-1 flex flex-col gap-[6px]">
+                        <label className="font-medium text-[12px] leading-[16px] text-[#6a7282] dark:text-muted-foreground">
+                          Label derecho <span className="font-normal text-[#99a1af] dark:text-muted-foreground">(10)</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={question.label_derecha ?? DEFAULT_NPS_LABELS.right}
+                          maxLength={NPS_LABEL_MAX_LENGTH}
+                          onChange={(e) => updateQuestion(index, 'label_derecha', e.target.value)}
+                          className="w-full h-[36px] px-[12px] text-[14px] border border-[#d1d5dc] dark:border-border rounded-[8px] focus:border-blue-400 focus:ring-0 outline-none tracking-[-0.1504px] placeholder:text-[rgba(10,10,10,0.35)]"
+                          placeholder={DEFAULT_NPS_LABELS.right}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {question.tipo !== 'nps' && !(question.tipo === 'csat' && isCsatStarMode(question)) && (
                   <label className="font-medium text-[12px] leading-[16px] text-[#6a7282] dark:text-muted-foreground">
                     Opciones{question.tipo === 'multiple-choice' && <span className="font-normal text-[#99a1af] dark:text-muted-foreground"> (mínimo 2)</span>}:
@@ -964,9 +1017,25 @@ function DraggableQuestionCard({
                       type="text"
                       value={option}
                       onChange={(e) => updateOption(index, optIndex, e.target.value)}
-                      className="flex-1 h-[36px] px-[12px] text-[14px] border border-[#d1d5dc] dark:border-border rounded-[8px] focus:border-blue-400 focus:ring-0 outline-none tracking-[-0.1504px]"
+                      className={`${question.tipo === 'csat' ? 'w-[64px] text-center' : 'flex-1'} h-[36px] px-[12px] text-[14px] border border-[#d1d5dc] dark:border-border rounded-[8px] focus:border-blue-400 focus:ring-0 outline-none tracking-[-0.1504px]`}
                       placeholder={`Opción ${optIndex + 1}`}
                     />
+                    {question.tipo === 'csat' && (
+                      <input
+                        type="text"
+                        value={question.csat_labels?.[optIndex] ?? DEFAULT_CSAT_LABELS[optIndex] ?? ''}
+                        maxLength={CSAT_LABEL_MAX_LENGTH}
+                        onChange={(e) => {
+                          // Keep raw values (no trim) so typing isn't disturbed; viewers fall back to defaults
+                          const labels = DEFAULT_CSAT_LABELS.map((fallback, i) => question.csat_labels?.[i] ?? fallback);
+                          labels[optIndex] = e.target.value;
+                          updateQuestion(index, 'csat_labels', labels);
+                        }}
+                        className="flex-1 h-[36px] px-[12px] text-[14px] border border-[#d1d5dc] dark:border-border rounded-[8px] focus:border-blue-400 focus:ring-0 outline-none tracking-[-0.1504px] placeholder:text-[rgba(10,10,10,0.35)]"
+                        placeholder={DEFAULT_CSAT_LABELS[optIndex] ?? 'Etiqueta'}
+                        aria-label={`Etiqueta de la carita ${optIndex + 1}`}
+                      />
+                    )}
                     <span className="text-[11px] text-[#99a1af] dark:text-muted-foreground font-mono shrink-0">[{optIndex}]</span>
                     {question.tipo === 'multiple-choice' && question.opciones.length > 2 && (
                       <button
@@ -1768,6 +1837,7 @@ export function SurveyBuilder() {
 
     if (type === 'csat') {
       newQ.use_stars = false; // Default to caritas
+      newQ.csat_labels = [...DEFAULT_CSAT_LABELS];
     }
 
     // Add default configuration for Score Matrix questions
@@ -1786,6 +1856,8 @@ export function SurveyBuilder() {
     if (type === 'nps') {
       newQ.usar_slider = true; // Default to slider view
       newQ.subtitulo_pregunta = '0 = Nada probable, 10 = Muy probable';
+      newQ.label_izquierda = DEFAULT_NPS_LABELS.left;
+      newQ.label_derecha = DEFAULT_NPS_LABELS.right;
     }
 
     setEncuestaData({ ...encuestaData, preguntas: [...encuestaData.preguntas, newQ], ...editorMetaStamp() });
@@ -1970,6 +2042,7 @@ export function SurveyBuilder() {
 
     if (type === 'csat') {
       newQ.use_stars = false;
+      newQ.csat_labels = [...DEFAULT_CSAT_LABELS];
     }
 
     if (type === 'score-matrix') {
@@ -1985,6 +2058,8 @@ export function SurveyBuilder() {
     if (type === 'nps') {
       newQ.usar_slider = true;
       newQ.subtitulo_pregunta = '0 = Nada probable, 10 = Muy probable';
+      newQ.label_izquierda = DEFAULT_NPS_LABELS.left;
+      newQ.label_derecha = DEFAULT_NPS_LABELS.right;
     }
 
     setEncuestaData({

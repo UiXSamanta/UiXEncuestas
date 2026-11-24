@@ -88,3 +88,30 @@ export function formatMultipleChoiceAnswerDisplay(
   }
   return parseMultipleChoiceAnswer(value).join(', ');
 }
+
+// ── Editable scale labels (CSAT faces / NPS ends) ────────────────────────────
+
+export const DEFAULT_CSAT_LABELS = ['Muy insatisfecho', 'Insatisfecho', 'Neutral', 'Satisfecho', 'Muy satisfecho'];
+export const CSAT_LABEL_MAX_LENGTH = 20;
+
+/** Always returns 5 labels; empty or missing entries fall back to the Spanish defaults. */
+export function getCsatLabels(question: { csat_labels?: string[] }): string[] {
+  return DEFAULT_CSAT_LABELS.map((fallback, i) => question.csat_labels?.[i]?.trim() || fallback);
+}
+
+export const DEFAULT_NPS_LABELS = { left: 'Nada probable', right: 'Muy probable' };
+export const NPS_LABEL_MAX_LENGTH = 40;
+
+/** NPS end labels (0 and 10); reuses the SUS fields label_izquierda / label_derecha. */
+export function getNpsLabels(question: { label_izquierda?: string; label_derecha?: string }): { left: string; right: string } {
+  return {
+    left: question.label_izquierda?.trim() || DEFAULT_NPS_LABELS.left,
+    right: question.label_derecha?.trim() || DEFAULT_NPS_LABELS.right,
+  };
+}
+
+/** True when the creator changed either NPS end label; the slider's "…probable" value caption then no longer fits. */
+export function hasCustomNpsLabels(question: { label_izquierda?: string; label_derecha?: string }): boolean {
+  const { left, right } = getNpsLabels(question);
+  return left !== DEFAULT_NPS_LABELS.left || right !== DEFAULT_NPS_LABELS.right;
+}
