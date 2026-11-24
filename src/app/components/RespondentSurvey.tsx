@@ -15,6 +15,7 @@ import { SurveyLoader } from './SurveyLoader';
 import { SurveyThankYou } from './SurveyThankYou';
 import { SurveyFooter } from './SurveyFooter';
 import {
+  isCsatStarMode,
   isMultipleChoiceOptionSelected,
   parseMultipleChoiceAnswer,
   toggleMultipleChoiceOption,
@@ -101,7 +102,7 @@ function normalizeQuestion(q: any): Question {
     escala_sus: q.escala_sus ?? 5,
     matrix_rows: q.matrix_rows,
     matrix_columns: q.matrix_columns,
-    use_stars: q.use_stars ?? true,
+    use_stars: q.use_stars, // raw: CSAT falls back to legacy detection; score-matrix applies its own ?? true
     ranking_instruction: q.ranking_instruction,
     conditional_logic: q.conditional_logic,
     nps_group_logic: q.nps_group_logic,
@@ -884,11 +885,8 @@ export function RespondentSurvey() {
 
             {/* CSAT Scale */}
             {activeQ.type === 'csat' && (() => {
-              // Detect if this is a star rating CSAT (check if subtitle or options mention "estrella" or "star")
-              const isStarRating = 
-                activeQ.subtitle?.toLowerCase().includes('estrella') ||
-                activeQ.subtitle?.toLowerCase().includes('star') ||
-                activeQ.opciones?.some(opt => opt.includes('⭐') || opt.includes('★'));
+              // Builder toggle (use_stars) wins; legacy surveys fall back to subtitle/options detection
+              const isStarRating = isCsatStarMode(activeQ);
 
               if (isStarRating) {
                 // Star rating CSAT (cumulative/progressive highlighting)
