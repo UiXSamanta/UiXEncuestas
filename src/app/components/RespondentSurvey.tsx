@@ -15,6 +15,10 @@ import { SurveyLoader } from './SurveyLoader';
 import { SurveyThankYou } from './SurveyThankYou';
 import { SurveyFooter } from './SurveyFooter';
 import {
+  getCsatLabels,
+  getNpsLabels,
+  hasCustomNpsLabels,
+  isCsatStarMode,
   isMultipleChoiceOptionSelected,
   parseMultipleChoiceAnswer,
   toggleMultipleChoiceOption,
@@ -76,6 +80,7 @@ interface Question {
   matrix_rows?: string[];
   matrix_columns?: string[];
   use_stars?: boolean;
+  csat_labels?: string[];
   ranking_instruction?: string;
   conditional_logic?: ConditionalLogic[];
   nps_group_logic?: NPSGroupLogic[];
@@ -101,7 +106,8 @@ function normalizeQuestion(q: any): Question {
     escala_sus: q.escala_sus ?? 5,
     matrix_rows: q.matrix_rows,
     matrix_columns: q.matrix_columns,
-    use_stars: q.use_stars ?? true,
+    csat_labels: q.csat_labels,
+    use_stars: q.use_stars, // raw: CSAT falls back to legacy detection; score-matrix applies its own ?? true
     ranking_instruction: q.ranking_instruction,
     conditional_logic: q.conditional_logic,
     nps_group_logic: q.nps_group_logic,
@@ -884,11 +890,8 @@ export function RespondentSurvey() {
 
             {/* CSAT Scale */}
             {activeQ.type === 'csat' && (() => {
-              // Detect if this is a star rating CSAT (check if subtitle or options mention "estrella" or "star")
-              const isStarRating = 
-                activeQ.subtitle?.toLowerCase().includes('estrella') ||
-                activeQ.subtitle?.toLowerCase().includes('star') ||
-                activeQ.opciones?.some(opt => opt.includes('⭐') || opt.includes('★'));
+              // Builder toggle (use_stars) wins; legacy surveys fall back to subtitle/options detection
+              const isStarRating = isCsatStarMode(activeQ);
 
               if (isStarRating) {
                 // Star rating CSAT (cumulative/progressive highlighting)
@@ -929,13 +932,7 @@ export function RespondentSurvey() {
                       <p className="text-sm text-gray-600 dark:text-muted-foreground mb-4">{activeQ.subtitle}</p>
                     )}
                     <div className="flex justify-center gap-2 sm:gap-2 md:gap-4">
-                      {[
-                        { value: 1, emoji: '😞', label: 'Muy Insatisfecho' },
-                        { value: 2, emoji: '😕', label: 'Insatisfecho' },
-                        { value: 3, emoji: '😐', label: 'Neutral' },
-                        { value: 4, emoji: '🙂', label: 'Satisfecho' },
-                        { value: 5, emoji: '😄', label: 'Muy Satisfecho' },
-                      ].map((option) => (
+                      {['😞', '😕', '😐', '🙂', '😄'].map((emoji, i) => ({ value: i + 1, emoji, label: getCsatLabels(activeQ)[i] })).map((option) => (
                         <button
                           key={option.value}
                           onClick={() => handleAnswer(option.value, activeQ.id)}
@@ -946,7 +943,7 @@ export function RespondentSurvey() {
                           }`}
                         >
                           <span className="text-4xl sm:text-5xl md:text-6xl">{option.emoji}</span>
-                          <span className="text-[10px] sm:text-xs md:text-sm text-gray-600 dark:text-muted-foreground text-center whitespace-nowrap">
+                          <span className="text-[10px] sm:text-xs md:text-sm text-gray-600 dark:text-muted-foreground text-center leading-tight break-words max-w-[72px] sm:max-w-[110px] md:max-w-[140px]">
                             {option.label}
                           </span>
                         </button>
@@ -956,6 +953,11 @@ export function RespondentSurvey() {
                 );
               }
             })()}
+
+            {/* NPS subtitle (e.g. "0 = Nada probable, 10 = Muy probable"), matches PreviewSurvey */}
+            {activeQ.type === 'nps' && activeQ.subtitle && (
+              <p className="text-sm text-gray-500 dark:text-muted-foreground mb-8">{activeQ.subtitle}</p>
+            )}
 
             {/* NPS (Net Promoter Score) - 0 to 10 */}
             {activeQ.type === 'nps' && (() => {
@@ -991,13 +993,16 @@ export function RespondentSurvey() {
                         <div className="text-5xl font-bold" style={{ color: getSliderColor(sliderValue) }}>
                           {sliderValue}
                         </div>
-                        <div className="text-sm text-gray-500 dark:text-muted-foreground mt-1">
-                          {sliderValue === 0 && 'Nada probable'}
-                          {(sliderValue === 1 || sliderValue === 2) && 'Muy poco probable'}
-                          {(sliderValue >= 3 && sliderValue <= 6) && 'Poco probable'}
-                          {(sliderValue === 7 || sliderValue === 8) && 'Neutral'}
-                          {sliderValue >= 9 && 'Muy probable'}
-                        </div>
+                        {/* Generic "…probable" caption only makes sense with the default end labels */}
+                        {!hasCustomNpsLabels(activeQ) && (
+                          <div className="text-sm text-gray-500 dark:text-muted-foreground mt-1">
+                            {sliderValue === 0 && 'Nada probable'}
+                            {(sliderValue === 1 || sliderValue === 2) && 'Muy poco probable'}
+                            {(sliderValue >= 3 && sliderValue <= 6) && 'Poco probable'}
+                            {(sliderValue === 7 || sliderValue === 8) && 'Neutral'}
+                            {sliderValue >= 9 && 'Muy probable'}
+                          </div>
+                        )}
                       </div>
 
                       {/* Slider */}
@@ -1023,8 +1028,8 @@ export function RespondentSurvey() {
                           <span>10</span>
                         </div>
                         <div className="flex justify-between text-xs text-gray-600 dark:text-muted-foreground mt-1 font-medium">
-                          <span>Nada probable</span>
-                          <span>Muy probable</span>
+                          <span className="max-w-[45%] truncate" title={getNpsLabels(activeQ).left}>{getNpsLabels(activeQ).left}</span>
+                          <span className="max-w-[45%] truncate text-right" title={getNpsLabels(activeQ).right}>{getNpsLabels(activeQ).right}</span>
                         </div>
                       </div>
                     </div>
@@ -1062,8 +1067,8 @@ export function RespondentSurvey() {
                       })}
                     </div>
                     <div className="flex justify-between text-xs text-gray-600 dark:text-muted-foreground mt-4 px-4">
-                      <span className="font-medium">Nada probable</span>
-                      <span className="font-medium">Muy probable</span>
+                      <span className="font-medium max-w-[45%] truncate" title={getNpsLabels(activeQ).left}>{getNpsLabels(activeQ).left}</span>
+                      <span className="font-medium max-w-[45%] truncate text-right" title={getNpsLabels(activeQ).right}>{getNpsLabels(activeQ).right}</span>
                     </div>
                   </div>
                 );

@@ -56,8 +56,8 @@ Campo común: `pregunta_id`, `tipo`, `titulo_pregunta`, `subtitulo_pregunta?`, `
 |--------|-------------------|
 | `likert` | `opciones`, `conditional_logic` |
 | `sus` | `escala_sus` (3\|5\|10), `label_izquierda`, `label_derecha` |
-| `csat` | `use_stars?` (editor; default false = caritas), `opciones`, `conditional_logic` |
-| `nps` | `usar_slider`, `subtitulo_pregunta`, `nps_group_logic` |
+| `csat` | `use_stars?` (editor; default false = caritas; respondent/preview usan `isCsatStarMode`), `opciones` (emojis), `csat_labels?` (5 textos bajo cada carita; vacío → defaults en español vía `getCsatLabels`), `conditional_logic` |
+| `nps` | `usar_slider`, `subtitulo_pregunta`, `label_izquierda?` / `label_derecha?` (etiquetas 0 / 10; vacío → "Nada probable" / "Muy probable" vía `getNpsLabels`), `nps_group_logic` |
 | `multiple-choice` | `respuesta_unica`, `usar_dropdown`, `conditional_logic` |
 | `text` | `solo_email`, `text_logic` (answered/skipped) |
 | `separator` | Solo título informativo |

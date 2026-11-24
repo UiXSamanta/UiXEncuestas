@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import * as api from '../lib/api';
 import { getPreviewUrl, getSurveyUrl } from '../lib/urls';
-import { csatStarLabel, formatMultipleChoiceAnswerDisplay, isCsatStarMode, isYesNoQuestion, parseMultipleChoiceAnswer } from '../lib/surveyQuestionUtils';
+import { csatStarLabel, formatMultipleChoiceAnswerDisplay, getCsatLabels, isCsatStarMode, isYesNoQuestion, parseMultipleChoiceAnswer } from '../lib/surveyQuestionUtils';
 
 // ── Type helpers ─────────────────────────────────────────────────────────────
 
@@ -24,7 +24,6 @@ const TYPE_META: Record<string, { label: string; bar: string; badge: string; ico
 };
 
 const CSAT_EMOJIS = ['😞', '😕', '😐', '🙂', '😄'];
-const CSAT_LABELS = ['Muy insatisfecho', 'Insatisfecho', 'Neutral', 'Satisfecho', 'Muy satisfecho'];
 
 // ── Per-question stats helpers ────────────────────────────────────────────────
 
@@ -663,6 +662,7 @@ function CsatChart({ question, values, meta }: { question: any; values: any[]; m
   const satisfiedCount = values.filter(v => Number(v) >= 4).length;
   const satisfiedPct = total > 0 ? Math.round((satisfiedCount / total) * 100) : 0;
   const useStars = isCsatStarMode(question);
+  const csatLabels = getCsatLabels(question);
   const barColor = useStars ? '#FDC700' : meta.bar;
 
   return (
@@ -671,7 +671,7 @@ function CsatChart({ question, values, meta }: { question: any; values: any[]; m
         {[1, 2, 3, 4, 5].map((starValue, i) => (
           <BarRow
             key={starValue}
-            label={useStars ? `${starValue} estrella${starValue > 1 ? 's' : ''}` : CSAT_LABELS[i]}
+            label={useStars ? `${starValue} estrella${starValue > 1 ? 's' : ''}` : csatLabels[i]}
             count={counts[i]}
             total={total}
             color={barColor}
